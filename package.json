@@ -1,0 +1,19 @@
+{
+  "name": "fidelis-backtester",
+  "version": "1.0.0",
+  "description": "Fidelis government-bond backtester — historic yield simulator (RON tranches, 2024–2025).",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "vitest": "^2.1.8"
+  }
+}
