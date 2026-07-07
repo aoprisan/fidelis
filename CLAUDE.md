@@ -77,10 +77,20 @@ unit-testable without a DOM; the UI is a thin projection of them.
 - **Maturity switch.** Mid-2025 the 1/3/5-year RON tranches were replaced by
   2/4/6-year ones; rate/maturity lookup handles this fallback. Months without an
   issuance reuse the last available rate.
-- **Horizon.** The backtester is **END-anchored** (`END`, mid-2026 in
-  `data/history.ts`): legs accrue/mature relative to that fixed horizon, which is
-  what `trajectory`, `benchmark`, and `cashflow` assume. Do not switch to a
-  hold-to-maturity model without reworking those.
+- **Horizon (`SimParams.horizon`).** `"now"` (default) marks to the fixed `END`
+  (mid-2026): legs accrue/mature relative to that horizon — the historic
+  backtester, and the only mode the RON deposit/inflation benchmark is valid for
+  (so `render`/`export` hide the benchmark for `"maturity"` just like for EUR).
+  `"maturity"` holds every leg to term (`simulateLegToMaturity`), reinvesting
+  within ~one longest-bond span; `runHorizon()` returns the per-run horizon that
+  `trajectory`/`cashflow`/`summarize` key off. Missing `horizon` == `"now"`, so
+  the golden fixtures (all `"now"`) stay valid without regeneration.
+- **Two apps, one shell.** `sim/simulate.ts` is the historic backtester;
+  `sim/planner.ts` is the independent **forward ladder planner** (monthly
+  contributions, risk-based maturity pick, donor-edge, capital-return schedule,
+  its own `irr` — kept out of the `sim/index.ts` barrel to avoid clashing with
+  `simulate`'s `irr`). `ui/app.ts` switches between them via `#modeSeg`;
+  `ui/render.ts` paints both into the same result slots.
 - Coupons are annual, fixed, tax-free (CASS-exempt), held to maturity — no
   early-sale-at-market modeling.
 

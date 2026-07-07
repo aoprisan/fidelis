@@ -1,8 +1,18 @@
 import { END, type Currency } from "../data/history";
-import { byId, couponFor, idToYear, issuanceAtOrAfter, matsAt } from "./history";
+import { byId, couponFor, idToYear, issuanceAtOrAfter, matsAt, maxMatAt } from "./history";
 
 /** Investment strategy. */
 export type Strategy = "single" | "ladder";
+
+/**
+ * Which horizon a run is valued at:
+ *  - `"now"`   — mark to the program horizon `END` (mid-2026): coupons accrue
+ *    and legs mature relative to today. This is the historic backtester's
+ *    default and what the deposit/inflation benchmark + growth curve assume.
+ *  - `"maturity"` — hold to maturity: every leg runs its full term (all coupons
+ *    paid), reinvesting within roughly one longest-bond span from the start.
+ */
+export type Horizon = "now" | "maturity";
 
 /** Simulation parameters (the pure inputs to a run). */
 export interface SimParams {
@@ -14,6 +24,8 @@ export interface SimParams {
   reinvest: boolean;
   /** Tranche currency. Donor tranches exist only for RON. */
   currency: Currency;
+  /** Valuation horizon. Absent/`"now"` marks to `END`; `"maturity"` holds to term. */
+  horizon?: Horizon;
   /**
    * Recurring contribution plan: the issuance months in which `amount` is
    * invested (the same amount each month), sorted ascending. When present and
@@ -81,6 +93,21 @@ export function simulateLeg(
   donor: boolean,
   reinvest: boolean,
   currency: Currency = "RON",
+  horizon: Horizon = "now",
+): Leg[] {
+  return horizon === "maturity"
+    ? simulateLegToMaturity(startId, principal, targetMat, donor, reinvest, currency)
+    : simulateLegToEnd(startId, principal, targetMat, donor, reinvest, currency);
+}
+
+/** `"now"` horizon: legs accrue and mature relative to the fixed `END`. */
+function simulateLegToEnd(
+  startId: string,
+  principal: number,
+  targetMat: number,
+  donor: boolean,
+  reinvest: boolean,
+  currency: Currency,
 ): Leg[] {
   const legs: Leg[] = [];
   let curId = startId;
@@ -112,6 +139,55 @@ export function simulateLeg(
     cap = cap + couponAnnual * mat;
     curId = issuanceAtOrAfter(endY).id;
     if (idToYear(curId) < endY - 0.001) break;
+    targetMat = donor ? 2 : targetMat;
+  }
+  return legs;
+}
+
+/**
+ * `"maturity"` horizon: every leg runs its full term (all coupons paid). When
+ * reinvesting, at each maturity principal + coupons compound into the edition
+ * current at that moment, and the chain keeps rolling until it reaches the
+ * horizon target — roughly one longest-bond span from the start — so a short
+ * bond is shown rolled out over a comparable window. Past the last real
+ * issuance the final known edition's terms are reused (frozen rates).
+ */
+function simulateLegToMaturity(
+  startId: string,
+  principal: number,
+  targetMat: number,
+  donor: boolean,
+  reinvest: boolean,
+  currency: Currency,
+): Leg[] {
+  const legs: Leg[] = [];
+  let startY = idToYear(startId);
+  let editionId = startId;
+  let cap = principal;
+  const target = idToYear(startId) + maxMatAt(startId, currency);
+  let guard = 0;
+  while (guard++ < 12) {
+    const ed = byId[editionId];
+    if (!ed) break;
+    const { rate, mat } = couponFor(editionId, targetMat, donor, currency);
+    const endY = startY + mat;
+    const couponAnnual = (cap * rate) / 100;
+    legs.push({
+      startId: editionId,
+      startLabel: ed.label,
+      mat,
+      rate,
+      principal: cap,
+      startY,
+      endY,
+      couponsPaid: mat, // held to maturity: every scheduled coupon is paid
+      couponAnnual,
+      matured: true,
+    });
+    if (!reinvest || endY >= target - 1e-9) break;
+    cap = cap + couponAnnual * mat;
+    startY = endY;
+    editionId = issuanceAtOrAfter(endY).id;
     targetMat = donor ? 2 : targetMat;
   }
   return legs;
@@ -156,7 +232,9 @@ export function valueAt(legs: Leg[], t: number): number {
     if (leg.startY <= t) active = leg;
     else break;
   }
-  const cap = Math.min(t, Math.min(active.endY, END));
+  // Accrue within the active leg only, capped at its own maturity (not the
+  // global END) so a hold-to-maturity curve can extend past mid-2026.
+  const cap = Math.min(t, active.endY);
   const elapsed = Math.max(0, cap - active.startY);
   return active.principal + active.couponAnnual * elapsed;
 }
@@ -167,16 +245,16 @@ export function valueAt(legs: Leg[], t: number): number {
  * sampling at every leg boundary reproduces the exact curve. The first point is
  * the invested amount; the last equals {@link finalValueOf}.
  */
-export function trajectory(res: SimResult): ValuePoint[] {
+export function trajectory(res: SimResult, horizonY: number = END): ValuePoint[] {
   const legs = res.blocks.flatMap((b) => b.legs);
   if (legs.length === 0) return [];
   const start = Math.min(...legs.map((l) => l.startY));
-  const breaks = new Set<number>([start, END]);
+  const breaks = new Set<number>([start, horizonY]);
   for (const leg of legs) {
     breaks.add(leg.startY);
-    breaks.add(Math.min(leg.endY, END));
+    breaks.add(Math.min(leg.endY, horizonY));
   }
-  const ts = [...breaks].filter((t) => t >= start && t <= END).sort((a, b) => a - b);
+  const ts = [...breaks].filter((t) => t >= start && t <= horizonY).sort((a, b) => a - b);
   return ts.map((t) => ({
     t,
     value: res.blocks.reduce((sum, b) => sum + valueAt(b.legs, t), 0),
@@ -185,7 +263,7 @@ export function trajectory(res: SimResult): ValuePoint[] {
 
 /** Single-issuance strategy: the whole amount in one leg chain. */
 export function runSingle(p: SimParams): SimResult {
-  const legs = simulateLeg(p.startId, p.amount, p.mat, p.donor, p.reinvest, p.currency);
+  const legs = simulateLeg(p.startId, p.amount, p.mat, p.donor, p.reinvest, p.currency, p.horizon);
   return { blocks: [{ legs, amount: p.amount }] };
 }
 
@@ -201,7 +279,7 @@ export function runLadder(p: SimParams): SimResult {
       : [mats[0], mats[Math.floor(mats.length / 2)], mats[mats.length - 1]];
   const per = p.amount / 3;
   const blocks = chosen.map((m) => ({
-    legs: simulateLeg(p.startId, per, m, p.donor, p.reinvest, p.currency),
+    legs: simulateLeg(p.startId, per, m, p.donor, p.reinvest, p.currency, p.horizon),
     amount: per,
   }));
   return { blocks };
@@ -276,6 +354,17 @@ export function finalValueOf(res: SimResult): number {
 }
 
 /**
+ * The decimal year a run is valued at: the fixed `END` for the `"now"` horizon,
+ * or the latest maturity across all blocks when holding to maturity.
+ */
+export function runHorizon(p: SimParams, res: SimResult): number {
+  if (p.horizon !== "maturity") return END;
+  let end = -Infinity;
+  for (const b of res.blocks) for (const leg of b.legs) end = Math.max(end, leg.endY);
+  return end === -Infinity ? END : end;
+}
+
+/**
  * Compute headline figures from an already-computed run (avoids re-running when
  * the caller already has the {@link SimResult}). Invested is the amount times
  * the number of contributions; the horizon runs from the first contribution.
@@ -289,7 +378,8 @@ export function summarizeOf(p: SimParams, res: SimResult): Summary {
   const finalValue = finalValueOf(res);
   const profit = finalValue - invested;
   const startYear = Math.min(...months.map(idToYear));
-  const years = END - startYear;
+  const horizonYear = runHorizon(p, res);
+  const years = horizonYear - startYear;
   let cagr: number;
   if (invested <= 0) {
     cagr = 0;
@@ -297,7 +387,7 @@ export function summarizeOf(p: SimParams, res: SimResult): Summary {
     cagr = years > 0 ? (Math.pow(finalValue / invested, 1 / years) - 1) * 100 : 0;
   } else {
     const flows: CashFlow[] = months.map((id) => ({ t: idToYear(id), cf: -p.amount }));
-    flows.push({ t: END, cf: finalValue });
+    flows.push({ t: horizonYear, cf: finalValue });
     cagr = irr(flows);
   }
   return { finalValue, profit, years, cagr };

@@ -210,6 +210,48 @@ describe("summarize — CAGR math", () => {
   });
 });
 
+describe("hold-to-maturity horizon", () => {
+  const base: SimParams = {
+    amount: 50000,
+    startId: "2025-02",
+    strat: "single",
+    mat: 5,
+    donor: false,
+    reinvest: false,
+    currency: "RON",
+  };
+
+  it("runs a single leg its full term (all coupons paid)", () => {
+    const legs = simulateLeg("2025-02", 50000, 5, false, false, "RON", "maturity");
+    expect(legs).toHaveLength(1);
+    expect(legs[0].matured).toBe(true);
+    expect(legs[0].couponsPaid).toBe(5); // vs 1 under the "now" horizon
+  });
+
+  it("values a held-to-maturity bond at principal + all coupons", () => {
+    const s = summarize({ ...base, horizon: "maturity" });
+    // 50000 at 7.95% for 5 years = 50000 + 3975*5
+    expect(s.finalValue).toBeCloseTo(69875, 9);
+    expect(s.years).toBeCloseTo(5, 9);
+    expect(s.cagr).toBeCloseTo((Math.pow(69875 / 50000, 1 / 5) - 1) * 100, 9);
+  });
+
+  it("is worth at least the mark-to-now value (it holds longer)", () => {
+    const now = summarize({ ...base, horizon: "now" });
+    const mat = summarize({ ...base, horizon: "maturity" });
+    expect(mat.finalValue).toBeGreaterThanOrEqual(now.finalValue - 1e-9);
+  });
+
+  it("every leg in a reinvested chain is matured with all coupons paid", () => {
+    const legs = simulateLeg("2024-10", 50000, 1, false, true, "RON", "maturity");
+    expect(legs.length).toBeGreaterThan(1);
+    for (const leg of legs) {
+      expect(leg.matured).toBe(true);
+      expect(leg.couponsPaid).toBe(leg.mat);
+    }
+  });
+});
+
 describe("irr", () => {
   it("recovers a simple one-period return", () => {
     // -100 now, +110 in a year -> 10%

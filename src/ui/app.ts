@@ -1,8 +1,9 @@
 import { FIRST_SELECTABLE, HISTORY } from "../data/history";
 import { byId, matsAt } from "../sim/history";
-import type { SimParams } from "../sim/simulate";
+import type { PlanParams, Risk } from "../sim/planner";
+import type { Horizon, SimParams } from "../sim/simulate";
 import { fmt } from "./format";
-import { render, type RenderTargets } from "./render";
+import { render, renderPlan, type RenderTargets } from "./render";
 
 const el = <T extends HTMLElement>(id: string): T => {
   const node = document.getElementById(id);
@@ -10,11 +11,18 @@ const el = <T extends HTMLElement>(id: string): T => {
   return node as T;
 };
 
+/** Toggle `aria-pressed` across a segmented button group. */
+const press = (buttons: Iterable<Element>, active: Element): void => {
+  for (const b of buttons) b.setAttribute("aria-pressed", String(b === active));
+};
+
 /** Issuances offered as start / contribution months. */
 const SELECTABLE = HISTORY.filter((h) => h.id >= FIRST_SELECTABLE);
 
 /** The denomination word shown on amount labels for a currency. */
 const ccyWord = (ccy: string): string => (ccy === "EUR" ? "euro" : "lei");
+
+type Mode = "backtest" | "plan";
 
 /** The default scenario shown on first load. */
 export const DEFAULT_PARAMS: SimParams = {
@@ -25,6 +33,7 @@ export const DEFAULT_PARAMS: SimParams = {
   donor: false,
   reinvest: true,
   currency: "RON",
+  horizon: "now",
 };
 
 /**
@@ -41,10 +50,24 @@ export interface AppController {
 /**
  * Wire the controls to the render layer over a single mutable state object,
  * mirroring the original single-file app's interaction model, and expose a
- * controller so other UI modules (scenarios, export) can drive it.
+ * controller so other UI modules (scenarios, export) can drive it. Two modes —
+ * the historic backtester and the forward ladder planner — share the start-date
+ * and currency selectors; switching mode swaps which state object is painted.
  */
 export function createApp(initial?: SimParams | null): AppController {
+  let mode: Mode = "backtest";
+
   const S: SimParams = { ...DEFAULT_PARAMS, ...(initial ?? {}) };
+
+  const P: PlanParams = {
+    monthly: 1000,
+    horizonYears: 3,
+    startId: S.startId,
+    risk: "balanced",
+    donorEligible: false,
+    reinvest: true,
+    currency: S.currency,
+  };
 
   const targets: RenderTargets = {
     headline: el("headline"),
@@ -57,7 +80,8 @@ export function createApp(initial?: SimParams | null): AppController {
 
   const subscribers: Array<(p: SimParams) => void> = [];
   const paint = () => {
-    render(S, targets);
+    if (mode === "plan") renderPlan(P, targets);
+    else render(S, targets);
     const snapshot = { ...S, ...(S.plan ? { plan: [...S.plan] } : {}) };
     subscribers.forEach((cb) => cb(snapshot));
   };
@@ -65,7 +89,39 @@ export function createApp(initial?: SimParams | null): AppController {
   /** A recurring plan is active when it holds at least one contribution month. */
   const isRecurring = () => !!(S.plan && S.plan.length > 0);
 
-  // --- start date (lump) -----------------------------------------------------
+  // --- mode (backtester vs planner) -----------------------------------------
+
+  function bindMode() {
+    const seg = el("modeSeg");
+    seg.querySelectorAll("button").forEach((b) => {
+      b.onclick = () => {
+        mode = (b as HTMLButtonElement).dataset.mode as Mode;
+        press(seg.children, b);
+        applyMode();
+        paint();
+      };
+    });
+  }
+
+  /** Show the controls + result affordances that belong to the active mode. */
+  function applyMode() {
+    const planMode = mode === "plan";
+    el("backtestControls").style.display = planMode ? "none" : "block";
+    el("planControls").hidden = !planMode;
+    const scenarios = document.querySelector<HTMLElement>(".scenarios");
+    if (scenarios) scenarios.style.display = planMode ? "none" : "block";
+    el("actions").style.display = planMode ? "none" : "flex";
+    const compare = document.getElementById("compare");
+    if (compare) compare.style.display = planMode ? "none" : "block";
+    if (planMode) {
+      el("startWrap").hidden = false;
+      buildStart();
+    } else {
+      syncMode(); // restores start/plan pickers per the recurring toggle
+    }
+  }
+
+  // --- start date (shared by both modes) ------------------------------------
 
   function buildStart() {
     const seg = el("startSeg");
@@ -74,10 +130,8 @@ export function createApp(initial?: SimParams | null): AppController {
     ).join("");
     seg.querySelectorAll("button").forEach((b) => {
       b.onclick = () => {
-        S.startId = (b as HTMLButtonElement).dataset.id!;
-        [...seg.children].forEach((x) =>
-          x.setAttribute("aria-pressed", String(x === b)),
-        );
+        S.startId = P.startId = (b as HTMLButtonElement).dataset.id!;
+        press(seg.children, b);
         buildMat();
         paint();
       };
@@ -114,7 +168,7 @@ export function createApp(initial?: SimParams | null): AppController {
     const sorted = ids.filter((id) => byId[id]).sort();
     if (sorted.length === 0) return;
     S.plan = sorted;
-    S.startId = sorted[0]; // keep the start issuance equal to the first month
+    S.startId = P.startId = sorted[0]; // keep the start issuance equal to the first month
     buildPlan();
     buildMat();
     paint();
@@ -151,7 +205,7 @@ export function createApp(initial?: SimParams | null): AppController {
 
   function enterLump() {
     if (isRecurring()) {
-      S.startId = S.plan![0];
+      S.startId = P.startId = S.plan![0];
       S.plan = undefined;
     }
     syncMode();
@@ -181,7 +235,7 @@ export function createApp(initial?: SimParams | null): AppController {
       .querySelectorAll<HTMLButtonElement>("button")
       .forEach((b) => {
         b.onclick = () => {
-          S.currency = b.dataset.ccy as SimParams["currency"];
+          S.currency = P.currency = b.dataset.ccy as SimParams["currency"];
           applyCurrency();
           buildMat();
           paint();
@@ -189,25 +243,27 @@ export function createApp(initial?: SimParams | null): AppController {
       });
   }
 
-  /** Reflect the currency: relabel amount, hide the RON-only donor tranche. */
+  /** Reflect the currency: relabel amounts, hide the RON-only donor tranches. */
   function applyCurrency() {
     const eur = S.currency === "EUR";
-    el("currencySeg")
-      .querySelectorAll<HTMLButtonElement>("button")
-      .forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.ccy === S.currency)));
+    press(el("currencySeg").children, [...el("currencySeg").children].find(
+      (x) => (x as HTMLButtonElement).dataset.ccy === S.currency,
+    ) as Element);
     el("donorWrap").style.display = eur ? "none" : "flex";
-    if (eur && S.donor) {
+    el("donorEligWrap").style.display = eur ? "none" : "flex";
+    if (eur) {
       S.donor = false;
+      P.donorEligible = false;
       el<HTMLInputElement>("donor").checked = false;
+      el<HTMLInputElement>("donorElig").checked = false;
     }
-    // amount label + plan hint carry the currency word
     const rec = isRecurring();
     const w = ccyWord(S.currency);
     el("amountLabel").textContent = rec ? `Sumă / lună (${w})` : `Sumă investită (${w})`;
     updatePlanHint();
   }
 
-  // --- maturity & strategy ---------------------------------------------------
+  // --- maturity, strategy, horizon ------------------------------------------
 
   function buildMat() {
     const seg = el("matSeg");
@@ -219,9 +275,7 @@ export function createApp(initial?: SimParams | null): AppController {
     seg.querySelectorAll("button").forEach((b) => {
       b.onclick = () => {
         S.mat = Number((b as HTMLButtonElement).dataset.m);
-        [...seg.children].forEach((x) =>
-          x.setAttribute("aria-pressed", String(x === b)),
-        );
+        press(seg.children, b);
         paint();
       };
     });
@@ -229,10 +283,11 @@ export function createApp(initial?: SimParams | null): AppController {
   }
 
   function bindStrat() {
-    document.querySelectorAll<HTMLButtonElement>("#stratSeg button").forEach((b) => {
+    const seg = el("stratSeg");
+    seg.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
       b.onclick = () => {
         S.strat = b.dataset.strat as SimParams["strat"];
-        syncStrat();
+        press(seg.children, b);
         buildMat();
         paint();
       };
@@ -240,10 +295,68 @@ export function createApp(initial?: SimParams | null): AppController {
   }
 
   function syncStrat() {
-    document
-      .querySelectorAll("#stratSeg button")
-      .forEach((x) => x.setAttribute("aria-pressed", String((x as HTMLButtonElement).dataset.strat === S.strat)));
+    const seg = el("stratSeg");
+    press(
+      seg.children,
+      [...seg.children].find((x) => (x as HTMLButtonElement).dataset.strat === S.strat) as Element,
+    );
   }
+
+  function bindHorizon() {
+    const seg = el("horizonSeg");
+    seg.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
+      b.onclick = () => {
+        S.horizon = b.dataset.hz as Horizon;
+        press(seg.children, b);
+        paint();
+      };
+    });
+  }
+
+  function syncHorizon() {
+    const seg = el("horizonSeg");
+    press(
+      seg.children,
+      [...seg.children].find(
+        (x) => (x as HTMLButtonElement).dataset.hz === (S.horizon ?? "now"),
+      ) as Element,
+    );
+  }
+
+  // --- planner controls ------------------------------------------------------
+
+  function bindPlanControls() {
+    el<HTMLInputElement>("monthly").oninput = (e) => {
+      P.monthly = Math.max(0, Number((e.target as HTMLInputElement).value) || 0);
+      paint();
+    };
+    const hseg = el("planHorizonSeg");
+    hseg.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
+      b.onclick = () => {
+        P.horizonYears = Number(b.dataset.y);
+        press(hseg.children, b);
+        paint();
+      };
+    });
+    const rseg = el("riskSeg");
+    rseg.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
+      b.onclick = () => {
+        P.risk = b.dataset.r as Risk;
+        press(rseg.children, b);
+        paint();
+      };
+    });
+    el<HTMLInputElement>("donorElig").onchange = (e) => {
+      P.donorEligible = (e.target as HTMLInputElement).checked;
+      paint();
+    };
+    el<HTMLInputElement>("planReinvest").onchange = (e) => {
+      P.reinvest = (e.target as HTMLInputElement).checked;
+      paint();
+    };
+  }
+
+  // --- backtester inputs -----------------------------------------------------
 
   el<HTMLInputElement>("amount").oninput = (e) => {
     S.amount = Math.max(0, Number((e.target as HTMLInputElement).value) || 0);
@@ -265,15 +378,20 @@ export function createApp(initial?: SimParams | null): AppController {
     el<HTMLInputElement>("donor").checked = S.donor;
     el<HTMLInputElement>("reinvest").checked = S.reinvest;
     syncStrat();
+    syncHorizon();
     applyCurrency();
     buildMat();
     syncMode();
   }
 
+  bindMode();
   bindContrib();
   bindCurrency();
   bindStrat();
+  bindHorizon();
+  bindPlanControls();
   syncControls();
+  applyMode();
   paint();
 
   return {
@@ -281,6 +399,8 @@ export function createApp(initial?: SimParams | null): AppController {
     setParams: (p) => {
       Object.assign(S, p);
       if (!p.plan || p.plan.length === 0) delete S.plan;
+      P.startId = S.startId;
+      P.currency = S.currency;
       syncControls();
       paint();
     },

@@ -1,5 +1,4 @@
-import { END } from "../data/history";
-import type { SimParams, SimResult } from "./simulate";
+import { runHorizon, type SimParams, type SimResult } from "./simulate";
 
 /** What a cash event pays out: an annual coupon or the principal at maturity. */
 export type CashEventKind = "coupon" | "principal";
@@ -55,7 +54,10 @@ export function couponSchedule(res: SimResult, p: SimParams): CashEvent[] {
       }
     });
   }
-  return events.filter((e) => e.t <= END + 1e-9).sort((a, b) => a.t - b.t);
+  // Cap at the run's horizon — `END` for a mark-to-now run, or the latest
+  // maturity when holding to maturity (so the full coupon schedule shows).
+  const bound = runHorizon(p, res);
+  return events.filter((e) => e.t <= bound + 1e-9).sort((a, b) => a.t - b.t);
 }
 
 /** Events grouped by calendar year, with the per-year total paid. */

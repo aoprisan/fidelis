@@ -1,11 +1,11 @@
 import { byId, idToYear } from "../sim/history";
-import { END } from "../data/history";
 import { benchmarkSummary, deflate, depositTrajectory } from "../sim/benchmark";
 import { couponSchedule, scheduleByYear } from "../sim/cashflow";
 import {
   contributionMonths,
   finalValueOf,
   run,
+  runHorizon,
   summarize,
   trajectory,
   type Leg,
@@ -83,6 +83,8 @@ export function drawReport(
   const s = summarize(params);
   const finalValue = finalValueOf(res);
   const w = params.currency === "EUR" ? "euro" : "lei";
+  const toMaturity = params.horizon === "maturity";
+  const H = runHorizon(params, res); // valuation horizon (END, or last maturity)
   const invested = params.amount * contributionMonths(params).length;
 
   // --- layout pass: collect draw ops while advancing the y cursor ---------
@@ -126,7 +128,7 @@ export function drawReport(
 
   // headline stats (three cards)
   const cards: Array<{ k: string; v: string; color: string }> = [
-    { k: "VALOARE AZI", v: `${fmt(finalValue)} ${w}`, color: C.green },
+    { k: toMaturity ? "VALOARE LA SCADENȚĂ" : "VALOARE AZI", v: `${fmt(finalValue)} ${w}`, color: C.green },
     { k: "CÂȘTIG NET (NEIMPOZABIL)", v: `+${fmt(s.profit)} ${w}`, color: C.green },
     { k: "RANDAMENT ANUALIZAT", v: `${fmt2(s.cagr)}%`, color: C.paper },
   ];
@@ -136,7 +138,7 @@ export function drawReport(
   y += cardH + 30;
 
   // growth chart
-  const points = trajectory(res);
+  const points = trajectory(res, H);
   if (points.length >= 2) {
     ops.push(sectionTitle("EVOLUȚIA VALORII ÎN TIMP", y));
     y += 22;
@@ -148,7 +150,7 @@ export function drawReport(
 
   // benchmark comparison (Fidelis vs taxed deposit vs inflation) — the deposit
   // and CPI series are RON-denominated, so this is omitted for EUR tranches.
-  if (points.length >= 2 && params.currency !== "EUR") {
+  if (points.length >= 2 && params.currency !== "EUR" && !toMaturity) {
     const bs = benchmarkSummary(params, points);
     const series: BenchSeries[] = [
       { points: depositTrajectory(params), color: C.muted, dash: [], width: 1.5 },
@@ -202,7 +204,7 @@ export function drawReport(
   const trackX = P + labelW + 12;
   const trackW = W - P - trackX;
   const minY = idToYear(params.startId);
-  const span = Math.max(END - minY, 0.0001);
+  const span = Math.max(H - minY, 0.0001);
   const laneH = 30;
   const laneGap = 8;
   legs.forEach((leg) => {
@@ -215,9 +217,9 @@ export function drawReport(
   ops.push((c) => {
     c.fillStyle = C.muted;
     c.font = `10px ${MONO}`;
-    for (let yr = Math.ceil(minY); yr <= Math.floor(END); yr++) {
+    for (let yr = Math.ceil(minY); yr <= Math.floor(H); yr++) {
       const x = trackX + ((yr - minY) / span) * trackW;
-      c.textAlign = yr === Math.floor(END) ? "right" : "left";
+      c.textAlign = yr === Math.floor(H) ? "right" : "left";
       c.fillText(String(yr), Math.min(x, W - P), axisY + 8);
     }
     c.textAlign = "left";
@@ -584,7 +586,7 @@ function drawLane(
   c.fill();
   // bar
   const left = ((leg.startY - minY) / span) * trackW;
-  const width = ((Math.min(leg.endY, END) - leg.startY) / span) * trackW;
+  const width = ((Math.min(leg.endY, minY + span) - leg.startY) / span) * trackW;
   const bx = trackX + left;
   const bw = Math.max(width, 2);
   const grad = c.createLinearGradient(bx, 0, bx + bw, 0);
