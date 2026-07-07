@@ -1,8 +1,16 @@
 import { byId, idToYear } from "../sim/history";
 import { END } from "../data/history";
-import { finalValueOf, run, summarize, type Leg, type SimParams } from "../sim/simulate";
+import {
+  finalValueOf,
+  run,
+  summarize,
+  trajectory,
+  type Leg,
+  type SimParams,
+  type ValuePoint,
+} from "../sim/simulate";
 import type { AppController } from "./app";
-import { fmt, fmt2 } from "./format";
+import { fmt, fmt2, fmtK } from "./format";
 import { buildImagePdf } from "./pdf";
 
 /**
@@ -127,6 +135,17 @@ export function drawReport(
     });
   });
   y += cardH + 30;
+
+  // growth chart
+  const points = trajectory(res);
+  if (points.length >= 2) {
+    ops.push(sectionTitle("EVOLUȚIA VALORII ÎN TIMP", y));
+    y += 22;
+    const chartY = y;
+    const chartH = 210;
+    ops.push((c) => drawGrowthChart(c, points, params.amount, P, chartY, W - 2 * P, chartH));
+    y += chartH + 30;
+  }
 
   // timeline
   ops.push(sectionTitle("CRONOLOGIE EMISIUNI & MATURITĂȚI", y));
@@ -292,6 +311,127 @@ function drawLane(
   c.font = `700 11px ${MONO}`;
   c.fillText(`${leg.rate}%`, bx + 8, laneY + laneH / 2 + 4);
   c.restore();
+}
+
+/** Paint the value-over-time growth chart into a box on the report card. */
+function drawGrowthChart(
+  c: CanvasRenderingContext2D,
+  points: ValuePoint[],
+  invested: number,
+  x: number,
+  yTop: number,
+  w: number,
+  h: number,
+): void {
+  const padL = 62;
+  const padR = 18;
+  const padT = 12;
+  const padB = 22;
+  const px0 = x + padL;
+  const px1 = x + w - padR;
+  const py0 = yTop + padT;
+  const py1 = yTop + h - padB;
+
+  const minT = points[0].t;
+  const maxT = points[points.length - 1].t;
+  const tSpan = Math.max(maxT - minT, 1e-6);
+  const values = points.map((p) => p.value);
+  const dataMin = Math.min(invested, ...values);
+  const dataMax = Math.max(invested, ...values);
+  const pad = dataMax - dataMin > 0 ? dataMax - dataMin : Math.max(dataMax * 0.02, 1);
+  const yLo = Math.max(0, dataMin - pad * 0.6);
+  const yHi = dataMax + pad * 0.35;
+  const ySpan = Math.max(yHi - yLo, 1e-6);
+
+  const sx = (t: number): number => px0 + ((t - minT) / tSpan) * (px1 - px0);
+  const sy = (v: number): number => py1 - ((v - yLo) / ySpan) * (py1 - py0);
+
+  // panel background
+  c.fillStyle = C.ink2;
+  roundRect(c, x, yTop, w, h, 4);
+  c.fill();
+
+  // horizontal grid + y labels
+  const rows = 4;
+  c.strokeStyle = C.line;
+  c.lineWidth = 1;
+  c.fillStyle = C.muted;
+  c.font = `10px ${MONO}`;
+  c.textAlign = "right";
+  for (let i = 0; i <= rows; i++) {
+    const v = yLo + (ySpan * i) / rows;
+    const yy = Math.round(sy(v)) + 0.5;
+    c.beginPath();
+    c.moveTo(px0, yy);
+    c.lineTo(px1, yy);
+    c.stroke();
+    c.fillText(fmtK(v), px0 - 8, sy(v) + 3);
+  }
+
+  // x ticks (whole years)
+  c.textAlign = "center";
+  for (let yr = Math.ceil(minT); yr <= Math.floor(maxT); yr++) {
+    c.fillText(String(yr), sx(yr), py1 + 15);
+  }
+  c.textAlign = "left";
+
+  // area fill under the curve
+  c.beginPath();
+  points.forEach((p, i) => {
+    const xx = sx(p.t);
+    const yy = sy(p.value);
+    if (i === 0) c.moveTo(xx, yy);
+    else c.lineTo(xx, yy);
+  });
+  c.lineTo(px1, py1);
+  c.lineTo(px0, py1);
+  c.closePath();
+  const grad = c.createLinearGradient(0, py0, 0, py1);
+  grad.addColorStop(0, "rgba(216,165,74,0.34)");
+  grad.addColorStop(1, "rgba(216,165,74,0.02)");
+  c.fillStyle = grad;
+  c.fill();
+
+  // value line
+  c.beginPath();
+  points.forEach((p, i) => {
+    const xx = sx(p.t);
+    const yy = sy(p.value);
+    if (i === 0) c.moveTo(xx, yy);
+    else c.lineTo(xx, yy);
+  });
+  c.strokeStyle = C.gold;
+  c.lineWidth = 2;
+  c.lineJoin = "round";
+  c.stroke();
+
+  // invested baseline
+  const byBase = sy(invested);
+  if (byBase >= py0 && byBase <= py1) {
+    c.save();
+    c.strokeStyle = C.muted;
+    c.lineWidth = 1;
+    c.setLineDash([4, 4]);
+    c.beginPath();
+    c.moveTo(px0, byBase);
+    c.lineTo(px1, byBase);
+    c.stroke();
+    c.restore();
+    c.fillStyle = C.muted;
+    c.font = `10px ${MONO}`;
+    c.textAlign = "right";
+    c.fillText(`Investit · ${fmtK(invested)}`, px1, byBase - 6);
+    c.textAlign = "left";
+  }
+
+  // end marker
+  const last = points[points.length - 1];
+  const ex = sx(last.t);
+  const ey = sy(last.value);
+  c.fillStyle = C.gold;
+  c.beginPath();
+  c.arc(ex, ey, 4, 0, Math.PI * 2);
+  c.fill();
 }
 
 interface Column {

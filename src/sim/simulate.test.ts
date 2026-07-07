@@ -1,6 +1,18 @@
 import { describe, expect, it } from "vitest";
+import { END } from "../data/history";
 import { couponFor, idToYear, issuanceAtOrAfter, matsAt } from "./history";
-import { runLadder, runSingle, simulateLeg, summarize, valueOf, type SimParams } from "./simulate";
+import {
+  finalValueOf,
+  run,
+  runLadder,
+  runSingle,
+  simulateLeg,
+  summarize,
+  trajectory,
+  valueAt,
+  valueOf,
+  type SimParams,
+} from "./simulate";
 
 describe("idToYear", () => {
   it("maps YYYY-MM to a decimal year with month zero-based", () => {
@@ -90,6 +102,60 @@ describe("valueOf", () => {
     const legs = simulateLeg("2025-02", 50000, 5, false, true);
     // 50000 + 3850 * 1.5
     expect(valueOf(legs)).toBeCloseTo(55775, 9);
+  });
+});
+
+describe("valueAt", () => {
+  it("is the principal before the leg starts and accrues linearly within it", () => {
+    const legs = simulateLeg("2025-02", 50000, 5, false, true);
+    const startY = legs[0].startY;
+    expect(valueAt(legs, startY - 1)).toBeCloseTo(50000, 9);
+    expect(valueAt(legs, startY)).toBeCloseTo(50000, 9);
+    // half a year in: 50000 + 3850 * 0.5
+    expect(valueAt(legs, startY + 0.5)).toBeCloseTo(51925, 9);
+  });
+
+  it("agrees with valueOf at the horizon", () => {
+    const legs = simulateLeg("2024-10", 50000, 1, false, true);
+    expect(valueAt(legs, END)).toBeCloseTo(valueOf(legs), 9);
+  });
+
+  it("returns 0 for an empty chain", () => {
+    expect(valueAt([], 2025)).toBe(0);
+  });
+});
+
+describe("trajectory", () => {
+  const base: SimParams = {
+    amount: 50000,
+    startId: "2025-02",
+    strat: "single",
+    mat: 5,
+    donor: false,
+    reinvest: true,
+  };
+
+  it("starts at the invested amount and ends at the final value", () => {
+    const res = run(base);
+    const pts = trajectory(res);
+    expect(pts.length).toBeGreaterThanOrEqual(2);
+    expect(pts[0].value).toBeCloseTo(base.amount, 9);
+    expect(pts[pts.length - 1].value).toBeCloseTo(finalValueOf(res), 9);
+  });
+
+  it("is sorted in time and non-decreasing in value", () => {
+    const pts = trajectory(run({ ...base, startId: "2024-10", mat: 1 }));
+    for (let i = 1; i < pts.length; i++) {
+      expect(pts[i].t).toBeGreaterThan(pts[i - 1].t);
+      expect(pts[i].value).toBeGreaterThanOrEqual(pts[i - 1].value - 1e-9);
+    }
+  });
+
+  it("sums the value across ladder blocks", () => {
+    const res = run({ ...base, amount: 30000, strat: "ladder" });
+    const pts = trajectory(res);
+    expect(pts[0].value).toBeCloseTo(30000, 9);
+    expect(pts[pts.length - 1].value).toBeCloseTo(finalValueOf(res), 9);
   });
 });
 
