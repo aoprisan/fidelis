@@ -1,6 +1,7 @@
 import { byId, idToYear } from "../sim/history";
 import { END } from "../data/history";
 import {
+  contributionMonths,
   finalValueOf,
   run,
   summarize,
@@ -47,7 +48,14 @@ function tracking(ctx: CanvasRenderingContext2D, value: string): void {
 }
 
 function paramsLine(p: SimParams): string {
-  const bits = [`${fmt(p.amount)} RON`, byId[p.startId].label, STRAT_LABEL[p.strat]];
+  const bits: string[] =
+    p.plan && p.plan.length > 1
+      ? [
+          `${fmt(p.amount)} RON/lună × ${p.plan.length}`,
+          `${byId[p.plan[0]].label}–${byId[p.plan[p.plan.length - 1]].label}`,
+        ]
+      : [`${fmt(p.amount)} RON`, byId[p.startId].label];
+  bits.push(STRAT_LABEL[p.strat]);
   if (p.strat === "single") bits.push(`${p.mat} ani`);
   if (p.donor) bits.push("Donator");
   bits.push(p.reinvest ? "Reinvestit" : "Fără reinvestire");
@@ -66,6 +74,7 @@ export function drawReport(
   const legs: Leg[] = res.blocks.flatMap((b) => b.legs);
   const s = summarize(params);
   const finalValue = finalValueOf(res);
+  const invested = params.amount * contributionMonths(params).length;
 
   // --- layout pass: collect draw ops while advancing the y cursor ---------
   const ops: Array<(c: CanvasRenderingContext2D) => void> = [];
@@ -143,7 +152,7 @@ export function drawReport(
     y += 22;
     const chartY = y;
     const chartH = 210;
-    ops.push((c) => drawGrowthChart(c, points, params.amount, P, chartY, W - 2 * P, chartH));
+    ops.push((c) => drawGrowthChart(c, points, invested, P, chartY, W - 2 * P, chartH));
     y += chartH + 30;
   }
 

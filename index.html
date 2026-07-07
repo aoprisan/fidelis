@@ -18,11 +18,31 @@
     <div class="panel" id="controls">
       <h2>Parametri</h2>
 
-      <label for="amount">Sumă investită (RON)</label>
+      <label for="amount" id="amountLabel">Sumă investită (RON)</label>
       <input type="number" id="amount" value="50000" min="500" step="500" />
 
-      <label>Data de start</label>
-      <div class="seg" id="startSeg" role="group"></div>
+      <label>Contribuție</label>
+      <div class="seg" id="contribSeg" role="group">
+        <button data-mode="lump" aria-pressed="true">O singură dată</button>
+        <button data-mode="recurring">Lunar (recurent)</button>
+      </div>
+
+      <div id="startWrap">
+        <label>Data de start</label>
+        <div class="seg" id="startSeg" role="group"></div>
+      </div>
+
+      <div id="planWrap" hidden>
+        <div class="plan-head">
+          <label>Luni de contribuție</label>
+          <div class="plan-tools">
+            <button id="planAll" type="button" class="plan-tool">Toate</button>
+            <button id="planClear" type="button" class="plan-tool" title="Păstrează doar prima lună">Golește</button>
+          </div>
+        </div>
+        <div class="seg plan-grid" id="planSeg" role="group"></div>
+        <p class="plan-hint" id="planHint"></p>
+      </div>
 
       <label>Strategie</label>
       <div class="seg" id="stratSeg" role="group">

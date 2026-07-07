@@ -1,10 +1,11 @@
 # Fidelis Backtester
 
 A single-page **historic-yield simulator** for Romania's Fidelis government-bond
-program (RON tranches, 2024–2025). Pick an amount, a start date and a strategy
-(single issuance or a 3-rung ladder), toggle the blood-donor tranche and
-reinvestment, and see what the holding would have been worth by mid-2026 — with
-tax-free annual coupons compounded on reinvestment.
+program (RON tranches, 2024–2025). Pick an amount, a contribution schedule (a
+one-off lump sum or a recurring monthly plan) and a strategy (single issuance or
+a 3-rung ladder), toggle the blood-donor tranche and reinvestment, and see what
+the holding would have been worth by mid-2026 — with tax-free annual coupons
+compounded on reinvestment.
 
 > Educational tool. Not investment advice. Historic yields do not guarantee
 > future results. Verify the official terms on
@@ -53,6 +54,31 @@ Each scenario is drawn three ways, all from the same pure simulation core:
   PNG / PDF export so the report card matches the page.
 - **Timeline** — a Gantt-style lane per issuance/maturity (`vizHTML`).
 - **Detail table** — per-tranche coupon, principal and status.
+
+## Contribution schedule: lump sum or recurring
+
+The **Contribuție** control switches between two ways of putting money in, both
+running through the same pure core (`contributionMonths` · `run` in
+`sim/simulate.ts`):
+
+- **O singură dată** — the classic lump sum: the whole amount is invested at one
+  start date.
+- **Lunar (recurent)** — the *same amount* is invested in each of several chosen
+  issuance months. Tap the months in the grid to build the plan; **Toate**
+  selects the whole series (a continuous, month-after-month plan) and **Golește**
+  collapses back to a single month. Each contribution is run through the current
+  strategy/maturity/donor/reinvest settings, and the capital blocks are summed.
+
+Because a recurring plan's money is deployed on different dates, a plain
+`(final / invested)` CAGR would overstate the return. The headline **annualized
+return** for a recurring plan is instead the **money-weighted return** (IRR,
+`irr()` in `sim/simulate.ts`) of the contribution cash flows against the final
+value; a single-month plan reduces exactly to the lump-sum CAGR. The value curve
+and the invested baseline reflect the full committed capital
+(`amount × months`).
+
+Recurring plans are shared and stored just like lump sums: the plan months ride
+along in the URL hash (`#s?…&p=2025-02,2025-03,…`) and in saved scenarios.
 
 ## Compare scenarios
 

@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import { END } from "../data/history";
 import { couponFor, idToYear, issuanceAtOrAfter, matsAt } from "./history";
 import {
+  contributionMonths,
   finalValueOf,
+  irr,
   run,
   runLadder,
   runSingle,
@@ -200,5 +202,81 @@ describe("summarize — CAGR math", () => {
 
   it("runSingle produces exactly one block", () => {
     expect(runSingle(base).blocks).toHaveLength(1);
+  });
+});
+
+describe("irr", () => {
+  it("recovers a simple one-period return", () => {
+    // -100 now, +110 in a year -> 10%
+    expect(irr([{ t: 0, cf: -100 }, { t: 1, cf: 110 }])).toBeCloseTo(10, 6);
+  });
+
+  it("is money-weighted across two equal contributions", () => {
+    // -100 at t0, -100 at t0, +220 at t0+2 -> (1+r)^2 = 1.1
+    const r = irr([
+      { t: 0, cf: -100 },
+      { t: 0, cf: -100 },
+      { t: 2, cf: 220 },
+    ]);
+    expect(r).toBeCloseTo((Math.sqrt(1.1) - 1) * 100, 5);
+  });
+
+  it("returns 0 when the flows never turn a profit (no sign-changing root)", () => {
+    expect(irr([{ t: 0, cf: -100 }, { t: 1, cf: 100 }])).toBeCloseTo(0, 6);
+    expect(irr([])).toBe(0);
+  });
+});
+
+describe("recurring contribution plans", () => {
+  const base: SimParams = {
+    amount: 10000,
+    startId: "2025-02",
+    strat: "single",
+    mat: 5,
+    donor: false,
+    reinvest: false,
+    plan: ["2025-02", "2025-03"],
+  };
+
+  it("contributionMonths returns the plan when present, else the single start", () => {
+    expect(contributionMonths(base)).toEqual(["2025-02", "2025-03"]);
+    const { plan: _drop, ...lump } = base;
+    expect(contributionMonths(lump)).toEqual(["2025-02"]);
+  });
+
+  it("invests the amount at every plan month (one block per month, single strat)", () => {
+    expect(run(base).blocks).toHaveLength(2);
+    // ladder splits each contribution into three, so N months -> 3N blocks
+    expect(run({ ...base, strat: "ladder" }).blocks).toHaveLength(6);
+  });
+
+  it("aggregates the final value across contributions", () => {
+    // Feb 5y @7.70% -> 10000 + 770*1.5 = 11155; Mar 5y @7.80% -> 10000 + 780*(17/12)
+    const marAccrued = 780 * (END - (2025 + 2 / 12));
+    expect(finalValueOf(run(base))).toBeCloseTo(11155 + 10000 + marAccrued, 6);
+  });
+
+  it("summarizes invested as amount x contributions and uses a money-weighted return", () => {
+    const s = summarize(base);
+    expect(s.finalValue).toBeCloseTo(finalValueOf(run(base)), 9);
+    expect(s.profit).toBeCloseTo(s.finalValue - 20000, 9); // 2 x 10000 invested
+    // money-weighted return is positive and below the lump 5y coupon rate
+    expect(s.cagr).toBeGreaterThan(0);
+    expect(s.cagr).toBeLessThan(8);
+  });
+
+  it("a single-month plan matches the equivalent lump sum", () => {
+    const { plan: _drop, ...lump } = base;
+    const onePlan = summarize({ ...lump, plan: ["2025-02"] });
+    const asLump = summarize(lump);
+    expect(onePlan.finalValue).toBeCloseTo(asLump.finalValue, 9);
+    expect(onePlan.cagr).toBeCloseTo(asLump.cagr, 9);
+  });
+
+  it("trajectory starts at total invested and ends at the final value", () => {
+    const res = run(base);
+    const pts = trajectory(res);
+    expect(pts[0].value).toBeCloseTo(20000, 6);
+    expect(pts[pts.length - 1].value).toBeCloseTo(finalValueOf(res), 6);
   });
 });

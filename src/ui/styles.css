@@ -99,6 +99,22 @@ input:focus, select:focus { border-color: var(--gold); }
   color: var(--ink);
   font-weight: 700;
 }
+/* contribution plan (recurring) */
+.plan-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+.plan-head label { margin-bottom: 0; }
+.plan-tools { display: flex; gap: 6px; }
+.plan-tool {
+  background: none; border: 1px solid var(--line); color: var(--muted);
+  font-family: var(--mono); font-size: 10.5px; padding: 3px 8px; border-radius: 3px; cursor: pointer;
+  transition: all .12s;
+}
+.plan-tool:hover { border-color: var(--gold-dim); color: var(--paper); }
+.plan-grid button { flex: 1 1 30%; min-width: 62px; }
+.plan-hint {
+  font-family: var(--mono); font-size: 11px; color: var(--muted);
+  margin: 8px 0 0; line-height: 1.5;
+}
+
 .check { display: flex; align-items: flex-start; gap: 10px; margin-top: 16px; cursor: pointer; }
 .check input { margin-top: 3px; accent-color: var(--gold); }
 .check span { font-size: 13px; color: var(--paper); }
