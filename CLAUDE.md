@@ -36,16 +36,23 @@ unit-testable without a DOM; the UI is a thin projection of them.
 - **`src/data/history.ts`** — the typed rate table (one entry per issuance, with
   source URL). The single source of truth for coupons; edits to Fidelis rates go
   here.
+- **`src/data/benchmarks.ts`** — monthly macro benchmarks (avg RON term-deposit
+  rate, CPI index base Aug 2024 = 100) with BNR/INS source URLs. Values are
+  flagged approximations — verify against the official series before changing.
 - **`src/sim/`** — pure deterministic simulation (no DOM). `history.ts`
   (rate/maturity lookup), `simulate.ts` (coupon/CAGR/IRR math, `run`,
-  `trajectory`, `summarize`), `index.ts` re-exports both.
+  `trajectory`, `summarize`), `benchmark.ts` (taxed-deposit alternative on the
+  same contribution schedule, CPI deflation, `benchmarkSummary`), `cashflow.ts`
+  (coupon/principal payment calendar derived from legs), `index.ts` re-exports
+  all of them.
 - **`src/scenario/`** — pure scenario layer (no DOM). `codec.ts`
   (encode/decode/sanitize params for share links + storage), `store.ts`
   (named-scenario CRUD over a `StorageLike`), `compare.ts` (multi-scenario value
   curves).
 - **`src/ui/`** — DOM/SVG/canvas render layer only. `app.ts` (state + subscribe),
-  `render.ts`, `scenarios.ts`, `compare.ts`, `export.ts`, `pdf.ts`, `format.ts`,
-  `styles.css`.
+  `render.ts`, `benchmark.ts` (Fidelis vs deposit vs inflation section),
+  `hook.ts` (masthead latest-rates callout), `scenarios.ts`, `compare.ts`,
+  `export.ts`, `pdf.ts`, `format.ts`, `styles.css`.
 - **`src/main.ts`** — entry point: mounts the app, mirrors live params into the
   URL hash (`#s?...`), wires the one shared `ScenarioStore` so the save panel and
   compare view stay in sync.

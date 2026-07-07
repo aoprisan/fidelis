@@ -45,8 +45,10 @@ export function createApp(initial?: SimParams | null): AppController {
   const targets: RenderTargets = {
     headline: el("headline"),
     chart: el("chart"),
+    bench: el("bench"),
     viz: el("viz"),
     detail: el("detail"),
+    calendar: el("calendar"),
   };
 
   const subscribers: Array<(p: SimParams) => void> = [];

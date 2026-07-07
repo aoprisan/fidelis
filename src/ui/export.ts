@@ -1,5 +1,7 @@
 import { byId, idToYear } from "../sim/history";
 import { END } from "../data/history";
+import { benchmarkSummary, deflate, depositTrajectory } from "../sim/benchmark";
+import { couponSchedule, scheduleByYear } from "../sim/cashflow";
 import {
   contributionMonths,
   finalValueOf,
@@ -11,7 +13,7 @@ import {
   type ValuePoint,
 } from "../sim/simulate";
 import type { AppController } from "./app";
-import { fmt, fmt2, fmtK } from "./format";
+import { fmt, fmt2, fmtK, fmtMonthYear } from "./format";
 import { buildImagePdf } from "./pdf";
 
 /**
@@ -30,6 +32,7 @@ const C = {
   paper: "#eef2f6",
   muted: "#8ba0bb",
   green: "#57b98a",
+  red: "#d97066",
 };
 const MONO = 'ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace';
 const SANS = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
@@ -123,26 +126,7 @@ export function drawReport(
   ];
   const cardsY = y;
   const cardH = 78;
-  ops.push((c) => {
-    const inner = W - 2 * P;
-    const gap = 1;
-    const cw = (inner - 2 * gap) / 3;
-    c.fillStyle = C.line;
-    c.fillRect(P, cardsY, inner, cardH);
-    cards.forEach((card, i) => {
-      const cx = P + i * (cw + gap);
-      c.fillStyle = C.panel;
-      c.fillRect(cx, cardsY, cw, cardH);
-      c.fillStyle = C.muted;
-      c.font = `10px ${MONO}`;
-      tracking(c, "0.12em");
-      c.fillText(card.k, cx + 16, cardsY + 26);
-      tracking(c, "0em");
-      c.fillStyle = card.color;
-      c.font = `700 24px ${MONO}`;
-      c.fillText(card.v, cx + 16, cardsY + 58);
-    });
-  });
+  ops.push((c) => drawStatCards(c, cards, cardsY, cardH, 24));
   y += cardH + 30;
 
   // growth chart
@@ -154,6 +138,54 @@ export function drawReport(
     const chartH = 210;
     ops.push((c) => drawGrowthChart(c, points, invested, P, chartY, W - 2 * P, chartH));
     y += chartH + 30;
+  }
+
+  // benchmark comparison (Fidelis vs taxed deposit vs inflation)
+  if (points.length >= 2) {
+    const bs = benchmarkSummary(params, points);
+    const series: BenchSeries[] = [
+      { points: depositTrajectory(params), color: C.muted, dash: [], width: 1.5 },
+      { points: deflate(points), color: C.gold, dash: [5, 4], width: 1.5 },
+      { points, color: C.gold, dash: [], width: 2 },
+    ];
+    ops.push(sectionTitle("FIDELIS VS DEPOZIT BANCAR VS INFLAȚIE", y));
+    y += 20;
+    const legendY = y;
+    ops.push((c) =>
+      drawBenchLegend(c, legendY, [
+        { color: C.gold, dash: [], label: `Fidelis · ${fmtK(finalValue)}` },
+        { color: C.muted, dash: [], label: `Depozit (net de impozit) · ${fmtK(bs.depositFinal)}` },
+        { color: C.gold, dash: [5, 4], label: `Fidelis, valoare reală · ${fmtK(bs.realFinal)}` },
+      ]),
+    );
+    y += 22;
+    const benchY = y;
+    const benchH = 190;
+    ops.push((c) => drawBenchChart(c, series, invested, P, benchY, W - 2 * P, benchH));
+    y += benchH + 16;
+    const benchCards: Array<{ k: string; v: string; color: string }> = [
+      { k: "AVANTAJ VS DEPOZIT", v: `+${fmt(bs.advantage)} RON`, color: C.green },
+      { k: "IMPOZIT EVITAT", v: `${fmt(bs.taxSaved)} RON`, color: C.gold },
+      {
+        k: "CÂȘTIG REAL (INFLAȚIE)",
+        v: `${bs.realProfit >= 0 ? "+" : "−"}${fmt(Math.abs(bs.realProfit))} RON`,
+        color: bs.realProfit >= 0 ? C.green : C.red,
+      },
+    ];
+    const benchCardsY = y;
+    ops.push((c) => drawStatCards(c, benchCards, benchCardsY, 66, 20));
+    y += 66 + 12;
+    const benchNoteY = y;
+    ops.push((c) => {
+      c.fillStyle = C.muted;
+      c.font = `10px ${MONO}`;
+      c.fillText(
+        "Depozit: dobânda medie BNR la depozitele noi în lei, impozit 10% · Valoare reală: IPC (INS)",
+        P,
+        benchNoteY + 8,
+      );
+    });
+    y += 28;
   }
 
   // timeline
@@ -222,6 +254,75 @@ export function drawReport(
   });
   y += 22;
 
+  // cash-flow calendar (compact: per-year summary when the list is long)
+  const events = couponSchedule(res, params);
+  if (events.length > 0) {
+    ops.push(sectionTitle("CALENDARUL ÎNCASĂRILOR", y));
+    y += 24;
+    const calCols = calendarColumns();
+    const calHeadY = y;
+    ops.push((c) => {
+      c.font = `10px ${MONO}`;
+      c.fillStyle = C.muted;
+      tracking(c, "0.06em");
+      for (const col of calCols) drawCell(c, col.header, col, calHeadY + 12);
+      tracking(c, "0em");
+      c.strokeStyle = C.line;
+      c.beginPath();
+      c.moveTo(P, calHeadY + 22.5);
+      c.lineTo(W - P, calHeadY + 22.5);
+      c.stroke();
+    });
+    y += 30;
+    const compact = events.length > 18;
+    for (const bucket of scheduleByYear(events)) {
+      const yearY = y;
+      ops.push((c) => {
+        c.font = `700 11px ${MONO}`;
+        c.fillStyle = C.gold;
+        drawCell(c, String(bucket.year), calCols[0], yearY + 12);
+        drawCell(
+          c,
+          compact ? `${bucket.events.length} plăți` : "",
+          calCols[2],
+          yearY + 12,
+        );
+        drawCell(c, fmt(bucket.total), calCols[3], yearY + 12);
+        c.strokeStyle = C.line;
+        c.beginPath();
+        c.moveTo(P, yearY + 20.5);
+        c.lineTo(W - P, yearY + 20.5);
+        c.stroke();
+      });
+      y += 26;
+      if (compact) continue;
+      for (const e of bucket.events) {
+        const rowY = y;
+        ops.push((c) => {
+          c.font = `12.5px ${MONO}`;
+          const cells = [
+            fmtMonthYear(e.t),
+            e.legLabel,
+            e.kind === "coupon" ? "Cupon" : "Principal",
+            fmt(e.amount),
+            e.reinvested ? "reinvestit" : "încasat",
+          ];
+          calCols.forEach((col, i) => {
+            c.fillStyle = i === calCols.length - 1 && e.reinvested ? C.muted : C.paper;
+            drawCell(c, cells[i], col, rowY + 14);
+          });
+          c.strokeStyle = C.line;
+          c.beginPath();
+          c.moveTo(P, rowY + 24.5);
+          c.lineTo(W - P, rowY + 24.5);
+          c.stroke();
+        });
+        y += 28;
+      }
+    }
+    y += 22;
+  }
+
   // footer
   const disclaimer =
     "Instrument educativ. Nu este consultanță de investiții. Randamentele istorice nu " +
@@ -269,6 +370,164 @@ export function drawReport(
   for (const op of ops) op(ctx);
 
   return { canvas, width: W, height };
+}
+
+/** One curve on the export benchmark chart. */
+interface BenchSeries {
+  points: ValuePoint[];
+  color: string;
+  dash: number[];
+  width: number;
+}
+
+/** A row of three stat cards (headline + benchmark rows share the layout). */
+function drawStatCards(
+  c: CanvasRenderingContext2D,
+  cards: Array<{ k: string; v: string; color: string }>,
+  yTop: number,
+  cardH: number,
+  valueSize: number,
+): void {
+  const inner = W - 2 * P;
+  const gap = 1;
+  const cw = (inner - 2 * gap) / 3;
+  c.fillStyle = C.line;
+  c.fillRect(P, yTop, inner, cardH);
+  cards.forEach((card, i) => {
+    const cx = P + i * (cw + gap);
+    c.fillStyle = C.panel;
+    c.fillRect(cx, yTop, cw, cardH);
+    c.fillStyle = C.muted;
+    c.font = `10px ${MONO}`;
+    tracking(c, "0.12em");
+    c.fillText(card.k, cx + 16, yTop + 24);
+    tracking(c, "0em");
+    c.fillStyle = card.color;
+    c.font = `700 ${valueSize}px ${MONO}`;
+    c.fillText(card.v, cx + 16, yTop + cardH - 18);
+  });
+}
+
+/** Legend line for the benchmark chart: colored line samples + labels. */
+function drawBenchLegend(
+  c: CanvasRenderingContext2D,
+  yy: number,
+  items: Array<{ color: string; dash: number[]; label: string }>,
+): void {
+  let x = P;
+  for (const item of items) {
+    c.save();
+    c.strokeStyle = item.color;
+    c.lineWidth = 2;
+    c.setLineDash(item.dash);
+    c.beginPath();
+    c.moveTo(x, yy + 8);
+    c.lineTo(x + 18, yy + 8);
+    c.stroke();
+    c.restore();
+    x += 24;
+    c.fillStyle = C.muted;
+    c.font = `11px ${MONO}`;
+    c.fillText(item.label, x, yy + 12);
+    x += c.measureText(item.label).width + 22;
+  }
+}
+
+/** Multi-series line chart sharing the growth chart's geometry conventions. */
+function drawBenchChart(
+  c: CanvasRenderingContext2D,
+  series: BenchSeries[],
+  invested: number,
+  x: number,
+  yTop: number,
+  w: number,
+  h: number,
+): void {
+  const all = series.flatMap((s) => s.points);
+  const padL = 62;
+  const padR = 18;
+  const padT = 12;
+  const padB = 22;
+  const px0 = x + padL;
+  const px1 = x + w - padR;
+  const py0 = yTop + padT;
+  const py1 = yTop + h - padB;
+
+  const minT = Math.min(...all.map((p) => p.t));
+  const maxT = Math.max(...all.map((p) => p.t));
+  const tSpan = Math.max(maxT - minT, 1e-6);
+  const values = all.map((p) => p.value);
+  const dataMin = Math.min(invested, ...values);
+  const dataMax = Math.max(invested, ...values);
+  const pad = dataMax - dataMin > 0 ? dataMax - dataMin : Math.max(dataMax * 0.02, 1);
+  const yLo = Math.max(0, dataMin - pad * 0.6);
+  const yHi = dataMax + pad * 0.35;
+  const ySpan = Math.max(yHi - yLo, 1e-6);
+
+  const sx = (t: number): number => px0 + ((t - minT) / tSpan) * (px1 - px0);
+  const sy = (v: number): number => py1 - ((v - yLo) / ySpan) * (py1 - py0);
+
+  c.fillStyle = C.ink2;
+  roundRect(c, x, yTop, w, h, 4);
+  c.fill();
+
+  const rows = 4;
+  c.strokeStyle = C.line;
+  c.lineWidth = 1;
+  c.fillStyle = C.muted;
+  c.font = `10px ${MONO}`;
+  c.textAlign = "right";
+  for (let i = 0; i <= rows; i++) {
+    const v = yLo + (ySpan * i) / rows;
+    const yy = Math.round(sy(v)) + 0.5;
+    c.beginPath();
+    c.moveTo(px0, yy);
+    c.lineTo(px1, yy);
+    c.stroke();
+    c.fillText(fmtK(v), px0 - 8, sy(v) + 3);
+  }
+  c.textAlign = "center";
+  for (let yr = Math.ceil(minT); yr <= Math.floor(maxT); yr++) {
+    c.fillText(String(yr), sx(yr), py1 + 15);
+  }
+  c.textAlign = "left";
+
+  // invested baseline
+  const byBase = sy(invested);
+  if (byBase >= py0 && byBase <= py1) {
+    c.save();
+    c.strokeStyle = C.muted;
+    c.lineWidth = 1;
+    c.setLineDash([4, 4]);
+    c.beginPath();
+    c.moveTo(px0, byBase);
+    c.lineTo(px1, byBase);
+    c.stroke();
+    c.restore();
+    c.fillStyle = C.muted;
+    c.font = `10px ${MONO}`;
+    c.textAlign = "right";
+    c.fillText(`Investit · ${fmtK(invested)}`, px1, byBase - 6);
+    c.textAlign = "left";
+  }
+
+  for (const s of series) {
+    if (s.points.length < 2) continue;
+    c.save();
+    c.beginPath();
+    s.points.forEach((p, i) => {
+      const xx = sx(p.t);
+      const yy = sy(p.value);
+      if (i === 0) c.moveTo(xx, yy);
+      else c.lineTo(xx, yy);
+    });
+    c.strokeStyle = s.color;
+    c.lineWidth = s.width;
+    c.setLineDash(s.dash);
+    c.lineJoin = "round";
+    c.stroke();
+    c.restore();
+  }
 }
 
 function sectionTitle(text: string, yy: number) {
@@ -458,6 +717,17 @@ function tableColumns(): Column[] {
     { header: "Principal", x: right - 232, align: "right" },
     { header: "Cupon/an", x: right - 96, align: "right" },
     { header: "Status", x: right, align: "right" },
+  ];
+}
+
+function calendarColumns(): Column[] {
+  const right = W - P;
+  return [
+    { header: "Data", x: P, align: "left" },
+    { header: "Emisiune", x: right - 480, align: "right" },
+    { header: "Tip", x: right - 320, align: "right" },
+    { header: "Sumă", x: right - 160, align: "right" },
+    { header: "Destinație", x: right, align: "right" },
   ];
 }
 

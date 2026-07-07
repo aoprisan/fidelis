@@ -310,3 +310,75 @@ a { color: var(--gold); }
   font-size: 13px; padding: 6px 6px; border-radius: 3px; line-height: 1;
 }
 .sc-icon:hover { color: var(--paper); background: var(--line); }
+
+/* forward-looking hook (masthead callout) */
+.hook {
+  margin-top: 18px; padding: 14px 16px; border: 1px solid var(--gold-dim);
+  border-radius: 4px; background: var(--ink-2); max-width: 640px;
+}
+.hook:empty { display: none; }
+.hook-eyebrow {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--gold); margin: 0 0 8px;
+}
+.hook-rates { display: flex; flex-wrap: wrap; gap: 6px; }
+.hook-rate {
+  font-family: var(--mono); font-size: 12px; color: var(--muted);
+  border: 1px solid var(--line); border-radius: 3px; padding: 5px 9px; background: var(--panel);
+}
+.hook-rate b { color: var(--paper); font-size: 13px; }
+.hook-donor { border-color: var(--gold-dim); }
+.hook-donor b { color: var(--gold); }
+.hook-copy { font-size: 12.5px; color: var(--muted); margin: 10px 0 0; }
+.hook-copy a { color: var(--gold); text-decoration: none; }
+.hook-copy a:hover { text-decoration: underline; }
+
+/* benchmark comparison (Fidelis vs deposit vs inflation) */
+.bench-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 10px; }
+.bench-key {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--mono); font-size: 11px; color: var(--muted);
+}
+.bench-key i { width: 18px; height: 0; border-top: 2px solid; display: inline-block; }
+.bench-key .bl-fidelis { border-color: var(--gold); }
+.bench-key .bl-deposit { border-color: var(--muted); }
+.bench-key .bl-real { border-color: var(--gold); border-top-style: dashed; opacity: 0.75; }
+.growthchart .bench-fidelis { fill: none; stroke: var(--gold); stroke-width: 2; stroke-linejoin: round; }
+.growthchart .bench-deposit { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-linejoin: round; }
+.growthchart .bench-real { fill: none; stroke: var(--gold); stroke-width: 1.5; stroke-dasharray: 5 4; opacity: 0.75; stroke-linejoin: round; }
+.bench-stats { margin-top: 14px; }
+.stat .v.neg { color: var(--red); }
+.bench-note { font-size: 12px; color: var(--muted); margin: 12px 0 0; line-height: 1.6; }
+.bench-note a { color: var(--muted); text-decoration: underline; }
+.bench-note a:hover { color: var(--paper); }
+
+/* cash-flow calendar */
+.detail tr.cal-year td {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+  color: var(--gold); text-transform: uppercase; padding-top: 14px;
+  border-bottom: 1px solid var(--line); font-weight: 700;
+}
+
+/* explainer */
+.explainer { margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--line); }
+.explainer h2 {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--muted); margin: 0 0 14px; font-weight: 600;
+}
+.explainer details {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+  margin-bottom: 8px; overflow: hidden;
+}
+.explainer summary {
+  cursor: pointer; list-style: none; padding: 12px 14px;
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--paper); font-weight: 600;
+}
+.explainer summary::-webkit-details-marker { display: none; }
+.explainer summary::before { content: "+"; color: var(--gold); margin-right: 10px; font-weight: 700; }
+.explainer details[open] summary::before { content: "−"; }
+.explainer summary:hover { color: var(--gold); }
+.explainer p { margin: 0; padding: 0 14px 14px 34px; font-size: 13px; color: var(--muted); line-height: 1.65; }
+.explainer p b { color: var(--paper); }
+.explainer a { color: var(--gold); text-decoration: none; }
+.explainer a:hover { text-decoration: underline; }
