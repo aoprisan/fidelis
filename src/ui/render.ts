@@ -1,4 +1,6 @@
 import { END } from "../data/history";
+import { benchmarkSummary, deflate, depositTrajectory } from "../sim/benchmark";
+import { couponSchedule, scheduleByYear, type CashEvent } from "../sim/cashflow";
 import { idToYear } from "../sim/history";
 import {
   contributionMonths,
@@ -9,14 +11,17 @@ import {
   type SimParams,
   type ValuePoint,
 } from "../sim/simulate";
-import { fmt, fmt2, fmtK } from "./format";
+import { benchmarkSectionHTML } from "./benchmark";
+import { fmt, fmt2, fmtK, fmtMonthYear } from "./format";
 
 /** DOM targets the render layer writes into. */
 export interface RenderTargets {
   headline: HTMLElement;
   chart: HTMLElement;
+  bench: HTMLElement;
   viz: HTMLElement;
   detail: HTMLElement;
+  calendar: HTMLElement;
 }
 
 function headlineHTML(finalValue: number, profit: number, cagr: number): string {
@@ -169,6 +174,33 @@ function detailHTML(allLegs: Leg[]): string {
     </table>`;
 }
 
+/** The coupon & principal payment calendar, grouped by calendar year. */
+function calendarHTML(events: CashEvent[]): string {
+  if (events.length === 0) return "";
+  const body = scheduleByYear(events)
+    .map((bucket) => {
+      const rows = bucket.events
+        .map(
+          (e) => `<tr>
+      <td>${fmtMonthYear(e.t)}</td>
+      <td>${e.legLabel}</td>
+      <td>${e.kind === "coupon" ? "Cupon" : "Principal"}</td>
+      <td class="num">${fmt(e.amount)}</td>
+      <td class="num">${e.reinvested ? "reinvestit" : "încasat"}</td>
+    </tr>`,
+        )
+        .join("");
+      return `<tr class="cal-year"><td colspan="3">${bucket.year}</td><td class="num">${fmt(bucket.total)}</td><td></td></tr>${rows}`;
+    })
+    .join("");
+  return `
+    <div class="laddertitle">Calendarul încasărilor — când și cât primești</div>
+    <table class="detail">
+      <thead><tr><th>Data</th><th>Emisiune</th><th>Tip</th><th>Sumă</th><th>Destinație</th></tr></thead>
+      <tbody>${body}</tbody>
+    </table>`;
+}
+
 /** Run the simulation for the given params and paint the results. */
 export function render(params: SimParams, els: RenderTargets): void {
   const res = run(params);
@@ -178,9 +210,18 @@ export function render(params: SimParams, els: RenderTargets): void {
   const { finalValue, profit, cagr } = summarizeOf(params, res);
 
   const allLegs = res.blocks.flatMap((b) => b.legs);
+  const points = trajectory(res);
 
   els.headline.innerHTML = headlineHTML(finalValue, profit, cagr);
-  els.chart.innerHTML = growthChartHTML(trajectory(res), invested);
+  els.chart.innerHTML = growthChartHTML(points, invested);
+  els.bench.innerHTML = benchmarkSectionHTML(
+    points,
+    depositTrajectory(params),
+    deflate(points),
+    invested,
+    benchmarkSummary(params, points),
+  );
   els.viz.innerHTML = vizHTML(allLegs, params.startId);
   els.detail.innerHTML = detailHTML(allLegs);
+  els.calendar.innerHTML = calendarHTML(couponSchedule(res, params));
 }

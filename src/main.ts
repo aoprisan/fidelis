@@ -1,5 +1,6 @@
 import "./ui/styles.css";
 import { createApp } from "./ui/app";
+import { initHook } from "./ui/hook";
 import { initScenarios } from "./ui/scenarios";
 import { initCompare } from "./ui/compare";
 import { initExport } from "./ui/export";
@@ -12,6 +13,7 @@ function paramsFromHash() {
   return q >= 0 ? decodeParams(location.hash.slice(q + 1)) : null;
 }
 
+initHook();
 const app = createApp(paramsFromHash());
 
 // Keep the address bar shareable: reflect the live parameters into the hash.

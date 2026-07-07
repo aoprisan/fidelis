@@ -11,6 +11,7 @@
     <p class="eyebrow">Titluri de stat · Program FIDELIS</p>
     <h1>Cât ai fi câștigat?<br /><span class="thin">Simulator de randament istoric</span></h1>
     <p class="sub">Alege o sumă, o dată de start și o strategie. Calculul folosește dobânzile reale ale emisiunilor Fidelis din 2024–2025, cu cupon anual neimpozabil și randament compus la reinvestire.</p>
+    <div class="hook" id="hook"></div>
   </header>
 
   <div class="grid">
@@ -93,17 +94,53 @@
       </div>
       <div class="headline" id="headline"></div>
       <div id="chart"></div>
+      <div id="bench"></div>
       <div id="viz"></div>
       <div id="detail"></div>
+      <div id="calendar"></div>
 
       <section class="compare" id="compare" aria-label="Comparație scenarii"></section>
+
+      <section class="explainer" id="explainer" aria-label="Cum funcționează Fidelis">
+        <h2>Cum funcționează Fidelis?</h2>
+
+        <details open>
+          <summary>Ce sunt titlurile Fidelis?</summary>
+          <p>Titluri de stat emise de Ministerul Finanțelor pentru populație, în lei și în euro, listate la Bursa de Valori București. Împrumuți statul român pe o perioadă fixă (2–6 ani la tranșele în lei), iar statul îți plătește o dobândă anuală fixă — cuponul — și îți returnează integral suma la scadență. Detalii oficiale: <a href="https://mfinante.gov.ro/ro/web/titluridestat/fidelis" target="_blank" rel="noopener">mfinante.gov.ro</a>.</p>
+        </details>
+
+        <details>
+          <summary>Cum subscrii?</summary>
+          <p>În perioadele de subscriere (de regulă o săptămână, aproape lunar) poți cumpăra prin băncile și brokerii parteneri — de exemplu Banca Transilvania, BCR, BRD sau brokerii membri BVB — la ghișeu ori din aplicație. <b>Nu plătești niciun comision</b> la subscriere sau la păstrarea până la scadență. Pragul minim este de regulă 5.000 lei (500 lei pentru donatorii de sânge la tranșa dedicată) — verifică prospectul fiecărei emisiuni.</p>
+        </details>
+
+        <details>
+          <summary>Cum funcționează cuponul?</summary>
+          <p>Dobânda este fixă și se plătește anual, direct în contul tău, iar principalul revine integral la scadență — fluxurile exacte pentru scenariul ales sunt în secțiunea „Calendarul încasărilor” de mai sus. Dacă alegi reinvestirea, capitalul și cupoanele intră în emisiunea echivalentă curentă și câștigul se compune.</p>
+        </details>
+
+        <details>
+          <summary>De ce e neimpozabil?</summary>
+          <p>Prin lege, dobânzile și câștigurile de capital din titlurile de stat pentru populație sunt <b>scutite de impozit pe venit și de CASS</b>. La un depozit bancar, dobânda este impozitată cu 10%. Diferența este cuantificată în secțiunea „Fidelis vs depozit vs inflație” — pentru scenariul tău, exact cât impozit eviți.</p>
+        </details>
+
+        <details>
+          <summary>Tranșa pentru donatorii de sânge</summary>
+          <p>Cine a donat sânge în perioada indicată în prospect primește acces la o tranșă specială de 2 ani cu dobândă mai mare (istoric, în jur de +1 punct procentual peste tranșa standard de 2 ani), cu prag minim redus la 500 lei. Bifează „Donator de sânge” în simulator ca să vezi efectul.</p>
+        </details>
+
+        <details>
+          <summary>Strategia „scară” și limitele modelului</summary>
+          <p>Strategia scară (ladder) împarte suma egal între maturitatea scurtă, medie și lungă: o parte din bani se eliberează periodic și se reinvestește la dobânda momentului — un compromis între randament și flexibilitate. Limitele modelului: cupon fix plătit anual, deținere până la scadență (nu modelează vânzarea anticipată pe bursă la preț de piață), iar dobânzile istorice nu garantează dobânzile emisiunilor viitoare.</p>
+        </details>
+      </section>
 
       <div class="disclaimer" id="disc">
         Instrument educativ. Nu este consultanță de investiții sau recomandare. Randamentele istorice nu garantează rezultate viitoare. Verifică termenii finali oficiali pe mfinante.gov.ro înainte de a subscrie.
       </div>
 
       <p class="note">
-        <b>Sursă dobânzi:</b> comunicatele Ministerului Finanțelor pentru emisiunile Fidelis 2024–2025. Câștigurile din dobânzi și cele de capital sunt <b>neimpozabile</b> și exceptate de CASS. La mijlocul lui 2025 structura maturităților în lei a fost reorganizată (2 / 4 / 6 ani în loc de 1 / 3 / 5). Pentru lunile fără emisiune se folosește ultima dobândă disponibilă. Modelul presupune cupon fix plătit anual și deținere până la scadență (nu modelează vânzarea anticipată pe bursă la preț de piață).
+        <b>Sursă dobânzi:</b> comunicatele Ministerului Finanțelor pentru emisiunile Fidelis 2024–2025. Câștigurile din dobânzi și cele de capital sunt <b>neimpozabile</b> și exceptate de CASS. La mijlocul lui 2025 structura maturităților în lei a fost reorganizată (2 / 4 / 6 ani în loc de 1 / 3 / 5). Pentru lunile fără emisiune se folosește ultima dobândă disponibilă. Modelul presupune cupon fix plătit anual și deținere până la scadență (nu modelează vânzarea anticipată pe bursă la preț de piață). Comparația cu depozitul folosește dobânda medie la depozitele noi la termen în lei ale populației (BNR), capitalizare anuală și impozit de 10% pe dobândă; valorile reale folosesc indicele prețurilor de consum (INS) — ambele serii sunt aproximări lunare, de verificat pe sursele oficiale.
       </p>
     </div>
   </div>
