@@ -48,10 +48,29 @@
           <small>Capitalul + cupoanele intră în emisiunea curentă echivalentă</small>
         </span>
       </label>
+
+      <!-- SCENARIOS -->
+      <div class="scenarios">
+        <div class="sc-head">
+          <h2>Scenarii salvate</h2>
+          <button id="scNew" class="sc-new" type="button" title="Scenariu nou">+ nou</button>
+        </div>
+        <div class="sc-save">
+          <input type="text" id="scName" placeholder="Nume scenariu" maxlength="60" autocomplete="off" />
+          <button id="scSave" type="button">Salvează</button>
+        </div>
+        <div id="scList" class="sc-list"></div>
+      </div>
     </div>
 
     <!-- RESULTS -->
     <div>
+      <div class="toolbar" id="actions" role="group" aria-label="Export și partajare">
+        <button id="dlPng" type="button">PNG</button>
+        <button id="dlPdf" type="button">PDF</button>
+        <button id="shareImg" type="button">Partajează</button>
+        <button id="copyLink" type="button">Copiază link</button>
+      </div>
       <div class="headline" id="headline"></div>
       <div id="viz"></div>
       <div id="detail"></div>

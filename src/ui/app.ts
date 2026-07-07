@@ -1,4 +1,4 @@
-import { HISTORY } from "../data/history";
+import { FIRST_SELECTABLE, HISTORY } from "../data/history";
 import { matsAt } from "../sim/history";
 import type { SimParams } from "../sim/simulate";
 import { render, type RenderTargets } from "./render";
@@ -9,19 +9,34 @@ const el = <T extends HTMLElement>(id: string): T => {
   return node as T;
 };
 
+/** The default scenario shown on first load. */
+export const DEFAULT_PARAMS: SimParams = {
+  amount: 50000,
+  startId: "2025-02",
+  strat: "single",
+  mat: 5,
+  donor: false,
+  reinvest: true,
+};
+
+/**
+ * Imperative handle onto the running app: read the current parameters, replace
+ * them wholesale (used when loading a saved or shared scenario), and subscribe
+ * to changes (used to keep the share link and exports in sync).
+ */
+export interface AppController {
+  getParams(): SimParams;
+  setParams(p: SimParams): void;
+  subscribe(cb: (p: SimParams) => void): void;
+}
+
 /**
  * Wire the controls to the render layer over a single mutable state object,
- * mirroring the original single-file app's interaction model.
+ * mirroring the original single-file app's interaction model, and expose a
+ * controller so other UI modules (scenarios, export) can drive it.
  */
-export function createApp(): void {
-  const S: SimParams = {
-    amount: 50000,
-    startId: "2025-02",
-    strat: "single",
-    mat: 5,
-    donor: false,
-    reinvest: true,
-  };
+export function createApp(initial?: SimParams | null): AppController {
+  const S: SimParams = { ...DEFAULT_PARAMS, ...(initial ?? {}) };
 
   const targets: RenderTargets = {
     headline: el("headline"),
@@ -29,11 +44,16 @@ export function createApp(): void {
     detail: el("detail"),
   };
 
-  const paint = () => render(S, targets);
+  const subscribers: Array<(p: SimParams) => void> = [];
+  const paint = () => {
+    render(S, targets);
+    const snapshot = { ...S };
+    subscribers.forEach((cb) => cb(snapshot));
+  };
 
   function buildStart() {
     const seg = el("startSeg");
-    seg.innerHTML = HISTORY.filter((h) => h.id >= "2024-10")
+    seg.innerHTML = HISTORY.filter((h) => h.id >= FIRST_SELECTABLE)
       .map(
         (h) =>
           `<button data-id="${h.id}" aria-pressed="${h.id === S.startId}">${h.label}</button>`,
@@ -74,13 +94,17 @@ export function createApp(): void {
     document.querySelectorAll<HTMLButtonElement>("#stratSeg button").forEach((b) => {
       b.onclick = () => {
         S.strat = b.dataset.strat as SimParams["strat"];
-        document
-          .querySelectorAll("#stratSeg button")
-          .forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        syncStrat();
         buildMat();
         paint();
       };
     });
+  }
+
+  function syncStrat() {
+    document
+      .querySelectorAll("#stratSeg button")
+      .forEach((x) => x.setAttribute("aria-pressed", String((x as HTMLButtonElement).dataset.strat === S.strat)));
   }
 
   el<HTMLInputElement>("amount").oninput = (e) => {
@@ -96,8 +120,32 @@ export function createApp(): void {
     paint();
   };
 
+  /** Reflect the whole state object back onto every control. */
+  function syncControls() {
+    el<HTMLInputElement>("amount").value = String(S.amount);
+    el<HTMLInputElement>("donor").checked = S.donor;
+    el<HTMLInputElement>("reinvest").checked = S.reinvest;
+    buildStart();
+    syncStrat();
+    buildMat();
+  }
+
   buildStart();
   bindStrat();
+  syncStrat();
   buildMat();
+  syncControls();
   paint();
+
+  return {
+    getParams: () => ({ ...S }),
+    setParams: (p) => {
+      Object.assign(S, p);
+      syncControls();
+      paint();
+    },
+    subscribe: (cb) => {
+      subscribers.push(cb);
+    },
+  };
 }
