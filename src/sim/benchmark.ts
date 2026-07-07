@@ -1,7 +1,7 @@
 import { BENCHMARKS, DEPOSIT_TAX, type BenchmarkPoint } from "../data/benchmarks";
 import { END } from "../data/history";
 import { idToYear } from "./history";
-import { contributionMonths, type SimParams, type ValuePoint } from "./simulate";
+import { contributionMonths, currencyOf, type Currency, type SimParams, type ValuePoint } from "./simulate";
 
 /** Benchmark observation at or before decimal year `t` (last-known fallback). */
 export function benchmarkAt(t: number): BenchmarkPoint {
@@ -13,20 +13,33 @@ export function benchmarkAt(t: number): BenchmarkPoint {
   return best;
 }
 
+/** Deposit rate (%) at `t` for the given currency. */
+function depositRateAt(t: number, cur: Currency): number {
+  const b = benchmarkAt(t);
+  return cur === "EUR" ? b.eurDepositRate : b.depositRate;
+}
+
+/** Consumer price index at `t` for the given currency (RON: INS, EUR: HICP). */
+function cpiAt(t: number, cur: Currency): number {
+  const b = benchmarkAt(t);
+  return cur === "EUR" ? b.eurCpiIndex : b.cpiIndex;
+}
+
 /**
- * One taxed RON term deposit opened at `t0`: annual capitalization with 10%
- * tax withheld on each year's interest, the rate re-fixing at the then-current
- * benchmark rate on every anniversary, net interest accruing linearly within a
- * period, and the final period pro-rated at the horizon. Mirrors the Fidelis
- * convention that a not-yet-made contribution counts at face value.
+ * One taxed term deposit opened at `t0`, in the scenario's currency: annual
+ * capitalization with 10% tax withheld on each year's interest, the rate
+ * re-fixing at the then-current benchmark rate on every anniversary, net
+ * interest accruing linearly within a period, and the final period pro-rated at
+ * the horizon. Mirrors the Fidelis convention that a not-yet-made contribution
+ * counts at face value.
  */
-function depositValueAt(t0: number, amount: number, t: number): number {
+function depositValueAt(t0: number, amount: number, t: number, cur: Currency): number {
   if (t <= t0) return amount;
   let balance = amount;
   let from = t0;
   while (from < Math.min(t, END) - 1e-9) {
     const to = Math.min(from + 1, t, END);
-    const rate = benchmarkAt(from).depositRate;
+    const rate = depositRateAt(from, cur);
     const net = ((balance * rate) / 100) * (1 - DEPOSIT_TAX);
     balance += net * (to - from);
     from = to;
@@ -49,6 +62,7 @@ function depositBreaks(t0: number): number[] {
  * (the same guarantee `trajectory()` gives for the Fidelis run).
  */
 export function depositTrajectory(p: SimParams): ValuePoint[] {
+  const cur = currencyOf(p);
   const starts = contributionMonths(p).map(idToYear);
   if (starts.length === 0) return [];
   const breaks = new Set<number>();
@@ -57,7 +71,7 @@ export function depositTrajectory(p: SimParams): ValuePoint[] {
   const ts = [...breaks].filter((t) => t >= first && t <= END).sort((a, b) => a - b);
   return ts.map((t) => ({
     t,
-    value: starts.reduce((sum, t0) => sum + depositValueAt(t0, p.amount, t), 0),
+    value: starts.reduce((sum, t0) => sum + depositValueAt(t0, p.amount, t, cur), 0),
   }));
 }
 
@@ -74,14 +88,15 @@ export function depositTaxOf(p: SimParams): number {
 
 /**
  * Deflate a nominal value curve into the prices of its first point's date:
- * `real(t) = value(t) · cpi(t0) / cpi(t)`.
+ * `real(t) = value(t) · cpi(t0) / cpi(t)`. Uses the RON (INS) price index by
+ * default, or the euro-area (HICP) index for a EUR scenario.
  */
-export function deflate(points: ValuePoint[]): ValuePoint[] {
+export function deflate(points: ValuePoint[], cur: Currency = "RON"): ValuePoint[] {
   if (points.length === 0) return [];
-  const base = benchmarkAt(points[0].t).cpiIndex;
+  const base = cpiAt(points[0].t, cur);
   return points.map((pt) => ({
     t: pt.t,
-    value: (pt.value * base) / benchmarkAt(pt.t).cpiIndex,
+    value: (pt.value * base) / cpiAt(pt.t, cur),
   }));
 }
 
@@ -116,7 +131,7 @@ export function benchmarkSummary(p: SimParams, fidelisPoints: ValuePoint[]): Ben
   const depositPoints = depositTrajectory(p);
   const depositFinal =
     depositPoints.length > 0 ? depositPoints[depositPoints.length - 1].value : invested;
-  const real = deflate(fidelisPoints);
+  const real = deflate(fidelisPoints, currencyOf(p));
   const realFinal = real.length > 0 ? real[real.length - 1].value : invested;
   return {
     depositFinal,

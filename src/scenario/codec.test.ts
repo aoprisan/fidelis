@@ -38,6 +38,17 @@ describe("encode/decode round-trip", () => {
     };
     expect(decodeParams(encodeParams(p))).toEqual(p);
   });
+
+  it("round-trips a EUR scenario and emits the currency key", () => {
+    // Dec 2025 offers a EUR 3/5/10y tranche, so mat=5 is valid in EUR.
+    const p: SimParams = { ...base, startId: "2025-12", currency: "EUR" };
+    expect(encodeParams(p)).toContain("c=eur");
+    expect(decodeParams(encodeParams(p))).toEqual(p);
+  });
+
+  it("does not emit a currency key for a lei scenario", () => {
+    expect(encodeParams(base)).not.toContain("c=");
+  });
 });
 
 describe("sanitizeParams", () => {
@@ -72,6 +83,15 @@ describe("sanitizeParams", () => {
     const p = sanitizeParams({ ...base, donor: 1, reinvest: 0 });
     expect(p?.donor).toBe(true);
     expect(p?.reinvest).toBe(false);
+  });
+
+  it("accepts EUR when the start issuance has a euro tranche", () => {
+    expect(sanitizeParams({ ...base, startId: "2025-12", currency: "eur" })?.currency).toBe("EUR");
+  });
+
+  it("falls back to lei when the start issuance has no euro tranche", () => {
+    // Dec 2024 is selectable but has no verified EUR tranche.
+    expect(sanitizeParams({ ...base, startId: "2024-12", currency: "eur" })?.currency).toBeUndefined();
   });
 
   it("returns null for junk input", () => {

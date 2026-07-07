@@ -4,9 +4,11 @@ import { couponSchedule, scheduleByYear, type CashEvent } from "../sim/cashflow"
 import { idToYear } from "../sim/history";
 import {
   contributionMonths,
+  currencyOf,
   run,
   summarizeOf,
   trajectory,
+  type Currency,
   type Leg,
   type SimParams,
   type ValuePoint,
@@ -24,15 +26,15 @@ export interface RenderTargets {
   calendar: HTMLElement;
 }
 
-function headlineHTML(finalValue: number, profit: number, cagr: number): string {
+function headlineHTML(finalValue: number, profit: number, cagr: number, cur: Currency): string {
   return `
-    <div class="stat"><div class="k">Valoare azi</div><div class="v gold num">${fmt(finalValue)} RON</div></div>
-    <div class="stat"><div class="k">Câștig net (neimpozabil)</div><div class="v pos num">+${fmt(profit)} RON</div></div>
+    <div class="stat"><div class="k">Valoare azi</div><div class="v gold num">${fmt(finalValue)} ${cur}</div></div>
+    <div class="stat"><div class="k">Câștig net (neimpozabil)</div><div class="v pos num">+${fmt(profit)} ${cur}</div></div>
     <div class="stat"><div class="k">Randament anualizat</div><div class="v num">${fmt2(cagr)}%</div></div>`;
 }
 
 /** Value-over-time growth chart as a self-contained, responsive inline SVG. */
-function growthChartHTML(points: ValuePoint[], invested: number): string {
+function growthChartHTML(points: ValuePoint[], invested: number, cur: Currency): string {
   if (points.length < 2) return "";
 
   // viewBox geometry (scaled to fit by width:100% in CSS).
@@ -111,7 +113,7 @@ function growthChartHTML(points: ValuePoint[], invested: number): string {
     <div class="laddertitle">Evoluția valorii în timp</div>
     <div class="growthchart">
       <svg viewBox="0 0 ${W} ${H}" role="img"
-           aria-label="Grafic al evoluției valorii investiției de la ${fmt(invested)} la ${fmt(last.value)} RON">
+           aria-label="Grafic al evoluției valorii investiției de la ${fmt(invested)} la ${fmt(last.value)} ${cur}">
         <defs>
           <linearGradient id="gcFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stop-color="rgba(216,165,74,0.34)" />
@@ -203,6 +205,7 @@ function calendarHTML(events: CashEvent[]): string {
 
 /** Run the simulation for the given params and paint the results. */
 export function render(params: SimParams, els: RenderTargets): void {
+  const cur = currencyOf(params);
   const res = run(params);
   // For a recurring plan the invested capital is the amount times the number of
   // contributions; the baseline and figures reflect the whole committed plan.
@@ -212,14 +215,15 @@ export function render(params: SimParams, els: RenderTargets): void {
   const allLegs = res.blocks.flatMap((b) => b.legs);
   const points = trajectory(res);
 
-  els.headline.innerHTML = headlineHTML(finalValue, profit, cagr);
-  els.chart.innerHTML = growthChartHTML(points, invested);
+  els.headline.innerHTML = headlineHTML(finalValue, profit, cagr, cur);
+  els.chart.innerHTML = growthChartHTML(points, invested, cur);
   els.bench.innerHTML = benchmarkSectionHTML(
     points,
     depositTrajectory(params),
-    deflate(points),
+    deflate(points, cur),
     invested,
     benchmarkSummary(params, points),
+    cur,
   );
   els.viz.innerHTML = vizHTML(allLegs, params.startId);
   els.detail.innerHTML = detailHTML(allLegs);

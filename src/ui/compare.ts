@@ -119,7 +119,7 @@ export function initCompare(
       <div class="cmp-head">
         <h2>Compară scenarii</h2>
         <div class="seg cmp-mode" role="group" aria-label="Mod de afișare">
-          <button data-mode="abs" aria-pressed="${!normalized}">RON</button>
+          <button data-mode="abs" aria-pressed="${!normalized}" title="Valoare absolută (nu amestecă monede)">Absolut</button>
           <button data-mode="idx" aria-pressed="${normalized}" title="Indexat la 100 la start">Index 100</button>
         </div>
       </div>

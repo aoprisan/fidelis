@@ -4,6 +4,18 @@ import { byId, couponFor, idToYear, issuanceAtOrAfter, matsAt } from "./history"
 /** Investment strategy. */
 export type Strategy = "single" | "ladder";
 
+/**
+ * Denomination of the tranche. Fidelis issues both RON (lei) and EUR (euro)
+ * tranches; a EUR run is simulated in euro on its own coupon schedule (no FX
+ * conversion). `undefined` is treated as `"RON"` everywhere, so lei stays the
+ * default and pre-currency params (share links, saved scenarios, the golden
+ * fixture) keep meaning exactly what they did.
+ */
+export type Currency = "RON" | "EUR";
+
+/** Resolve the effective currency of a scenario (absent ⇒ RON). */
+export const currencyOf = (p: { currency?: Currency }): Currency => p.currency ?? "RON";
+
 /** Simulation parameters (the pure inputs to a run). */
 export interface SimParams {
   amount: number;
@@ -12,6 +24,12 @@ export interface SimParams {
   mat: number;
   donor: boolean;
   reinvest: boolean;
+  /**
+   * Tranche denomination. Absent means RON (lei); `"EUR"` selects the euro
+   * tranche of each issuance. Kept optional so lump-sum lei links stay compact
+   * and older params round-trip unchanged.
+   */
+  currency?: Currency;
   /**
    * Recurring contribution plan: the issuance months in which `amount` is
    * invested (the same amount each month), sorted ascending. When present and
@@ -78,6 +96,7 @@ export function simulateLeg(
   targetMat: number,
   donor: boolean,
   reinvest: boolean,
+  cur: Currency = "RON",
 ): Leg[] {
   const legs: Leg[] = [];
   let curId = startId;
@@ -86,7 +105,7 @@ export function simulateLeg(
   while (guard++ < 12) {
     const h = byId[curId];
     if (!h) break;
-    const { rate, mat } = couponFor(curId, targetMat, donor);
+    const { rate, mat } = couponFor(curId, targetMat, donor, cur);
     const startY = idToYear(curId);
     const endY = startY + mat;
     // coupons actually paid before the horizon
@@ -107,9 +126,9 @@ export function simulateLeg(
     if (!reinvest || endY > END) break;
     // roll over: capital + all coupons compounded
     cap = cap + couponAnnual * mat;
-    curId = issuanceAtOrAfter(endY).id;
+    curId = issuanceAtOrAfter(endY, cur).id;
     if (idToYear(curId) < endY - 0.001) break;
-    targetMat = donor ? 2 : targetMat;
+    targetMat = cur === "RON" && donor ? 2 : targetMat;
   }
   return legs;
 }
@@ -182,7 +201,8 @@ export function trajectory(res: SimResult): ValuePoint[] {
 
 /** Single-issuance strategy: the whole amount in one leg chain. */
 export function runSingle(p: SimParams): SimResult {
-  const legs = simulateLeg(p.startId, p.amount, p.mat, p.donor, p.reinvest);
+  const cur = currencyOf(p);
+  const legs = simulateLeg(p.startId, p.amount, p.mat, p.donor, p.reinvest, cur);
   return { blocks: [{ legs, amount: p.amount }] };
 }
 
@@ -191,13 +211,15 @@ export function runSingle(p: SimParams): SimResult {
  * longest maturities available at the start issuance.
  */
 export function runLadder(p: SimParams): SimResult {
-  const mats = matsAt(p.startId);
-  const chosen = p.donor
-    ? [2, 2, 2]
-    : [mats[0], mats[Math.floor(mats.length / 2)], mats[mats.length - 1]];
+  const cur = currencyOf(p);
+  const mats = matsAt(p.startId, cur);
+  const chosen =
+    cur === "RON" && p.donor
+      ? [2, 2, 2]
+      : [mats[0], mats[Math.floor(mats.length / 2)], mats[mats.length - 1]];
   const per = p.amount / 3;
   const blocks = chosen.map((m) => ({
-    legs: simulateLeg(p.startId, per, m, p.donor, p.reinvest),
+    legs: simulateLeg(p.startId, per, m, p.donor, p.reinvest, cur),
     amount: per,
   }));
   return { blocks };

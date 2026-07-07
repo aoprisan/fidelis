@@ -4,6 +4,7 @@ import { benchmarkSummary, deflate, depositTrajectory } from "../sim/benchmark";
 import { couponSchedule, scheduleByYear } from "../sim/cashflow";
 import {
   contributionMonths,
+  currencyOf,
   finalValueOf,
   run,
   summarize,
@@ -51,13 +52,14 @@ function tracking(ctx: CanvasRenderingContext2D, value: string): void {
 }
 
 function paramsLine(p: SimParams): string {
+  const c = currencyOf(p);
   const bits: string[] =
     p.plan && p.plan.length > 1
       ? [
-          `${fmt(p.amount)} RON/lună × ${p.plan.length}`,
+          `${fmt(p.amount)} ${c}/lună × ${p.plan.length}`,
           `${byId[p.plan[0]].label}–${byId[p.plan[p.plan.length - 1]].label}`,
         ]
-      : [`${fmt(p.amount)} RON`, byId[p.startId].label];
+      : [`${fmt(p.amount)} ${c}`, byId[p.startId].label];
   bits.push(STRAT_LABEL[p.strat]);
   if (p.strat === "single") bits.push(`${p.mat} ani`);
   if (p.donor) bits.push("Donator");
@@ -78,6 +80,7 @@ export function drawReport(
   const s = summarize(params);
   const finalValue = finalValueOf(res);
   const invested = params.amount * contributionMonths(params).length;
+  const cur = currencyOf(params);
 
   // --- layout pass: collect draw ops while advancing the y cursor ---------
   const ops: Array<(c: CanvasRenderingContext2D) => void> = [];
@@ -120,8 +123,8 @@ export function drawReport(
 
   // headline stats (three cards)
   const cards: Array<{ k: string; v: string; color: string }> = [
-    { k: "VALOARE AZI", v: `${fmt(finalValue)} RON`, color: C.gold },
-    { k: "CÂȘTIG NET (NEIMPOZABIL)", v: `+${fmt(s.profit)} RON`, color: C.green },
+    { k: "VALOARE AZI", v: `${fmt(finalValue)} ${cur}`, color: C.gold },
+    { k: "CÂȘTIG NET (NEIMPOZABIL)", v: `+${fmt(s.profit)} ${cur}`, color: C.green },
     { k: "RANDAMENT ANUALIZAT", v: `${fmt2(s.cagr)}%`, color: C.paper },
   ];
   const cardsY = y;
@@ -145,7 +148,7 @@ export function drawReport(
     const bs = benchmarkSummary(params, points);
     const series: BenchSeries[] = [
       { points: depositTrajectory(params), color: C.muted, dash: [], width: 1.5 },
-      { points: deflate(points), color: C.gold, dash: [5, 4], width: 1.5 },
+      { points: deflate(points, cur), color: C.gold, dash: [5, 4], width: 1.5 },
       { points, color: C.gold, dash: [], width: 2 },
     ];
     ops.push(sectionTitle("FIDELIS VS DEPOZIT BANCAR VS INFLAȚIE", y));
@@ -164,11 +167,11 @@ export function drawReport(
     ops.push((c) => drawBenchChart(c, series, invested, P, benchY, W - 2 * P, benchH));
     y += benchH + 16;
     const benchCards: Array<{ k: string; v: string; color: string }> = [
-      { k: "AVANTAJ VS DEPOZIT", v: `+${fmt(bs.advantage)} RON`, color: C.green },
-      { k: "IMPOZIT EVITAT", v: `${fmt(bs.taxSaved)} RON`, color: C.gold },
+      { k: "AVANTAJ VS DEPOZIT", v: `+${fmt(bs.advantage)} ${cur}`, color: C.green },
+      { k: "IMPOZIT EVITAT", v: `${fmt(bs.taxSaved)} ${cur}`, color: C.gold },
       {
         k: "CÂȘTIG REAL (INFLAȚIE)",
-        v: `${bs.realProfit >= 0 ? "+" : "−"}${fmt(Math.abs(bs.realProfit))} RON`,
+        v: `${bs.realProfit >= 0 ? "+" : "−"}${fmt(Math.abs(bs.realProfit))} ${cur}`,
         color: bs.realProfit >= 0 ? C.green : C.red,
       },
     ];

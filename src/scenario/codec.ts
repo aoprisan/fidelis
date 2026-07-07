@@ -1,6 +1,6 @@
 import { FIRST_SELECTABLE } from "../data/history";
-import { byId, matsAt } from "../sim/history";
-import type { SimParams, Strategy } from "../sim/simulate";
+import { byId, hasCurrency, matsAt } from "../sim/history";
+import type { Currency, SimParams, Strategy } from "../sim/simulate";
 
 /**
  * (De)serialization of a scenario's simulation parameters for share links and
@@ -10,9 +10,19 @@ import type { SimParams, Strategy } from "../sim/simulate";
 
 const STRATEGIES: readonly Strategy[] = ["single", "ladder"];
 
+/**
+ * Resolve the tranche currency, defaulting to RON when absent, invalid, or when
+ * the chosen start issuance has no tranche in that currency (so a EUR link
+ * pointing at a lei-only month degrades to lei rather than an empty run).
+ */
+function resolveCurrency(startId: string, raw: unknown): Currency {
+  const cur = String(raw).toUpperCase();
+  return cur === "EUR" && hasCurrency(byId[startId], "EUR") ? "EUR" : "RON";
+}
+
 /** Pick a valid maturity for a start issuance, snapping to the default (5y). */
-function resolveMat(startId: string, raw: unknown): number {
-  const mats = matsAt(startId);
+function resolveMat(startId: string, raw: unknown, cur: Currency): number {
+  const mats = matsAt(startId, cur);
   const m = Number(raw);
   if (mats.includes(m)) return m;
   return mats.includes(5) ? 5 : mats[mats.length - 1];
@@ -63,14 +73,18 @@ export function sanitizeParams(raw: unknown): SimParams | null {
   const amount = Number(r.amount);
   if (!Number.isFinite(amount) || amount < 0) return null;
 
+  const currency = resolveCurrency(startId, r.currency);
   const params: SimParams = {
     amount,
     startId,
     strat,
-    mat: resolveMat(startId, r.mat),
+    mat: resolveMat(startId, r.mat, currency),
     donor: !!r.donor,
     reinvest: !!r.reinvest,
   };
+  // Emit the currency only when it departs from the RON default, so lei params
+  // round-trip to an object without a `currency` key (matching legacy links).
+  if (currency === "EUR") params.currency = currency;
   if (plan) params.plan = plan;
   return params;
 }
@@ -85,6 +99,9 @@ export function encodeParams(p: SimParams): string {
     d: p.donor ? "1" : "0",
     r: p.reinvest ? "1" : "0",
   };
+  // Only emit the currency for EUR scenarios, so lei links stay compact and
+  // round-trip to an object without a `currency` key.
+  if (p.currency === "EUR") q.c = "eur";
   // Only emit the plan for recurring scenarios, so lump-sum links stay compact
   // and round-trip to an object without a `plan` key.
   if (p.plan && p.plan.length > 0) q.p = p.plan.join(",");
@@ -101,6 +118,7 @@ export function decodeParams(query: string): SimParams | null {
     mat: q.get("m"),
     donor: q.get("d") === "1",
     reinvest: q.get("r") === "1",
+    currency: q.get("c") ?? undefined,
     plan: q.get("p") ?? undefined,
   });
 }

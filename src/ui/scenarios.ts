@@ -1,5 +1,5 @@
 import { byId } from "../sim/history";
-import type { SimParams } from "../sim/simulate";
+import { currencyOf, type SimParams } from "../sim/simulate";
 import { ScenarioStore } from "../scenario/store";
 import type { AppController } from "./app";
 import { fmt } from "./format";
@@ -25,14 +25,15 @@ function newId(): string {
 }
 
 function summaryLine(p: SimParams): string {
+  const c = currencyOf(p);
   const strat = p.strat === "ladder" ? "Scară" : `${p.mat}a`;
   const tags = [p.donor ? "donator" : null, p.reinvest ? "reinv." : null]
     .filter(Boolean)
     .join(", ");
   const when =
     p.plan && p.plan.length > 1
-      ? `${fmt(p.amount)} RON/lună · ${p.plan.length} luni`
-      : `${fmt(p.amount)} RON · ${byId[p.startId].label}`;
+      ? `${fmt(p.amount)} ${c}/lună · ${p.plan.length} luni`
+      : `${fmt(p.amount)} ${c} · ${byId[p.startId].label}`;
   return `${when} · ${strat}${tags ? ` · ${tags}` : ""}`;
 }
 

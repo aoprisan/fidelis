@@ -1,6 +1,6 @@
 import { FIRST_SELECTABLE, HISTORY } from "../data/history";
-import { byId, matsAt } from "../sim/history";
-import type { SimParams } from "../sim/simulate";
+import { byId, hasCurrency, matsAt } from "../sim/history";
+import { currencyOf, type Currency, type SimParams } from "../sim/simulate";
 import { fmt } from "./format";
 import { render, type RenderTargets } from "./render";
 
@@ -61,15 +61,29 @@ export function createApp(initial?: SimParams | null): AppController {
   /** A recurring plan is active when it holds at least one contribution month. */
   const isRecurring = () => !!(S.plan && S.plan.length > 0);
 
+  /** The active tranche currency (RON unless EUR is explicitly chosen). */
+  const cur = (): Currency => currencyOf(S);
+
+  /** Whether an issuance offers a tranche in the active currency. */
+  const offered = (id: string) => hasCurrency(byId[id], cur());
+
+  /** Selectable months that offer a tranche in the active currency. */
+  const availableMonths = () => SELECTABLE.filter((h) => offered(h.id));
+
   // --- start date (lump) -----------------------------------------------------
 
   function buildStart() {
     const seg = el("startSeg");
-    seg.innerHTML = SELECTABLE.map(
-      (h) => `<button data-id="${h.id}" aria-pressed="${h.id === S.startId}">${h.label}</button>`,
-    ).join("");
+    seg.innerHTML = SELECTABLE.map((h) => {
+      const has = offered(h.id);
+      const attrs = has
+        ? ""
+        : ` disabled title="Fără tranșă în ${cur()} la această emisiune"`;
+      return `<button data-id="${h.id}" aria-pressed="${h.id === S.startId}"${attrs}>${h.label}</button>`;
+    }).join("");
     seg.querySelectorAll("button").forEach((b) => {
       b.onclick = () => {
+        if ((b as HTMLButtonElement).disabled) return;
         S.startId = (b as HTMLButtonElement).dataset.id!;
         [...seg.children].forEach((x) =>
           x.setAttribute("aria-pressed", String(x === b)),
@@ -85,11 +99,18 @@ export function createApp(initial?: SimParams | null): AppController {
   function buildPlan() {
     const seg = el("planSeg");
     const chosen = new Set(S.plan ?? []);
-    seg.innerHTML = SELECTABLE.map(
-      (h) => `<button data-id="${h.id}" aria-pressed="${chosen.has(h.id)}">${h.label}</button>`,
-    ).join("");
+    seg.innerHTML = SELECTABLE.map((h) => {
+      const has = offered(h.id);
+      const attrs = has
+        ? ""
+        : ` disabled title="Fără tranșă în ${cur()} la această emisiune"`;
+      return `<button data-id="${h.id}" aria-pressed="${chosen.has(h.id)}"${attrs}>${h.label}</button>`;
+    }).join("");
     seg.querySelectorAll("button").forEach((b) => {
-      b.onclick = () => togglePlanMonth((b as HTMLButtonElement).dataset.id!);
+      b.onclick = () => {
+        if ((b as HTMLButtonElement).disabled) return;
+        togglePlanMonth((b as HTMLButtonElement).dataset.id!);
+      };
     });
     updatePlanHint();
   }
@@ -118,11 +139,12 @@ export function createApp(initial?: SimParams | null): AppController {
 
   function updatePlanHint() {
     const n = S.plan?.length ?? 0;
+    const c = cur();
     el("planHint").textContent =
       n > 0
-        ? `Investești ${fmt(S.amount)} RON în fiecare din ${n} ${
+        ? `Investești ${fmt(S.amount)} ${c} în fiecare din ${n} ${
             n === 1 ? "lună" : "luni"
-          } · total ${fmt(S.amount * n)} RON.`
+          } · total ${fmt(S.amount * n)} ${c}.`
         : "";
   }
 
@@ -134,7 +156,7 @@ export function createApp(initial?: SimParams | null): AppController {
       .forEach((b) => {
         b.onclick = () => (b.dataset.mode === "recurring" ? enterRecurring() : enterLump());
       });
-    el("planAll").onclick = () => commitPlan(SELECTABLE.map((h) => h.id));
+    el("planAll").onclick = () => commitPlan(availableMonths().map((h) => h.id));
     el("planClear").onclick = () => commitPlan([S.plan?.[0] ?? S.startId]);
   }
 
@@ -163,7 +185,7 @@ export function createApp(initial?: SimParams | null): AppController {
       );
     el("startWrap").hidden = rec;
     el("planWrap").hidden = !rec;
-    el("amountLabel").textContent = rec ? "Sumă / lună (RON)" : "Sumă investită (RON)";
+    el("amountLabel").textContent = rec ? `Sumă / lună (${cur()})` : `Sumă investită (${cur()})`;
     if (rec) buildPlan();
     else buildStart();
   }
@@ -172,7 +194,7 @@ export function createApp(initial?: SimParams | null): AppController {
 
   function buildMat() {
     const seg = el("matSeg");
-    const mats = matsAt(S.startId);
+    const mats = matsAt(S.startId, cur());
     if (!mats.includes(S.mat)) S.mat = mats.includes(5) ? 5 : mats[mats.length - 1];
     seg.innerHTML = mats
       .map((m) => `<button data-m="${m}" aria-pressed="${m === S.mat}">${m} ani</button>`)
@@ -206,6 +228,49 @@ export function createApp(initial?: SimParams | null): AppController {
       .forEach((x) => x.setAttribute("aria-pressed", String((x as HTMLButtonElement).dataset.strat === S.strat)));
   }
 
+  // --- currency (RON vs EUR) -------------------------------------------------
+
+  function bindCurrency() {
+    document.querySelectorAll<HTMLButtonElement>("#currencySeg button").forEach((b) => {
+      b.onclick = () => setCurrency(b.dataset.cur === "eur" ? "EUR" : "RON");
+    });
+  }
+
+  function syncCurrency() {
+    document
+      .querySelectorAll<HTMLButtonElement>("#currencySeg button")
+      .forEach((x) =>
+        x.setAttribute("aria-pressed", String((x.dataset.cur === "eur" ? "EUR" : "RON") === cur())),
+      );
+    // The blood-donor tranche is a RON-only product; disable it under EUR.
+    const donorEl = el<HTMLInputElement>("donor");
+    const eur = cur() === "EUR";
+    donorEl.disabled = eur;
+    if (eur && S.donor) S.donor = false;
+    donorEl.closest("label")?.classList.toggle("disabled", eur);
+  }
+
+  /**
+   * Switch the tranche currency. Not every issuance offers a EUR tranche, so
+   * the start month (or every plan month) snaps onto months that do; the
+   * maturity, amount label and pickers then re-resolve for the new currency.
+   */
+  function setCurrency(next: Currency) {
+    if (cur() === next) return;
+    S.currency = next === "EUR" ? "EUR" : undefined;
+    if (isRecurring()) {
+      const kept = (S.plan ?? []).filter((id) => offered(id));
+      S.plan = (kept.length > 0 ? kept : [availableMonths()[0].id]).sort();
+      S.startId = S.plan[0];
+    } else if (!offered(S.startId)) {
+      S.startId = availableMonths()[0].id;
+    }
+    syncCurrency();
+    syncMode();
+    buildMat();
+    paint();
+  }
+
   el<HTMLInputElement>("amount").oninput = (e) => {
     S.amount = Math.max(0, Number((e.target as HTMLInputElement).value) || 0);
     updatePlanHint();
@@ -225,6 +290,7 @@ export function createApp(initial?: SimParams | null): AppController {
     el<HTMLInputElement>("amount").value = String(S.amount);
     el<HTMLInputElement>("donor").checked = S.donor;
     el<HTMLInputElement>("reinvest").checked = S.reinvest;
+    syncCurrency();
     syncStrat();
     buildMat();
     syncMode();
@@ -232,6 +298,7 @@ export function createApp(initial?: SimParams | null): AppController {
 
   bindContrib();
   bindStrat();
+  bindCurrency();
   syncControls();
   paint();
 

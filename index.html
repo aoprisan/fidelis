@@ -10,7 +10,7 @@
   <header class="masthead">
     <p class="eyebrow">Titluri de stat · Program FIDELIS</p>
     <h1>Cât ai fi câștigat?<br /><span class="thin">Simulator de randament istoric</span></h1>
-    <p class="sub">Alege o sumă, o dată de start și o strategie. Calculul folosește dobânzile reale ale emisiunilor Fidelis din 2024–2025, cu cupon anual neimpozabil și randament compus la reinvestire.</p>
+    <p class="sub">Alege o sumă, moneda (lei sau euro), o dată de start și o strategie. Calculul folosește dobânzile emisiunilor Fidelis din 2024–2026, cu cupon anual neimpozabil și randament compus la reinvestire.</p>
     <div class="hook" id="hook"></div>
   </header>
 
@@ -21,6 +21,12 @@
 
       <label for="amount" id="amountLabel">Sumă investită (RON)</label>
       <input type="number" id="amount" value="50000" min="500" step="500" />
+
+      <label>Monedă</label>
+      <div class="seg" id="currencySeg" role="group">
+        <button data-cur="ron" aria-pressed="true">Lei (RON)</button>
+        <button data-cur="eur" aria-pressed="false">Euro (EUR)</button>
+      </div>
 
       <label>Contribuție</label>
       <div class="seg" id="contribSeg" role="group">
@@ -140,7 +146,7 @@
       </div>
 
       <p class="note">
-        <b>Sursă dobânzi:</b> comunicatele Ministerului Finanțelor pentru emisiunile Fidelis 2024–2025. Câștigurile din dobânzi și cele de capital sunt <b>neimpozabile</b> și exceptate de CASS. La mijlocul lui 2025 structura maturităților în lei a fost reorganizată (2 / 4 / 6 ani în loc de 1 / 3 / 5). Pentru lunile fără emisiune se folosește ultima dobândă disponibilă. Modelul presupune cupon fix plătit anual și deținere până la scadență (nu modelează vânzarea anticipată pe bursă la preț de piață). Comparația cu depozitul folosește dobânda medie la depozitele noi la termen în lei ale populației (BNR), capitalizare anuală și impozit de 10% pe dobândă; valorile reale folosesc indicele prețurilor de consum (INS) — ambele serii sunt aproximări lunare, de verificat pe sursele oficiale.
+        <b>Sursă dobânzi:</b> comunicatele Ministerului Finanțelor pentru emisiunile Fidelis 2024–2026, în lei și în euro. Câștigurile din dobânzi și cele de capital sunt <b>neimpozabile</b> și exceptate de CASS. La mijlocul lui 2025 structura maturităților în lei a fost reorganizată (2 / 4 / 6 ani în loc de 1 / 3 / 5), iar tranșele în euro au trecut la 3 / 5 / 10 ani. Pentru lunile fără emisiune se folosește ultima dobândă disponibilă. Modelul presupune cupon fix plătit anual și deținere până la scadență (nu modelează vânzarea anticipată pe bursă la preț de piață). Comparația cu depozitul folosește dobânda medie la depozitele noi la termen ale populației, în lei (BNR) sau în euro, capitalizare anuală și impozit de 10% pe dobândă; valorile reale folosesc indicele prețurilor de consum din România (INS) sau din zona euro (Eurostat) — seriile sunt aproximări lunare, de verificat pe sursele oficiale. <b>Notă:</b> tranșele în euro și emisiunile din 2026 sunt provizorii, reconstituite din presa financiară și de verificat față de comunicatele oficiale.
       </p>
     </div>
   </div>

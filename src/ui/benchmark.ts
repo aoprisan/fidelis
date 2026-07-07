@@ -1,6 +1,6 @@
-import { BNR_SOURCE, INS_SOURCE } from "../data/benchmarks";
+import { BNR_SOURCE, ECB_SOURCE, EUROSTAT_SOURCE, INS_SOURCE } from "../data/benchmarks";
 import type { BenchmarkSummary } from "../sim/benchmark";
-import type { ValuePoint } from "../sim/simulate";
+import type { Currency, ValuePoint } from "../sim/simulate";
 import { fmt, fmtK } from "./format";
 
 /** One named curve on the comparison chart. */
@@ -101,10 +101,18 @@ export function benchmarkSectionHTML(
   realPoints: ValuePoint[],
   invested: number,
   s: BenchmarkSummary,
+  cur: Currency = "RON",
 ): string {
   if (fidelisPoints.length < 2) return "";
   const fidelisFinal = fidelisPoints[fidelisPoints.length - 1].value;
   const realCls = s.realProfit >= 0 ? "pos" : "neg";
+  // The deposit alternative and the inflation series are currency-specific: lei
+  // uses BNR RON deposits + INS prices; euro uses a Romanian EUR deposit rate +
+  // euro-area HICP.
+  const note =
+    cur === "EUR"
+      ? `Depozitul folosește o dobândă reprezentativă la depozitele în euro pentru clienții retail din România (surse <a href="${ECB_SOURCE}" target="_blank" rel="noopener">BNR/BCE</a>), capitalizare anuală și impozit de 10% pe dobândă. Valoarea reală folosește indicele armonizat al prețurilor din zona euro, IAPC (<a href="${EUROSTAT_SOURCE}" target="_blank" rel="noopener">Eurostat</a>). Dobânda Fidelis este scutită de impozit și CASS. Seria în euro este aproximativă — vezi sursele.`
+      : `Depozitul folosește dobânda medie la depozitele noi în lei ale populației (<a href="${BNR_SOURCE}" target="_blank" rel="noopener">BNR</a>), capitalizare anuală și impozit de 10% pe dobândă. Valoarea reală folosește indicele prețurilor de consum (<a href="${INS_SOURCE}" target="_blank" rel="noopener">INS</a>). Dobânda Fidelis este scutită de impozit și CASS.`;
   return `
     <div class="laddertitle">Și dacă banii stăteau la bancă? Fidelis vs depozit vs inflație</div>
     <div class="bench-legend">
@@ -121,9 +129,9 @@ export function benchmarkSectionHTML(
       invested,
     )}
     <div class="headline bench-stats">
-      <div class="stat"><div class="k">Avantaj vs depozit bancar</div><div class="v pos num">+${fmt(s.advantage)} RON</div></div>
-      <div class="stat"><div class="k">Impozit evitat (scutire Fidelis)</div><div class="v gold num">${fmt(s.taxSaved)} RON</div></div>
-      <div class="stat"><div class="k">Câștig real, după inflație</div><div class="v ${realCls} num">${s.realProfit >= 0 ? "+" : "−"}${fmt(Math.abs(s.realProfit))} RON</div></div>
+      <div class="stat"><div class="k">Avantaj vs depozit bancar</div><div class="v pos num">+${fmt(s.advantage)} ${cur}</div></div>
+      <div class="stat"><div class="k">Impozit evitat (scutire Fidelis)</div><div class="v gold num">${fmt(s.taxSaved)} ${cur}</div></div>
+      <div class="stat"><div class="k">Câștig real, după inflație</div><div class="v ${realCls} num">${s.realProfit >= 0 ? "+" : "−"}${fmt(Math.abs(s.realProfit))} ${cur}</div></div>
     </div>
-    <p class="bench-note">Depozitul folosește dobânda medie la depozitele noi în lei ale populației (<a href="${BNR_SOURCE}" target="_blank" rel="noopener">BNR</a>), capitalizare anuală și impozit de 10% pe dobândă. Valoarea reală folosește indicele prețurilor de consum (<a href="${INS_SOURCE}" target="_blank" rel="noopener">INS</a>). Dobânda Fidelis este scutită de impozit și CASS.</p>`;
+    <p class="bench-note">${note}</p>`;
 }

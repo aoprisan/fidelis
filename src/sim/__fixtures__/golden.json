@@ -346,10 +346,10 @@
         "reinvest": true
       },
       "out": {
-        "finalValue": 54900,
-        "profit": 4900,
+        "finalValue": 55447.09375,
+        "profit": 5447.09375,
         "years": 1.5,
-        "cagr": 6.431020596933856
+        "cagr": 7.1369278555897475
       }
     },
     {
@@ -474,10 +474,10 @@
         "reinvest": true
       },
       "out": {
-        "finalValue": 54745.83333333295,
-        "profit": 4745.83333333295,
+        "finalValue": 55183.416666666126,
+        "profit": 5183.416666666126,
         "years": 1.416666666666515,
-        "cagr": 6.610112084151787
+        "cagr": 7.210914115474942
       }
     },
     {
@@ -602,10 +602,10 @@
         "reinvest": true
       },
       "out": {
-        "finalValue": 54347.91666666667,
-        "profit": 4347.9166666666715,
+        "finalValue": 54632.98333333334,
+        "profit": 4632.983333333337,
         "years": 1.25,
-        "cagr": 6.89818147976331
+        "cagr": 7.346510096789816
       }
     },
     {
@@ -1557,6 +1557,18 @@
                 "couponsPaid": 1,
                 "couponAnnual": 675,
                 "matured": true
+              },
+              {
+                "startId": "2026-02",
+                "startLabel": "Feb 2026",
+                "mat": 2,
+                "rate": 6.15,
+                "principal": 10675,
+                "startY": 2026.0833333333333,
+                "endY": 2028.0833333333333,
+                "couponsPaid": 0,
+                "couponAnnual": 656.5125,
+                "matured": false
               }
             ],
             "amount": 10000
@@ -1598,10 +1610,10 @@
         ]
       },
       "out": {
-        "finalValue": 32940,
-        "profit": 2940,
+        "finalValue": 33268.25625,
+        "profit": 3268.2562499999985,
         "years": 1.5,
-        "cagr": 6.431020596933856
+        "cagr": 7.1369278555897475
       }
     },
     {

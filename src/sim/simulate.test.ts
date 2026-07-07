@@ -30,6 +30,11 @@ describe("matsAt", () => {
     expect(matsAt("2025-02")).toEqual([1, 3, 5]);
     expect(matsAt("2025-06")).toEqual([2, 4, 6]);
   });
+
+  it("returns the EUR ladder for a EUR run, empty when there is no euro tranche", () => {
+    expect(matsAt("2025-12", "EUR")).toEqual([3, 5, 10]);
+    expect(matsAt("2024-12", "EUR")).toEqual([]);
+  });
 });
 
 describe("couponFor", () => {
@@ -53,6 +58,11 @@ describe("couponFor", () => {
     // Aug 2024 has donor: null
     expect(couponFor("2024-08", 5, true)).toEqual({ rate: 7.0, mat: 5 });
   });
+
+  it("resolves the euro coupon and ignores the RON-only donor tranche for EUR", () => {
+    expect(couponFor("2025-12", 5, false, "EUR")).toEqual({ rate: 4.75, mat: 5 });
+    expect(couponFor("2025-12", 5, true, "EUR")).toEqual({ rate: 4.75, mat: 5 });
+  });
 });
 
 describe("issuanceAtOrAfter", () => {
@@ -62,7 +72,7 @@ describe("issuanceAtOrAfter", () => {
   });
 
   it("returns the last issuance when the year is past the table", () => {
-    expect(issuanceAtOrAfter(2099).id).toBe("2025-12");
+    expect(issuanceAtOrAfter(2099).id).toBe("2026-07");
   });
 });
 
@@ -196,12 +206,31 @@ describe("summarize — CAGR math", () => {
     expect(res.blocks).toHaveLength(3);
     res.blocks.forEach((b) => expect(b.amount).toBeCloseTo(10000, 9));
     const s = summarize({ ...base, amount: 30000, strat: "ladder" });
-    expect(s.finalValue).toBeCloseTo(32940, 9);
-    expect(s.cagr).toBeCloseTo(6.431020596933856, 9);
+    // The 1-year rung of this Feb-2025 ladder now reinvests into the Feb-2026
+    // edition (added to the rate table), so the horizon value is higher than
+    // before 2026 existed. Same intentional change guarded by golden.json.
+    expect(s.finalValue).toBeCloseTo(33268.25625, 9);
+    expect(s.cagr).toBeCloseTo(7.1369278555897475, 9);
   });
 
   it("runSingle produces exactly one block", () => {
     expect(runSingle(base).blocks).toHaveLength(1);
+  });
+
+  it("runs a EUR tranche on its euro coupons", () => {
+    const p: SimParams = {
+      amount: 10000,
+      startId: "2025-12",
+      strat: "single",
+      mat: 5,
+      donor: false,
+      reinvest: false,
+      currency: "EUR",
+    };
+    const legs = runSingle(p).blocks[0].legs;
+    expect(legs[0].rate).toBe(4.75); // Dec 2025 EUR 5y
+    expect(legs[0].mat).toBe(5);
+    expect(legs[0].couponAnnual).toBeCloseTo((10000 * 4.75) / 100, 9);
   });
 });
 

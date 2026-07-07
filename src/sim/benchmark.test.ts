@@ -89,6 +89,17 @@ describe("depositTrajectory", () => {
     expect(depositTaxOf(p)).toBeCloseTo((netGain * DEPOSIT_TAX) / (1 - DEPOSIT_TAX), 9);
     expect(depositTaxOf(p)).toBeGreaterThan(0);
   });
+
+  it("a EUR deposit uses the (lower) euro deposit rate", () => {
+    const eur = lump({ startId: "2025-12", currency: "EUR" });
+    const ron = lump({ startId: "2025-12" });
+    const eurPts = depositTrajectory(eur);
+    const ronPts = depositTrajectory(ron);
+    const eurFinal = eurPts[eurPts.length - 1].value;
+    const ronFinal = ronPts[ronPts.length - 1].value;
+    expect(eurFinal).toBeGreaterThan(eur.amount);
+    expect(eurFinal).toBeLessThan(ronFinal); // euro deposit rates sit well below lei
+  });
 });
 
 describe("deflate", () => {
