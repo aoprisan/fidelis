@@ -111,10 +111,10 @@ function modelHTML(): string {
       <span>Observații = <b>${REG.n}</b></span>
       <span>Cupoane istorice = <b>${pct(SUPPORT.min)}–${pct(SUPPORT.max)}</b></span>
     </div>
-    <table class="detail fc-coef">
+    <div class="table-scroll"><table class="detail fc-coef">
       <thead><tr><th>Variabilă</th><th>Coeficient</th><th>Citire</th></tr></thead>
       <tbody>${rows}</tbody>
-    </table>
+    </table></div>
     <p class="note fc-caveat">
       <b>Cum se citește:</b> este o regresie liniară simplă (metoda celor mai mici pătrate) pe
       tabelul real al cupoanelor Fidelis 2024–2025, îmbinat cu trei serii macro la momentul emisiunii.

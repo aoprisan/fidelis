@@ -111,6 +111,30 @@ Written **before** the refactor and kept green through it:
   coefficients and fit stats, term-premium monotonicity, scenario shifts, and
   the per-tenor extrapolation flag.
 
+## Installable PWA & mobile
+
+The app is an installable, offline-capable **Progressive Web App**, hand-rolled
+with no build plugin so it stays inspectable and dependency-free:
+
+- `public/manifest.webmanifest` — standalone display, theme/background pinned to
+  the app's ink, and maskable + "any" icons. All paths are **relative** so the
+  manifest, service worker and icons resolve correctly from any GitHub Pages
+  subpath.
+- `public/sw.js` — a small service worker: the app shell is precached on
+  install; navigations are **network-first** (a new deploy wins online, the
+  cached shell serves offline); content-hashed assets use
+  **stale-while-revalidate**. It is registered from `main.ts` **in production
+  only** (never in dev/HMR), with a relative URL so its scope is correct on a
+  subpath.
+- Icons are rasterized from `public/*.svg` by `scripts/gen-icons.mjs`
+  (a dev-only Playwright utility) into the PNG sizes the manifest and iOS need.
+
+The layout is **responsive down to ~320px**: the two-column grids collapse to a
+single column, tables and the model formula scroll inside their own boxes
+(the page itself never scrolls horizontally), touch targets grow, inputs use a
+≥16px font to stop iOS zoom-on-focus, and `viewport-fit=cover` + `env(safe-area-inset-*)`
+padding respect notches.
+
 ## Deployment (GitHub Pages)
 
 `npm run build` emits a static site to `dist/` with a relative base path, so it

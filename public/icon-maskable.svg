@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Fidelis">
+  <!-- Full-bleed background for maskable / apple-touch (platform applies the mask). -->
+  <rect x="0" y="0" width="512" height="512" fill="#0c1524"/>
+  <!-- Content kept inside the central safe zone (~80%). -->
+  <rect x="141" y="388" width="230" height="8" rx="4" fill="#d8a54a" fill-opacity="0.55"/>
+  <rect x="156" y="308" width="52" height="80"  rx="12" fill="#d8a54a" fill-opacity="0.50"/>
+  <rect x="230" y="256" width="52" height="132" rx="12" fill="#d8a54a" fill-opacity="0.74"/>
+  <rect x="304" y="200" width="52" height="188" rx="12" fill="#d8a54a"/>
+</svg>

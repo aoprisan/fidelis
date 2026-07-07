@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Fidelis">
+  <rect x="0" y="0" width="512" height="512" rx="96" fill="#0c1524"/>
+  <rect x="96" y="392" width="320" height="12" rx="6" fill="#d8a54a" fill-opacity="0.55"/>
+  <rect x="120" y="288" width="76" height="104" rx="16" fill="#d8a54a" fill-opacity="0.55"/>
+  <rect x="218" y="212" width="76" height="180" rx="16" fill="#d8a54a" fill-opacity="0.78"/>
+  <rect x="316" y="128" width="76" height="264" rx="16" fill="#d8a54a"/>
+</svg>

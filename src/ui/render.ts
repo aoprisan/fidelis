@@ -56,10 +56,10 @@ function detailHTML(allLegs: Leg[]): string {
     .join("");
   return `
     <div class="laddertitle">Detaliu pe tranșe</div>
-    <table class="detail">
+    <div class="table-scroll"><table class="detail">
       <thead><tr><th>Emisiune</th><th>Scad.</th><th>Dobândă</th><th>Principal</th><th>Cupon/an</th><th>Status</th></tr></thead>
       <tbody>${rows}</tbody>
-    </table>`;
+    </table></div>`;
 }
 
 /** Run the simulation for the given params and paint the results. */
