@@ -1,4 +1,4 @@
-import { HISTORY, type Issuance } from "../data/history";
+import { HISTORY, type Currency, type Issuance } from "../data/history";
 import { byId, couponFor, idToYear, matsAt } from "./history";
 
 /**
@@ -44,6 +44,8 @@ export interface PlanParams {
   donorEligible: boolean;
   /** Auto-reinvest matured capital + coupons into the current edition. */
   reinvest: boolean;
+  /** Currency of the ladder (RON or EUR). Donor tranches apply to RON only. */
+  currency: Currency;
 }
 
 /** One month's purchase — "which tranche to buy this month". */
@@ -129,11 +131,18 @@ interface Choice {
 }
 
 /** Choose the tranche for this month's pool: risk pick, or donor if it dominates. */
-function choose(id: string, risk: Risk, donorEligible: boolean, cash: number): Choice {
-  const mats = matsAt(id);
-  const base = couponFor(id, pickMaturity(mats, risk), false);
+function choose(
+  id: string,
+  risk: Risk,
+  donorEligible: boolean,
+  cash: number,
+  ccy: Currency,
+): Choice {
+  const mats = matsAt(id, ccy);
+  const base = couponFor(id, pickMaturity(mats, risk), false, ccy);
   const h = byId[id];
-  if (donorEligible && h.donorRate != null && h.donorRate > base.rate) {
+  // Donor tranches are RON-only.
+  if (ccy === "RON" && donorEligible && h.donorRate != null && h.donorRate > base.rate) {
     if (cash >= DONOR_MIN) {
       return {
         mat: h.donorMaturity ?? 2,
@@ -250,7 +259,7 @@ export function plan(p: PlanParams): PlanResult {
     // 3. Invest the pooled cash into this month's edition.
     if (cash >= MIN_BUY) {
       const iss = issuanceForMonth(y);
-      const c = choose(iss.id, p.risk, p.donorEligible, cash);
+      const c = choose(iss.id, p.risk, p.donorEligible, cash, p.currency);
       if (c.blockedDonor) donorBlockedCount++;
       const maturesMonth = m + c.mat * 12;
       holdings.push({

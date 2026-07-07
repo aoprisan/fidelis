@@ -32,6 +32,7 @@ export function createApp(): void {
     mat: 5,
     donor: false,
     reinvest: true,
+    currency: "RON",
   };
 
   const P: PlanParams = {
@@ -41,6 +42,7 @@ export function createApp(): void {
     risk: "balanced",
     donorEligible: false,
     reinvest: true,
+    currency: "RON",
   };
 
   const targets: RenderTargets = {
@@ -57,6 +59,37 @@ export function createApp(): void {
     el("planControls").style.display = mode === "plan" ? "block" : "none";
     el("matWrap").style.display =
       mode === "backtest" && S.strat === "single" ? "block" : "none";
+  }
+
+  /** Reflect the selected currency: relabel inputs, hide the RON-only donor rows. */
+  function applyCurrency() {
+    const eur = S.currency === "EUR";
+    document.querySelectorAll(".ccyLabel").forEach((n) => {
+      n.textContent = S.currency;
+    });
+    el("donorWrap").style.display = eur ? "none" : "flex";
+    el("donorEligWrap").style.display = eur ? "none" : "flex";
+    if (eur) {
+      // Donor tranches are RON-only — force them off in EUR.
+      S.donor = false;
+      P.donorEligible = false;
+      el<HTMLInputElement>("donor").checked = false;
+      el<HTMLInputElement>("donorElig").checked = false;
+    }
+  }
+
+  function bindCurrency() {
+    const seg = el("currencySeg");
+    seg.querySelectorAll("button").forEach((b) => {
+      b.onclick = () => {
+        S.currency = P.currency = (b as HTMLButtonElement).dataset
+          .ccy as SimParams["currency"];
+        press(seg.children, b);
+        applyCurrency();
+        buildMat();
+        paint();
+      };
+    });
   }
 
   function bindMode() {
@@ -91,7 +124,7 @@ export function createApp(): void {
 
   function buildMat() {
     const seg = el("matSeg");
-    const mats = matsAt(S.startId);
+    const mats = matsAt(S.startId, S.currency);
     if (!mats.includes(S.mat)) S.mat = mats.includes(5) ? 5 : mats[mats.length - 1];
     seg.innerHTML = mats
       .map((m) => `<button data-m="${m}" aria-pressed="${m === S.mat}">${m} ani</button>`)
@@ -171,10 +204,12 @@ export function createApp(): void {
 
   bindMode();
   buildStart();
+  bindCurrency();
   bindStrat();
   bindHorizon();
   bindRisk();
   buildMat();
   applyMode();
+  applyCurrency();
   paint();
 }

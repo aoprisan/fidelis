@@ -7,29 +7,14 @@
         "strat": "single",
         "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 56416.6666666664,
-        "profit": 6416.666666666402,
-        "years": 1.8333333333332575,
-        "cagr": 6.80761763853146
-      }
-    },
-    {
-      "S": {
-        "amount": 50000,
-        "startId": "2024-10",
-        "strat": "single",
-        "mat": 5,
-        "donor": false,
-        "reinvest": true
-      },
-      "out": {
-        "finalValue": 56416.6666666664,
-        "profit": 6416.666666666402,
-        "years": 1.8333333333332575,
-        "cagr": 6.80761763853146
+        "finalValue": 67500,
+        "profit": 17500,
+        "years": 5,
+        "cagr": 6.185875879493463
       }
     },
     {
@@ -39,13 +24,48 @@
         "strat": "single",
         "mat": 5,
         "donor": true,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
         "finalValue": 53425,
         "profit": 3425,
-        "years": 1.8333333333332575,
-        "cagr": 3.6800495956961665
+        "years": 1,
+        "cagr": 6.8500000000000005
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-10",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 62500,
+        "profit": 12500,
+        "years": 5,
+        "cagr": 4.563955259127317
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-10",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 67500,
+        "profit": 17500,
+        "years": 5,
+        "cagr": 6.185875879493463
       }
     },
     {
@@ -55,13 +75,31 @@
         "strat": "single",
         "mat": 5,
         "donor": true,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 57075.708333333,
-        "profit": 7075.708333333001,
-        "years": 1.8333333333332575,
-        "cagr": 7.486380686225891
+        "finalValue": 71265.9582,
+        "profit": 21265.958199999994,
+        "years": 5,
+        "cagr": 7.3451494288884644
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-10",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 62500,
+        "profit": 12500,
+        "years": 5,
+        "cagr": 4.563955259127317
       }
     },
     {
@@ -71,29 +109,14 @@
         "strat": "ladder",
         "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 55252.7777777776,
-        "profit": 5252.777777777599,
-        "years": 1.8333333333332575,
-        "cagr": 5.600034783069319
-      }
-    },
-    {
-      "S": {
-        "amount": 50000,
-        "startId": "2024-10",
-        "strat": "ladder",
-        "mat": 5,
-        "donor": false,
-        "reinvest": true
-      },
-      "out": {
-        "finalValue": 56311.27777777751,
-        "profit": 6311.277777777512,
-        "years": 1.8333333333332575,
-        "cagr": 6.698741500693051
+        "finalValue": 62641.66666666667,
+        "profit": 12641.666666666672,
+        "years": 5,
+        "cagr": 4.611314665759858
       }
     },
     {
@@ -103,13 +126,48 @@
         "strat": "ladder",
         "mat": 5,
         "donor": true,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
         "finalValue": 53425.00000000001,
         "profit": 3425.0000000000073,
-        "years": 1.8333333333332575,
-        "cagr": 3.6800495956961887
+        "years": 1,
+        "cagr": 6.850000000000023
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-10",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 58991.66666666667,
+        "profit": 8991.666666666672,
+        "years": 5,
+        "cagr": 3.362768334835775
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-10",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 67725.00706666667,
+        "profit": 17725.007066666672,
+        "years": 5,
+        "cagr": 6.25657448174084
       }
     },
     {
@@ -119,13 +177,31 @@
         "strat": "ladder",
         "mat": 5,
         "donor": true,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 57075.70833333301,
-        "profit": 7075.708333333008,
-        "years": 1.8333333333332575,
-        "cagr": 7.486380686225891
+        "finalValue": 71265.9582,
+        "profit": 21265.958199999994,
+        "years": 5,
+        "cagr": 7.3451494288884644
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-10",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 63428.018779166676,
+        "profit": 13428.018779166676,
+        "years": 7,
+        "cagr": 3.456726944787225
       }
     },
     {
@@ -135,29 +211,14 @@
         "strat": "single",
         "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 56333.33333333276,
-        "profit": 6333.333333332761,
-        "years": 1.666666666666515,
-        "cagr": 7.4180507751032465
-      }
-    },
-    {
-      "S": {
-        "amount": 50000,
-        "startId": "2024-12",
-        "strat": "single",
-        "mat": 5,
-        "donor": false,
-        "reinvest": true
-      },
-      "out": {
-        "finalValue": 56333.33333333276,
-        "profit": 6333.333333332761,
-        "years": 1.666666666666515,
-        "cagr": 7.4180507751032465
+        "finalValue": 69000,
+        "profit": 19000,
+        "years": 5,
+        "cagr": 6.653673185724296
       }
     },
     {
@@ -167,13 +228,48 @@
         "strat": "single",
         "mat": 5,
         "donor": true,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
         "finalValue": 53725,
         "profit": 3725,
-        "years": 1.666666666666515,
-        "cagr": 4.40561403124029
+        "years": 1,
+        "cagr": 7.450000000000001
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-12",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 70125,
+        "profit": 20125,
+        "years": 7,
+        "cagr": 4.9508896269115255
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-12",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 69000,
+        "profit": 19000,
+        "years": 5,
+        "cagr": 6.653673185724296
       }
     },
     {
@@ -183,13 +279,31 @@
         "strat": "single",
         "mat": 5,
         "donor": true,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 56429.15833333272,
-        "profit": 6429.158333332722,
-        "years": 1.666666666666515,
-        "cagr": 7.527646657520637
+        "finalValue": 70865.74635,
+        "profit": 20865.74635,
+        "years": 5,
+        "cagr": 7.224312969989666
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-12",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 70125,
+        "profit": 20125,
+        "years": 7,
+        "cagr": 4.9508896269115255
       }
     },
     {
@@ -199,29 +313,14 @@
         "strat": "ladder",
         "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 55297.22222222184,
-        "profit": 5297.222222221841,
-        "years": 1.666666666666515,
-        "cagr": 6.228240172443411
-      }
-    },
-    {
-      "S": {
-        "amount": 50000,
-        "startId": "2024-12",
-        "strat": "ladder",
-        "mat": 5,
-        "donor": false,
-        "reinvest": true
-      },
-      "out": {
-        "finalValue": 56071.94166666611,
-        "profit": 6071.941666666113,
-        "years": 1.666666666666515,
-        "cagr": 7.118715067883752
+        "finalValue": 63741.66666666667,
+        "profit": 13741.666666666672,
+        "years": 5,
+        "cagr": 4.976159942385228
       }
     },
     {
@@ -231,13 +330,48 @@
         "strat": "ladder",
         "mat": 5,
         "donor": true,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
         "finalValue": 53725.00000000001,
         "profit": 3725.0000000000073,
-        "years": 1.666666666666515,
-        "cagr": 4.4056140312403125
+        "years": 1,
+        "cagr": 7.450000000000023
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-12",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 64666.66666666667,
+        "profit": 14666.666666666672,
+        "years": 7,
+        "cagr": 3.742960847370247
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-12",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 68594.11895,
+        "profit": 18594.118950000004,
+        "years": 5,
+        "cagr": 6.527902399394714
       }
     },
     {
@@ -247,13 +381,31 @@
         "strat": "ladder",
         "mat": 5,
         "donor": true,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 56429.15833333273,
-        "profit": 6429.158333332729,
-        "years": 1.666666666666515,
-        "cagr": 7.527646657520659
+        "finalValue": 70865.74635,
+        "profit": 20865.74635,
+        "years": 5,
+        "cagr": 7.224312969989666
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-12",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 69104.42791666667,
+        "profit": 19104.427916666667,
+        "years": 8,
+        "cagr": 4.127869817441221
       }
     },
     {
@@ -263,29 +415,14 @@
         "strat": "single",
         "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 55962.5,
-        "profit": 5962.5,
-        "years": 1.5,
-        "cagr": 7.799828196310954
-      }
-    },
-    {
-      "S": {
-        "amount": 50000,
-        "startId": "2025-02",
-        "strat": "single",
-        "mat": 5,
-        "donor": false,
-        "reinvest": true
-      },
-      "out": {
-        "finalValue": 55962.5,
-        "profit": 5962.5,
-        "years": 1.5,
-        "cagr": 7.799828196310954
+        "finalValue": 69875,
+        "profit": 19875,
+        "years": 5,
+        "cagr": 6.922809886694736
       }
     },
     {
@@ -295,13 +432,48 @@
         "strat": "single",
         "mat": 5,
         "donor": true,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
         "finalValue": 53975,
         "profit": 3975,
-        "years": 1.5,
-        "cagr": 5.232146982293151
+        "years": 1,
+        "cagr": 7.94999999999999
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-02",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 71875,
+        "profit": 21875,
+        "years": 7,
+        "cagr": 5.321105161798112
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-02",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 69875,
+        "profit": 19875,
+        "years": 5,
+        "cagr": 6.922809886694736
       }
     },
     {
@@ -311,13 +483,31 @@
         "strat": "single",
         "mat": 5,
         "donor": true,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 55904.60625,
-        "profit": 5904.606249999997,
-        "years": 1.5,
-        "cagr": 7.7254687252338305
+        "finalValue": 70700.66505000001,
+        "profit": 20700.66505000001,
+        "years": 5,
+        "cagr": 7.17431068687413
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-02",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 71875,
+        "profit": 21875,
+        "years": 7,
+        "cagr": 5.321105161798112
       }
     },
     {
@@ -327,29 +517,14 @@
         "strat": "ladder",
         "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 55058.33333333334,
-        "profit": 5058.333333333343,
-        "years": 1.5,
-        "cagr": 6.635555976967122
-      }
-    },
-    {
-      "S": {
-        "amount": 50000,
-        "startId": "2025-02",
-        "strat": "ladder",
-        "mat": 5,
-        "donor": false,
-        "reinvest": true
-      },
-      "out": {
-        "finalValue": 55606.45208333334,
-        "profit": 5606.452083333337,
-        "years": 1.5,
-        "cagr": 7.342108365729505
+        "finalValue": 61608.33333333334,
+        "profit": 11608.333333333343,
+        "years": 5,
+        "cagr": 4.263882101364791
       }
     },
     {
@@ -359,13 +534,48 @@
         "strat": "ladder",
         "mat": 5,
         "donor": true,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
         "finalValue": 53975,
         "profit": 3975,
-        "years": 1.5,
-        "cagr": 5.232146982293151
+        "years": 1,
+        "cagr": 7.94999999999999
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-02",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 65916.66666666667,
+        "profit": 15916.666666666672,
+        "years": 7,
+        "cagr": 4.02709286116858
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-02",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 68904.96018333333,
+        "profit": 18904.96018333333,
+        "years": 5,
+        "cagr": 6.624276273141305
       }
     },
     {
@@ -375,13 +585,31 @@
         "strat": "ladder",
         "mat": 5,
         "donor": true,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 55904.606250000004,
-        "profit": 5904.606250000004,
-        "years": 1.5,
-        "cagr": 7.7254687252338305
+        "finalValue": 70700.66505000001,
+        "profit": 20700.66505000001,
+        "years": 5,
+        "cagr": 7.17431068687413
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-02",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 70375.06866666666,
+        "profit": 20375.06866666666,
+        "years": 8,
+        "cagr": 4.3652946107864965
       }
     },
     {
@@ -391,29 +619,14 @@
         "strat": "single",
         "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 55524.99999999941,
-        "profit": 5524.999999999411,
-        "years": 1.416666666666515,
-        "cagr": 7.678934694007422
-      }
-    },
-    {
-      "S": {
-        "amount": 50000,
-        "startId": "2025-03",
-        "strat": "single",
-        "mat": 5,
-        "donor": false,
-        "reinvest": true
-      },
-      "out": {
-        "finalValue": 55524.99999999941,
-        "profit": 5524.999999999411,
-        "years": 1.416666666666515,
-        "cagr": 7.678934694007422
+        "finalValue": 69500,
+        "profit": 19500,
+        "years": 5,
+        "cagr": 6.8077976341520685
       }
     },
     {
@@ -423,13 +636,48 @@
         "strat": "single",
         "mat": 5,
         "donor": true,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
         "finalValue": 53900,
         "profit": 3900,
-        "years": 1.416666666666515,
-        "cagr": 5.444761212351423
+        "years": 1,
+        "cagr": 7.800000000000007
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-03",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 71000,
+        "profit": 21000,
+        "years": 7,
+        "cagr": 5.136975102490515
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-03",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 69500,
+        "profit": 19500,
+        "years": 5,
+        "cagr": 6.8077976341520685
       }
     },
     {
@@ -439,13 +687,31 @@
         "strat": "single",
         "mat": 5,
         "donor": true,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 55449.62499999943,
-        "profit": 5449.6249999994325,
-        "years": 1.416666666666515,
-        "cagr": 7.575732584635375
+        "finalValue": 70293.5772,
+        "profit": 20293.5772,
+        "years": 5,
+        "cagr": 7.050605503178375
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-03",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 71000,
+        "profit": 21000,
+        "years": 7,
+        "cagr": 5.136975102490515
       }
     },
     {
@@ -455,29 +721,14 @@
         "strat": "ladder",
         "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54745.83333333295,
-        "profit": 4745.83333333295,
-        "years": 1.416666666666515,
-        "cagr": 6.610112084151787
-      }
-    },
-    {
-      "S": {
-        "amount": 50000,
-        "startId": "2025-03",
-        "strat": "ladder",
-        "mat": 5,
-        "donor": false,
-        "reinvest": true
-      },
-      "out": {
-        "finalValue": 55183.416666666126,
-        "profit": 5183.416666666126,
-        "years": 1.416666666666515,
-        "cagr": 7.210914115474942
+        "finalValue": 61383.33333333334,
+        "profit": 11383.333333333343,
+        "years": 5,
+        "cagr": 4.187614109967641
       }
     },
     {
@@ -487,13 +738,48 @@
         "strat": "ladder",
         "mat": 5,
         "donor": true,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
         "finalValue": 53900,
         "profit": 3900,
-        "years": 1.416666666666515,
-        "cagr": 5.444761212351423
+        "years": 1,
+        "cagr": 7.800000000000007
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-03",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 65250,
+        "profit": 15250,
+        "years": 7,
+        "cagr": 3.876136257177598
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-03",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 68563.68373333334,
+        "profit": 18563.68373333334,
+        "years": 5,
+        "cagr": 6.518447433227981
       }
     },
     {
@@ -503,13 +789,235 @@
         "strat": "ladder",
         "mat": 5,
         "donor": true,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 55449.62499999944,
-        "profit": 5449.62499999944,
-        "years": 1.416666666666515,
-        "cagr": 7.575732584635375
+        "finalValue": 70293.57720000001,
+        "profit": 20293.577200000014,
+        "years": 5,
+        "cagr": 7.050605503178398
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-03",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 69687.76125000001,
+        "profit": 19687.76125000001,
+        "years": 8,
+        "cagr": 4.237338402007085
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-04",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 69000,
+        "profit": 19000,
+        "years": 5,
+        "cagr": 6.653673185724296
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-04",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 53800,
+        "profit": 3800,
+        "years": 1,
+        "cagr": 7.600000000000007
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-04",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 71000,
+        "profit": 21000,
+        "years": 7,
+        "cagr": 5.136975102490515
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-04",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 69000,
+        "profit": 19000,
+        "years": 5,
+        "cagr": 6.653673185724296
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-04",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 71026.3296,
+        "profit": 21026.329599999997,
+        "years": 5,
+        "cagr": 7.272863486426928
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-04",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 71000,
+        "profit": 21000,
+        "years": 7,
+        "cagr": 5.136975102490515
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-04",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 61083.333333333336,
+        "profit": 11083.333333333336,
+        "years": 5,
+        "cagr": 4.0855747904501305
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-04",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 53800.00000000001,
+        "profit": 3800.0000000000073,
+        "years": 1,
+        "cagr": 7.600000000000007
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-04",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 65200,
+        "profit": 15200,
+        "years": 7,
+        "cagr": 3.8647612964636258
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-04",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 68522.52853333333,
+        "profit": 18522.52853333333,
+        "years": 5,
+        "cagr": 6.505656869209497
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-04",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 71026.32960000001,
+        "profit": 21026.329600000012,
+        "years": 5,
+        "cagr": 7.272863486426928
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-04",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 69625.3768,
+        "profit": 19625.3768,
+        "years": 8,
+        "cagr": 4.225669679352673
       }
     },
     {
@@ -519,29 +1027,14 @@
         "strat": "single",
         "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54875,
-        "profit": 4875,
-        "years": 1.25,
-        "cagr": 7.7267661938557275
-      }
-    },
-    {
-      "S": {
-        "amount": 50000,
-        "startId": "2025-05",
-        "strat": "single",
-        "mat": 5,
-        "donor": false,
-        "reinvest": true
-      },
-      "out": {
-        "finalValue": 54875,
-        "profit": 4875,
-        "years": 1.25,
-        "cagr": 7.7267661938557275
+        "finalValue": 69500,
+        "profit": 19500,
+        "years": 5,
+        "cagr": 6.8077976341520685
       }
     },
     {
@@ -551,13 +1044,48 @@
         "strat": "single",
         "mat": 5,
         "donor": true,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
         "finalValue": 53875,
         "profit": 3875,
-        "years": 1.25,
-        "cagr": 6.1533790455728266
+        "years": 1,
+        "cagr": 7.74999999999999
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-05",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 71875,
+        "profit": 21875,
+        "years": 7,
+        "cagr": 5.321105161798112
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-05",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 69500,
+        "profit": 19500,
+        "years": 5,
+        "cagr": 6.8077976341520685
       }
     },
     {
@@ -567,13 +1095,31 @@
         "strat": "single",
         "mat": 5,
         "donor": true,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54871.6875,
-        "profit": 4871.6875,
-        "years": 1.25,
-        "cagr": 7.721563867592107
+        "finalValue": 70878.381,
+        "profit": 20878.380999999994,
+        "years": 5,
+        "cagr": 7.22813610071571
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-05",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 71875,
+        "profit": 21875,
+        "years": 7,
+        "cagr": 5.321105161798112
       }
     },
     {
@@ -583,29 +1129,14 @@
         "strat": "ladder",
         "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54291.66666666667,
-        "profit": 4291.6666666666715,
-        "years": 1.25,
-        "cagr": 6.809660768292702
-      }
-    },
-    {
-      "S": {
-        "amount": 50000,
-        "startId": "2025-05",
-        "strat": "ladder",
-        "mat": 5,
-        "donor": false,
-        "reinvest": true
-      },
-      "out": {
-        "finalValue": 54576.33333333334,
-        "profit": 4576.333333333343,
-        "years": 1.25,
-        "cagr": 7.257453116820134
+        "finalValue": 61325,
+        "profit": 11325,
+        "years": 5,
+        "cagr": 4.167804425278754
       }
     },
     {
@@ -615,13 +1146,48 @@
         "strat": "ladder",
         "mat": 5,
         "donor": true,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
         "finalValue": 53875.00000000001,
         "profit": 3875.0000000000073,
-        "years": 1.25,
-        "cagr": 6.153379045572849
+        "years": 1,
+        "cagr": 7.750000000000012
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-05",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 65866.66666666667,
+        "profit": 15866.666666666672,
+        "years": 7,
+        "cagr": 4.015816618458201
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-05",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 68697.22733333334,
+        "profit": 18697.227333333343,
+        "years": 5,
+        "cagr": 6.559908996024966
       }
     },
     {
@@ -631,13 +1197,31 @@
         "strat": "ladder",
         "mat": 5,
         "donor": true,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54871.687500000015,
-        "profit": 4871.687500000015,
-        "years": 1.25,
-        "cagr": 7.721563867592129
+        "finalValue": 70878.38100000001,
+        "profit": 20878.38100000001,
+        "years": 5,
+        "cagr": 7.22813610071571
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-05",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 70312.68421666668,
+        "profit": 20312.684216666676,
+        "years": 8,
+        "cagr": 4.353725709211553
       }
     },
     {
@@ -645,15 +1229,16 @@
         "amount": 50000,
         "startId": "2025-06",
         "strat": "single",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54637.499999999396,
-        "profit": 4637.499999999396,
-        "years": 1.166666666666515,
-        "cagr": 7.899104813455793
+        "finalValue": 65400,
+        "profit": 15400,
+        "years": 4,
+        "cagr": 6.9428948757075615
       }
     },
     {
@@ -661,15 +1246,16 @@
         "amount": 50000,
         "startId": "2025-06",
         "strat": "single",
-        "mat": 6,
-        "donor": false,
-        "reinvest": true
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54637.499999999396,
-        "profit": 4637.499999999396,
-        "years": 1.166666666666515,
-        "cagr": 7.899104813455793
+        "finalValue": 58350,
+        "profit": 8350,
+        "years": 2,
+        "cagr": 8.027774206451177
       }
     },
     {
@@ -677,15 +1263,16 @@
         "amount": 50000,
         "startId": "2025-06",
         "strat": "single",
-        "mat": 6,
-        "donor": true,
-        "reinvest": false
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
       },
       "out": {
-        "finalValue": 54870.8333333327,
-        "profit": 4870.833333332703,
-        "years": 1.166666666666515,
-        "cagr": 8.293948079010715
+        "finalValue": 64000,
+        "profit": 14000,
+        "years": 5,
+        "cagr": 5.061112176150684
       }
     },
     {
@@ -693,15 +1280,50 @@
         "amount": 50000,
         "startId": "2025-06",
         "strat": "single",
-        "mat": 6,
-        "donor": true,
-        "reinvest": true
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54870.8333333327,
-        "profit": 4870.833333332703,
-        "years": 1.166666666666515,
-        "cagr": 8.293948079010715
+        "finalValue": 83319.6,
+        "profit": 33319.600000000006,
+        "years": 8,
+        "cagr": 6.59139511875837
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-06",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76631.98860000001,
+        "profit": 26631.98860000001,
+        "years": 6,
+        "cagr": 7.375866591179014
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-06",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 79360,
+        "profit": 29360,
+        "years": 10,
+        "cagr": 4.728085758143563
       }
     },
     {
@@ -709,15 +1331,16 @@
         "amount": 50000,
         "startId": "2025-06",
         "strat": "ladder",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54472.22222222164,
-        "profit": 4472.222222221637,
-        "years": 1.166666666666515,
-        "cagr": 7.619278446606326
+        "finalValue": 65533.33333333334,
+        "profit": 15533.333333333343,
+        "years": 6,
+        "cagr": 4.612129417699418
       }
     },
     {
@@ -725,15 +1348,16 @@
         "amount": 50000,
         "startId": "2025-06",
         "strat": "ladder",
-        "mat": 6,
-        "donor": false,
-        "reinvest": true
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54472.22222222164,
-        "profit": 4472.222222221637,
-        "years": 1.166666666666515,
-        "cagr": 7.619278446606326
+        "finalValue": 58350,
+        "profit": 8350,
+        "years": 2,
+        "cagr": 8.027774206451177
       }
     },
     {
@@ -741,15 +1365,16 @@
         "amount": 50000,
         "startId": "2025-06",
         "strat": "ladder",
-        "mat": 6,
-        "donor": true,
-        "reinvest": false
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
       },
       "out": {
-        "finalValue": 54870.8333333327,
-        "profit": 4870.833333332703,
-        "years": 1.166666666666515,
-        "cagr": 8.293948079010715
+        "finalValue": 63550,
+        "profit": 13550,
+        "years": 7,
+        "cagr": 3.4851267168788613
       }
     },
     {
@@ -757,15 +1382,254 @@
         "amount": 50000,
         "startId": "2025-06",
         "strat": "ladder",
-        "mat": 6,
-        "donor": true,
-        "reinvest": true
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54870.8333333327,
-        "profit": 4870.833333332703,
-        "years": 1.166666666666515,
-        "cagr": 8.293948079010715
+        "finalValue": 76627.42953333334,
+        "profit": 26627.429533333343,
+        "years": 8,
+        "cagr": 5.481617695175278
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-06",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76631.98860000001,
+        "profit": 26631.98860000001,
+        "years": 6,
+        "cagr": 7.375866591179014
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-06",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 73120.14570000001,
+        "profit": 23120.14570000001,
+        "years": 10,
+        "cagr": 3.8739637736743937
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-07",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 65400,
+        "profit": 15400,
+        "years": 4,
+        "cagr": 6.9428948757075615
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-07",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 58250,
+        "profit": 8250,
+        "years": 2,
+        "cagr": 7.9351657246145235
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-07",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 63750,
+        "profit": 13750,
+        "years": 5,
+        "cagr": 4.978904632428516
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-07",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 83319.6,
+        "profit": 33319.600000000006,
+        "years": 8,
+        "cagr": 6.59139511875837
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-07",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76500.657,
+        "profit": 26500.657000000007,
+        "years": 6,
+        "cagr": 7.345174611135441
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-07",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 79050,
+        "profit": 29050,
+        "years": 10,
+        "cagr": 4.687104260164299
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-07",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 65500,
+        "profit": 15500,
+        "years": 6,
+        "cagr": 4.603259096623269
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-07",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 58250,
+        "profit": 8250,
+        "years": 2,
+        "cagr": 7.9351657246145235
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-07",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 63066.66666666667,
+        "profit": 13066.666666666672,
+        "years": 7,
+        "cagr": 3.372321012977819
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-07",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76585.167,
+        "profit": 26585.167,
+        "years": 8,
+        "cagr": 5.474343869636589
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-07",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76500.657,
+        "profit": 26500.657000000007,
+        "years": 6,
+        "cagr": 7.345174611135441
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-07",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 72575.53086666667,
+        "profit": 22575.530866666668,
+        "years": 10,
+        "cagr": 3.796335631454051
       }
     },
     {
@@ -773,15 +1637,16 @@
         "amount": 50000,
         "startId": "2025-08",
         "strat": "single",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53950,
-        "profit": 3950,
-        "years": 1,
-        "cagr": 7.899999999999996
+        "finalValue": 65300,
+        "profit": 15300,
+        "years": 4,
+        "cagr": 6.901991102735416
       }
     },
     {
@@ -789,15 +1654,16 @@
         "amount": 50000,
         "startId": "2025-08",
         "strat": "single",
-        "mat": 6,
-        "donor": false,
-        "reinvest": true
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53950,
-        "profit": 3950,
-        "years": 1,
-        "cagr": 7.899999999999996
+        "finalValue": 58200,
+        "profit": 8200,
+        "years": 2,
+        "cagr": 7.888831674089425
       }
     },
     {
@@ -805,15 +1671,16 @@
         "amount": 50000,
         "startId": "2025-08",
         "strat": "single",
-        "mat": 6,
-        "donor": true,
-        "reinvest": false
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
       },
       "out": {
-        "finalValue": 54100,
-        "profit": 4100,
-        "years": 1,
-        "cagr": 8.200000000000006
+        "finalValue": 63125,
+        "profit": 13125,
+        "years": 5,
+        "cagr": 4.772251642204761
       }
     },
     {
@@ -821,15 +1688,50 @@
         "amount": 50000,
         "startId": "2025-08",
         "strat": "single",
-        "mat": 6,
-        "donor": true,
-        "reinvest": true
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54100,
-        "profit": 4100,
-        "years": 1,
-        "cagr": 8.200000000000006
+        "finalValue": 83192.2,
+        "profit": 33192.2,
+        "years": 8,
+        "cagr": 6.571008503937437
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-08",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76434.99119999999,
+        "profit": 26434.99119999999,
+        "years": 6,
+        "cagr": 7.329812152312676
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-08",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 78275,
+        "profit": 28275,
+        "years": 10,
+        "cagr": 4.584014213694965
       }
     },
     {
@@ -837,15 +1739,16 @@
         "amount": 50000,
         "startId": "2025-08",
         "strat": "ladder",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53791.66666666667,
-        "profit": 3791.6666666666715,
-        "years": 1,
-        "cagr": 7.583333333333342
+        "finalValue": 65400.00000000001,
+        "profit": 15400.000000000007,
+        "years": 6,
+        "cagr": 4.576625543758106
       }
     },
     {
@@ -853,15 +1756,16 @@
         "amount": 50000,
         "startId": "2025-08",
         "strat": "ladder",
-        "mat": 6,
-        "donor": false,
-        "reinvest": true
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53791.66666666667,
-        "profit": 3791.6666666666715,
-        "years": 1,
-        "cagr": 7.583333333333342
+        "finalValue": 58200,
+        "profit": 8200,
+        "years": 2,
+        "cagr": 7.888831674089425
       }
     },
     {
@@ -869,15 +1773,16 @@
         "amount": 50000,
         "startId": "2025-08",
         "strat": "ladder",
-        "mat": 6,
-        "donor": true,
-        "reinvest": false
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
       },
       "out": {
-        "finalValue": 54100.00000000001,
-        "profit": 4100.000000000007,
-        "years": 1,
-        "cagr": 8.200000000000006
+        "finalValue": 66241.66666666667,
+        "profit": 16241.666666666672,
+        "years": 10,
+        "cagr": 2.852801304502761
       }
     },
     {
@@ -885,15 +1790,50 @@
         "amount": 50000,
         "startId": "2025-08",
         "strat": "ladder",
-        "mat": 6,
-        "donor": true,
-        "reinvest": true
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 54100.00000000001,
-        "profit": 4100.000000000007,
-        "years": 1,
-        "cagr": 8.200000000000006
+        "finalValue": 76471.56906666668,
+        "profit": 26471.569066666678,
+        "years": 8,
+        "cagr": 5.454775050798655
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-08",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76434.9912,
+        "profit": 26434.991200000004,
+        "years": 6,
+        "cagr": 7.329812152312676
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-08",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 78259.60111676667,
+        "profit": 28259.601116766673,
+        "years": 11,
+        "cagr": 4.156880902110305
       }
     },
     {
@@ -901,15 +1841,16 @@
         "amount": 50000,
         "startId": "2025-09",
         "strat": "single",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53620.83333333273,
-        "profit": 3620.833333332732,
-        "years": 0.9166666666665151,
-        "cagr": 7.925452448983972
+        "finalValue": 65200,
+        "profit": 15200,
+        "years": 4,
+        "cagr": 6.8610403229173
       }
     },
     {
@@ -917,15 +1858,16 @@
         "amount": 50000,
         "startId": "2025-09",
         "strat": "single",
-        "mat": 6,
-        "donor": false,
-        "reinvest": true
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53620.83333333273,
-        "profit": 3620.833333332732,
-        "years": 0.9166666666665151,
-        "cagr": 7.925452448983972
+        "finalValue": 58200,
+        "profit": 8200,
+        "years": 2,
+        "cagr": 7.888831674089425
       }
     },
     {
@@ -933,15 +1875,16 @@
         "amount": 50000,
         "startId": "2025-09",
         "strat": "single",
-        "mat": 6,
-        "donor": true,
-        "reinvest": false
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
       },
       "out": {
-        "finalValue": 53758.33333333271,
-        "profit": 3758.33333333271,
-        "years": 0.9166666666665151,
-        "cagr": 8.227400448513134
+        "finalValue": 63125,
+        "profit": 13125,
+        "years": 5,
+        "cagr": 4.772251642204761
       }
     },
     {
@@ -949,15 +1892,50 @@
         "amount": 50000,
         "startId": "2025-09",
         "strat": "single",
-        "mat": 6,
-        "donor": true,
-        "reinvest": true
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53758.33333333271,
-        "profit": 3758.33333333271,
-        "years": 0.9166666666665151,
-        "cagr": 8.227400448513134
+        "finalValue": 83064.8,
+        "profit": 33064.8,
+        "years": 8,
+        "cagr": 6.550594553351252
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-09",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76434.99119999999,
+        "profit": 26434.99119999999,
+        "years": 6,
+        "cagr": 7.329812152312676
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-09",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 78275,
+        "profit": 28275,
+        "years": 10,
+        "cagr": 4.584014213694965
       }
     },
     {
@@ -965,15 +1943,16 @@
         "amount": 50000,
         "startId": "2025-09",
         "strat": "ladder",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53468.05555555499,
-        "profit": 3468.055555554987,
-        "years": 0.9166666666665151,
-        "cagr": 7.590037225055846
+        "finalValue": 65366.66666666667,
+        "profit": 15366.666666666672,
+        "years": 6,
+        "cagr": 4.567740151197186
       }
     },
     {
@@ -981,15 +1960,16 @@
         "amount": 50000,
         "startId": "2025-09",
         "strat": "ladder",
-        "mat": 6,
-        "donor": false,
-        "reinvest": true
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53468.05555555499,
-        "profit": 3468.055555554987,
-        "years": 0.9166666666665151,
-        "cagr": 7.590037225055846
+        "finalValue": 58200,
+        "profit": 8200,
+        "years": 2,
+        "cagr": 7.888831674089425
       }
     },
     {
@@ -997,15 +1977,16 @@
         "amount": 50000,
         "startId": "2025-09",
         "strat": "ladder",
-        "mat": 6,
-        "donor": true,
-        "reinvest": false
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
       },
       "out": {
-        "finalValue": 53758.33333333272,
-        "profit": 3758.3333333327173,
-        "years": 0.9166666666665151,
-        "cagr": 8.227400448513155
+        "finalValue": 66241.66666666667,
+        "profit": 16241.666666666672,
+        "years": 10,
+        "cagr": 2.852801304502761
       }
     },
     {
@@ -1013,15 +1994,50 @@
         "amount": 50000,
         "startId": "2025-09",
         "strat": "ladder",
-        "mat": 6,
-        "donor": true,
-        "reinvest": true
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53758.33333333272,
-        "profit": 3758.3333333327173,
-        "years": 0.9166666666665151,
-        "cagr": 8.227400448513155
+        "finalValue": 76429.1024,
+        "profit": 26429.102400000003,
+        "years": 8,
+        "cagr": 5.447453046617223
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-09",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76434.9912,
+        "profit": 26434.991200000004,
+        "years": 6,
+        "cagr": 7.329812152312676
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-09",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 78259.60111676667,
+        "profit": 28259.601116766673,
+        "years": 11,
+        "cagr": 4.156880902110305
       }
     },
     {
@@ -1029,15 +2045,16 @@
         "amount": 50000,
         "startId": "2025-10",
         "strat": "single",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53291.666666666366,
-        "profit": 3291.666666666366,
-        "years": 0.8333333333332575,
-        "cagr": 7.951121389407212
+        "finalValue": 65200,
+        "profit": 15200,
+        "years": 4,
+        "cagr": 6.8610403229173
       }
     },
     {
@@ -1045,15 +2062,16 @@
         "amount": 50000,
         "startId": "2025-10",
         "strat": "single",
-        "mat": 6,
-        "donor": false,
-        "reinvest": true
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53291.666666666366,
-        "profit": 3291.666666666366,
-        "years": 0.8333333333332575,
-        "cagr": 7.951121389407212
+        "finalValue": 58200,
+        "profit": 8200,
+        "years": 2,
+        "cagr": 7.888831674089425
       }
     },
     {
@@ -1061,15 +2079,16 @@
         "amount": 50000,
         "startId": "2025-10",
         "strat": "single",
-        "mat": 6,
-        "donor": true,
-        "reinvest": false
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
       },
       "out": {
-        "finalValue": 53416.66666666635,
-        "profit": 3416.6666666663514,
-        "years": 0.8333333333332575,
-        "cagr": 8.255042527029598
+        "finalValue": 63125,
+        "profit": 13125,
+        "years": 5,
+        "cagr": 4.772251642204761
       }
     },
     {
@@ -1077,15 +2096,50 @@
         "amount": 50000,
         "startId": "2025-10",
         "strat": "single",
-        "mat": 6,
-        "donor": true,
-        "reinvest": true
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53416.66666666635,
-        "profit": 3416.6666666663514,
-        "years": 0.8333333333332575,
-        "cagr": 8.255042527029598
+        "finalValue": 83064.8,
+        "profit": 33064.8,
+        "years": 8,
+        "cagr": 6.550594553351252
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-10",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76434.99119999999,
+        "profit": 26434.99119999999,
+        "years": 6,
+        "cagr": 7.329812152312676
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-10",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 78275,
+        "profit": 28275,
+        "years": 10,
+        "cagr": 4.584014213694965
       }
     },
     {
@@ -1093,15 +2147,16 @@
         "amount": 50000,
         "startId": "2025-10",
         "strat": "ladder",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53152.77777777749,
-        "profit": 3152.77777777749,
-        "years": 0.8333333333332575,
-        "cagr": 7.613598425959478
+        "finalValue": 65366.66666666667,
+        "profit": 15366.666666666672,
+        "years": 6,
+        "cagr": 4.567740151197186
       }
     },
     {
@@ -1109,15 +2164,16 @@
         "amount": 50000,
         "startId": "2025-10",
         "strat": "ladder",
-        "mat": 6,
-        "donor": false,
-        "reinvest": true
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53152.77777777749,
-        "profit": 3152.77777777749,
-        "years": 0.8333333333332575,
-        "cagr": 7.613598425959478
+        "finalValue": 58200,
+        "profit": 8200,
+        "years": 2,
+        "cagr": 7.888831674089425
       }
     },
     {
@@ -1125,15 +2181,16 @@
         "amount": 50000,
         "startId": "2025-10",
         "strat": "ladder",
-        "mat": 6,
-        "donor": true,
-        "reinvest": false
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
       },
       "out": {
-        "finalValue": 53416.66666666636,
-        "profit": 3416.6666666663587,
-        "years": 0.8333333333332575,
-        "cagr": 8.255042527029621
+        "finalValue": 67283.33333333334,
+        "profit": 17283.333333333343,
+        "years": 10,
+        "cagr": 3.0134066395474557
       }
     },
     {
@@ -1141,15 +2198,50 @@
         "amount": 50000,
         "startId": "2025-10",
         "strat": "ladder",
-        "mat": 6,
-        "donor": true,
-        "reinvest": true
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 53416.66666666636,
-        "profit": 3416.6666666663587,
-        "years": 0.8333333333332575,
-        "cagr": 8.255042527029621
+        "finalValue": 76429.1024,
+        "profit": 26429.102400000003,
+        "years": 8,
+        "cagr": 5.447453046617223
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-10",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76434.9912,
+        "profit": 26434.991200000004,
+        "years": 6,
+        "cagr": 7.329812152312676
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-10",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 79711.33925530834,
+        "profit": 29711.33925530834,
+        "years": 12,
+        "cagr": 3.9630890357549298
       }
     },
     {
@@ -1157,15 +2249,16 @@
         "amount": 50000,
         "startId": "2025-11",
         "strat": "single",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 52887.5,
-        "profit": 2887.5,
-        "years": 0.75,
-        "cagr": 7.773183594742639
+        "finalValue": 64700,
+        "profit": 14700,
+        "years": 4,
+        "cagr": 6.655576883948733
       }
     },
     {
@@ -1173,15 +2266,16 @@
         "amount": 50000,
         "startId": "2025-11",
         "strat": "single",
-        "mat": 6,
-        "donor": false,
-        "reinvest": true
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 52887.5,
-        "profit": 2887.5,
-        "years": 0.75,
-        "cagr": 7.773183594742639
+        "finalValue": 57950,
+        "profit": 7950,
+        "years": 2,
+        "cagr": 7.656862298694178
       }
     },
     {
@@ -1189,15 +2283,16 @@
         "amount": 50000,
         "startId": "2025-11",
         "strat": "single",
-        "mat": 6,
-        "donor": true,
-        "reinvest": false
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
       },
       "out": {
-        "finalValue": 52981.25,
-        "profit": 2981.25,
-        "years": 0.75,
-        "cagr": 8.027981541804197
+        "finalValue": 62500,
+        "profit": 12500,
+        "years": 5,
+        "cagr": 4.563955259127317
       }
     },
     {
@@ -1205,15 +2300,50 @@
         "amount": 50000,
         "startId": "2025-11",
         "strat": "single",
-        "mat": 6,
-        "donor": true,
-        "reinvest": true
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 52981.25,
-        "profit": 2981.25,
-        "years": 0.75,
-        "cagr": 8.027981541804197
+        "finalValue": 82427.8,
+        "profit": 32427.800000000003,
+        "years": 8,
+        "cagr": 6.448111998485939
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-11",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76106.66219999999,
+        "profit": 26106.66219999999,
+        "years": 6,
+        "cagr": 7.252834476607273
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-11",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 77500,
+        "profit": 27500,
+        "years": 10,
+        "cagr": 4.4800014160264245
       }
     },
     {
@@ -1221,15 +2351,16 @@
         "amount": 50000,
         "startId": "2025-11",
         "strat": "ladder",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 52750,
-        "profit": 2750,
-        "years": 0.75,
-        "cagr": 7.399752244670954
+        "finalValue": 64916.66666666667,
+        "profit": 14916.666666666672,
+        "years": 6,
+        "cagr": 4.447416262189696
       }
     },
     {
@@ -1237,15 +2368,16 @@
         "amount": 50000,
         "startId": "2025-11",
         "strat": "ladder",
-        "mat": 6,
-        "donor": false,
-        "reinvest": true
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 52750,
-        "profit": 2750,
-        "years": 0.75,
-        "cagr": 7.399752244670954
+        "finalValue": 57950,
+        "profit": 7950,
+        "years": 2,
+        "cagr": 7.656862298694178
       }
     },
     {
@@ -1253,15 +2385,16 @@
         "amount": 50000,
         "startId": "2025-11",
         "strat": "ladder",
-        "mat": 6,
-        "donor": true,
-        "reinvest": false
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
       },
       "out": {
-        "finalValue": 52981.25,
-        "profit": 2981.25,
-        "years": 0.75,
-        "cagr": 8.027981541804197
+        "finalValue": 66616.66666666667,
+        "profit": 16616.66666666667,
+        "years": 10,
+        "cagr": 2.9108793950436196
       }
     },
     {
@@ -1269,15 +2402,50 @@
         "amount": 50000,
         "startId": "2025-11",
         "strat": "ladder",
-        "mat": 6,
-        "donor": true,
-        "reinvest": true
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 52981.25,
-        "profit": 2981.25,
-        "years": 0.75,
-        "cagr": 8.027981541804197
+        "finalValue": 75911.11273333334,
+        "profit": 25911.112733333342,
+        "years": 8,
+        "cagr": 5.357854754014935
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-11",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 76106.66219999999,
+        "profit": 26106.66219999999,
+        "years": 6,
+        "cagr": 7.252834476607273
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-11",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 78945.46401201667,
+        "profit": 28945.464012016673,
+        "years": 12,
+        "cagr": 3.879479476048542
       }
     },
     {
@@ -1285,15 +2453,16 @@
         "amount": 50000,
         "startId": "2025-12",
         "strat": "single",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 52499.99999999943,
-        "profit": 2499.9999999994325,
-        "years": 0.6666666666665151,
-        "cagr": 7.592983042575829
+        "finalValue": 64200,
+        "profit": 14200,
+        "years": 4,
+        "cagr": 6.448919108520013
       }
     },
     {
@@ -1301,15 +2470,16 @@
         "amount": 50000,
         "startId": "2025-12",
         "strat": "single",
-        "mat": 6,
-        "donor": false,
-        "reinvest": true
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 52499.99999999943,
-        "profit": 2499.9999999994325,
-        "years": 0.6666666666665151,
-        "cagr": 7.592983042575829
+        "finalValue": 57550,
+        "profit": 7550,
+        "years": 2,
+        "cagr": 7.2846680565308075
       }
     },
     {
@@ -1317,15 +2487,16 @@
         "amount": 50000,
         "startId": "2025-12",
         "strat": "single",
-        "mat": 6,
-        "donor": true,
-        "reinvest": false
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
       },
       "out": {
-        "finalValue": 52516.6666666661,
-        "profit": 2516.6666666660967,
-        "years": 0.6666666666665151,
-        "cagr": 7.644221862440825
+        "finalValue": 61875,
+        "profit": 11875,
+        "years": 5,
+        "cagr": 4.353985782494485
       }
     },
     {
@@ -1333,47 +2504,50 @@
         "amount": 50000,
         "startId": "2025-12",
         "strat": "single",
-        "mat": 6,
-        "donor": true,
-        "reinvest": true
-      },
-      "out": {
-        "finalValue": 52516.6666666661,
-        "profit": 2516.6666666660967,
-        "years": 0.6666666666665151,
-        "cagr": 7.644221862440825
-      }
-    },
-    {
-      "S": {
-        "amount": 50000,
-        "startId": "2025-12",
-        "strat": "ladder",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": true,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 52349.99999999947,
-        "profit": 2349.999999999469,
-        "years": 0.6666666666665151,
-        "cagr": 7.132199781391613
+        "finalValue": 81790.8,
+        "profit": 31790.800000000003,
+        "years": 8,
+        "cagr": 6.344934100554989
       }
     },
     {
       "S": {
         "amount": 50000,
         "startId": "2025-12",
-        "strat": "ladder",
-        "mat": 6,
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75581.3358,
+        "profit": 25581.3358,
+        "years": 6,
+        "cagr": 7.129092623573352
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-12",
+        "strat": "single",
+        "mat": 5,
         "donor": false,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "EUR"
       },
       "out": {
-        "finalValue": 52349.99999999947,
-        "profit": 2349.999999999469,
-        "years": 0.6666666666665151,
-        "cagr": 7.132199781391613
+        "finalValue": 76725,
+        "profit": 26725,
+        "years": 10,
+        "cagr": 4.375048255166036
       }
     },
     {
@@ -1381,15 +2555,16 @@
         "amount": 50000,
         "startId": "2025-12",
         "strat": "ladder",
-        "mat": 6,
-        "donor": true,
-        "reinvest": false
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 52516.6666666661,
-        "profit": 2516.6666666660967,
-        "years": 0.6666666666665151,
-        "cagr": 7.644221862440825
+        "finalValue": 64416.66666666667,
+        "profit": 14416.666666666672,
+        "years": 6,
+        "cagr": 4.312905094338237
       }
     },
     {
@@ -1397,15 +2572,1512 @@
         "amount": 50000,
         "startId": "2025-12",
         "strat": "ladder",
-        "mat": 6,
+        "mat": 5,
         "donor": true,
-        "reinvest": true
+        "reinvest": false,
+        "currency": "RON"
       },
       "out": {
-        "finalValue": 52516.6666666661,
-        "profit": 2516.6666666660967,
-        "years": 0.6666666666665151,
-        "cagr": 7.644221862440825
+        "finalValue": 57550.00000000001,
+        "profit": 7550.000000000007,
+        "years": 2,
+        "cagr": 7.2846680565308075
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-12",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 66166.66666666667,
+        "profit": 16166.666666666672,
+        "years": 10,
+        "cagr": 2.8411501888916613
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-12",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75329.72926666666,
+        "profit": 25329.72926666666,
+        "years": 8,
+        "cagr": 5.256651613429364
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-12",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75581.3358,
+        "profit": 25581.3358,
+        "years": 6,
+        "cagr": 7.129092623573352
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-12",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 78415.93886604167,
+        "profit": 28415.938866041673,
+        "years": 12,
+        "cagr": 3.8212360726712413
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-01",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 64200,
+        "profit": 14200,
+        "years": 4,
+        "cagr": 6.448919108520013
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-01",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 57450,
+        "profit": 7450,
+        "years": 2,
+        "cagr": 7.191417566892921
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-01",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 61875,
+        "profit": 11875,
+        "years": 5,
+        "cagr": 4.353985782494485
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-01",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 81790.8,
+        "profit": 31790.800000000003,
+        "years": 8,
+        "cagr": 6.344934100554989
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-01",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75450.0042,
+        "profit": 25450.004199999996,
+        "years": 6,
+        "cagr": 7.098045204685821
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-01",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 76725,
+        "profit": 26725,
+        "years": 10,
+        "cagr": 4.375048255166036
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-01",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 64383.33333333334,
+        "profit": 14383.333333333343,
+        "years": 6,
+        "cagr": 4.303906784451805
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-01",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 57450,
+        "profit": 7450,
+        "years": 2,
+        "cagr": 7.191417566892921
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-01",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 66166.66666666667,
+        "profit": 16166.666666666672,
+        "years": 10,
+        "cagr": 2.8411501888916613
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-01",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75287.46673333333,
+        "profit": 25287.466733333335,
+        "years": 8,
+        "cagr": 5.249268231982529
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-01",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75450.0042,
+        "profit": 25450.004199999996,
+        "years": 6,
+        "cagr": 7.098045204685821
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-01",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 78415.93886604167,
+        "profit": 28415.938866041673,
+        "years": 12,
+        "cagr": 3.8212360726712413
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 63500,
+        "profit": 13500,
+        "years": 4,
+        "cagr": 6.157560586067756
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 57150,
+        "profit": 7150,
+        "years": 2,
+        "cagr": 6.911178087232761
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 55400,
+        "profit": 5400,
+        "years": 3,
+        "cagr": 3.477657043950244
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 80899,
+        "profit": 30899,
+        "years": 8,
+        "cagr": 6.199297423778605
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75056.0094,
+        "profit": 25056.009399999995,
+        "years": 6,
+        "cagr": 7.004631961816465
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 85183.04000000001,
+        "profit": 35183.04000000001,
+        "years": 13,
+        "cagr": 4.1834422063994126
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 63800,
+        "profit": 13800,
+        "years": 6,
+        "cagr": 4.145804481766269
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 57150,
+        "profit": 7150,
+        "years": 2,
+        "cagr": 6.911178087232761
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 71800,
+        "profit": 21800,
+        "years": 10,
+        "cagr": 3.684883489323343
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 74613.41246666668,
+        "profit": 24613.412466666676,
+        "years": 8,
+        "cagr": 5.13101619940437
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75056.0094,
+        "profit": 25056.009399999995,
+        "years": 6,
+        "cagr": 7.004631961816465
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 79069.74705340002,
+        "profit": 29069.747053400017,
+        "years": 12,
+        "cagr": 3.89309768666235
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-03",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 63200,
+        "profit": 13200,
+        "years": 4,
+        "cagr": 6.03195489117494
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-03",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 56900,
+        "profit": 6900,
+        "years": 2,
+        "cagr": 6.677082824756697
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-03",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 61250,
+        "profit": 11250,
+        "years": 5,
+        "cagr": 4.142312668144399
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-03",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 80516.8,
+        "profit": 30516.800000000003,
+        "years": 8,
+        "cagr": 6.136451289406475
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-03",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 74727.6804,
+        "profit": 24727.680399999997,
+        "years": 6,
+        "cagr": 6.926474925423998
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-03",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 75950,
+        "profit": 25950,
+        "years": 10,
+        "cagr": 4.269136600839762
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-03",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 63466.66666666667,
+        "profit": 13466.666666666672,
+        "years": 6,
+        "cagr": 4.054918683777453
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-03",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 56900,
+        "profit": 6900,
+        "years": 2,
+        "cagr": 6.677082824756697
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-03",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 65500,
+        "profit": 15500,
+        "years": 10,
+        "cagr": 2.7370590757167745
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-03",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 74230.35613333333,
+        "profit": 24230.356133333335,
+        "years": 8,
+        "cagr": 5.0633979197669765
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-03",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 74727.68040000001,
+        "profit": 24727.680400000012,
+        "years": 6,
+        "cagr": 6.926474925423998
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-03",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 77650.06362275,
+        "profit": 27650.063622750007,
+        "years": 12,
+        "cagr": 3.7363550579633253
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-04",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 64200,
+        "profit": 14200,
+        "years": 4,
+        "cagr": 6.448919108520013
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-04",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 57600,
+        "profit": 7600,
+        "years": 2,
+        "cagr": 7.3312629199899115
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-04",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 63125,
+        "profit": 13125,
+        "years": 5,
+        "cagr": 4.772251642204761
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-04",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 81790.8,
+        "profit": 31790.800000000003,
+        "years": 8,
+        "cagr": 6.344934100554989
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-04",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75647.0016,
+        "profit": 25647.001600000003,
+        "years": 6,
+        "cagr": 7.144599477328839
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-04",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 78275,
+        "profit": 28275,
+        "years": 10,
+        "cagr": 4.584014213694965
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-04",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 64533.33333333334,
+        "profit": 14533.333333333343,
+        "years": 6,
+        "cagr": 4.344368652644404
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-04",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 57600,
+        "profit": 7600,
+        "years": 2,
+        "cagr": 7.3312629199899115
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-04",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 67166.66666666667,
+        "profit": 17166.66666666667,
+        "years": 10,
+        "cagr": 2.995530565185822
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-04",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75450.86053333334,
+        "profit": 25450.86053333334,
+        "years": 8,
+        "cagr": 5.277793516914775
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-04",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75647.0016,
+        "profit": 25647.001600000003,
+        "years": 6,
+        "cagr": 7.144599477328839
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-04",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 79614.35601929168,
+        "profit": 29614.356019291678,
+        "years": 12,
+        "cagr": 3.9525423307874563
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-05",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 64000,
+        "profit": 14000,
+        "years": 4,
+        "cagr": 6.365917938899779
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-05",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 57400,
+        "profit": 7400,
+        "years": 2,
+        "cagr": 7.144761887830975
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-05",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 62500,
+        "profit": 12500,
+        "years": 5,
+        "cagr": 4.563955259127317
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-05",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 81536,
+        "profit": 31536,
+        "years": 8,
+        "cagr": 6.303465970701216
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-05",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75384.3384,
+        "profit": 25384.338399999993,
+        "years": 6,
+        "cagr": 7.082504603687134
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-05",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 77500,
+        "profit": 27500,
+        "years": 10,
+        "cagr": 4.4800014160264245
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-05",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 64300.00000000001,
+        "profit": 14300.000000000007,
+        "years": 6,
+        "cagr": 4.281394013098194
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-05",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 57400.00000000001,
+        "profit": 7400.000000000007,
+        "years": 2,
+        "cagr": 7.144761887830997
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-05",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 66583.33333333334,
+        "profit": 16583.333333333343,
+        "years": 10,
+        "cagr": 2.905728829165799
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-05",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75181.40213333335,
+        "profit": 25181.40213333335,
+        "years": 8,
+        "cagr": 5.230722469136717
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-05",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 75384.33840000001,
+        "profit": 25384.338400000008,
+        "years": 6,
+        "cagr": 7.082504603687156
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-05",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 78931.81410933334,
+        "profit": 28931.81410933334,
+        "years": 12,
+        "cagr": 3.8779826018203067
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-06",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 63800,
+        "profit": 13800,
+        "years": 4,
+        "cagr": 6.282722006704122
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-06",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 57350,
+        "profit": 7350,
+        "years": 2,
+        "cagr": 7.0980858839223115
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-06",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 62125,
+        "profit": 12125,
+        "years": 5,
+        "cagr": 4.438176279931971
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-06",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 103552.2488,
+        "profit": 53552.2488,
+        "years": 12,
+        "cagr": 6.254939300341111
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-06",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 98917.21782434161,
+        "profit": 48917.21782434161,
+        "years": 10,
+        "cagr": 7.060727170540848
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-06",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 77035,
+        "profit": 27035,
+        "years": 10,
+        "cagr": 4.4171435115846425
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-06",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 69383.33333333334,
+        "profit": 19383.333333333343,
+        "years": 10,
+        "cagr": 3.3304963691975553
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-06",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 57350,
+        "profit": 7350,
+        "years": 2,
+        "cagr": 7.0980858839223115
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-06",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 65708.33333333334,
+        "profit": 15708.333333333343,
+        "years": 10,
+        "cagr": 2.7696895805806143
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-06",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 94045.13734001254,
+        "profit": 44045.137340012545,
+        "years": 12,
+        "cagr": 5.4056429563713815
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-06",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 98917.2178243416,
+        "profit": 48917.2178243416,
+        "years": 10,
+        "cagr": 7.060727170540848
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-06",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 78026.81410933334,
+        "profit": 28026.81410933334,
+        "years": 12,
+        "cagr": 3.7782052909022035
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-07",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 63700,
+        "profit": 13700,
+        "years": 4,
+        "cagr": 6.241050670717518
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-07",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 57300,
+        "profit": 7300,
+        "years": 2,
+        "cagr": 7.051389528581087
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-07",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 62000,
+        "profit": 12000,
+        "years": 5,
+        "cagr": 4.396114979019283
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-07",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 103389.9412,
+        "profit": 53389.9412,
+        "years": 12,
+        "cagr": 6.241050670717518
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-07",
+        "strat": "single",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 98830.9778785488,
+        "profit": 48830.9778785488,
+        "years": 10,
+        "cagr": 7.051389528581087
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-07",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 76880,
+        "profit": 26880,
+        "years": 10,
+        "cagr": 4.396114979019283
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-07",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 69250,
+        "profit": 19250,
+        "years": 10,
+        "cagr": 3.310622247370776
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-07",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": false,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 57300,
+        "profit": 7300,
+        "years": 2,
+        "cagr": 7.051389528581087
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-07",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": false,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 66283.33333333334,
+        "profit": 16283.333333333343,
+        "years": 10,
+        "cagr": 2.8592690174195745
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-07",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 93880.9096474896,
+        "profit": 43880.90964748961,
+        "years": 12,
+        "cagr": 5.390291820792581
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-07",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": true,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "out": {
+        "finalValue": 98830.97787854879,
+        "profit": 48830.97787854879,
+        "years": 10,
+        "cagr": 7.051389528581087
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-07",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "out": {
+        "finalValue": 78572.13067868333,
+        "profit": 28572.13067868333,
+        "years": 12,
+        "cagr": 3.838453280118137
       }
     }
   ],
@@ -1413,27 +4085,28 @@
     {
       "S": {
         "amount": 50000,
-        "startId": "2025-02",
+        "startId": "2024-10",
         "strat": "single",
         "mat": 5,
         "donor": false,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "RON"
       },
       "res": {
         "blocks": [
           {
             "legs": [
               {
-                "startId": "2025-02",
-                "startLabel": "Feb 2025",
+                "startId": "2024-10",
+                "startLabel": "Oct 2024",
                 "mat": 5,
-                "rate": 7.95,
+                "rate": 7,
                 "principal": 50000,
-                "startY": 2025.0833333333333,
-                "endY": 2030.0833333333333,
-                "couponsPaid": 1,
-                "couponAnnual": 3975,
-                "matured": false
+                "startY": 2024.75,
+                "endY": 2029.75,
+                "couponsPaid": 5,
+                "couponAnnual": 3500,
+                "matured": true
               }
             ],
             "amount": 50000
@@ -1441,10 +4114,10 @@
         ]
       },
       "out": {
-        "finalValue": 55962.5,
-        "profit": 5962.5,
-        "years": 1.5,
-        "cagr": 7.799828196310954
+        "finalValue": 67500,
+        "profit": 17500,
+        "years": 5,
+        "cagr": 6.185875879493463
       }
     },
     {
@@ -1452,9 +4125,48 @@
         "amount": 50000,
         "startId": "2024-10",
         "strat": "single",
-        "mat": 1,
+        "mat": 5,
         "donor": false,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "res": {
+        "blocks": [
+          {
+            "legs": [
+              {
+                "startId": "2024-10",
+                "startLabel": "Oct 2024",
+                "mat": 5,
+                "rate": 5,
+                "principal": 50000,
+                "startY": 2024.75,
+                "endY": 2029.75,
+                "couponsPaid": 5,
+                "couponAnnual": 2500,
+                "matured": true
+              }
+            ],
+            "amount": 50000
+          }
+        ]
+      },
+      "out": {
+        "finalValue": 62500,
+        "profit": 12500,
+        "years": 5,
+        "cagr": 4.563955259127317
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2024-10",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
       },
       "res": {
         "blocks": [
@@ -1465,11 +4177,11 @@
                 "startLabel": "Oct 2024",
                 "mat": 1,
                 "rate": 5.85,
-                "principal": 50000,
+                "principal": 16666.666666666668,
                 "startY": 2024.75,
                 "endY": 2025.75,
                 "couponsPaid": 1,
-                "couponAnnual": 2925,
+                "couponAnnual": 975,
                 "matured": true
               },
               {
@@ -1477,155 +4189,165 @@
                 "startLabel": "Oct 2025",
                 "mat": 2,
                 "rate": 7.2,
-                "principal": 52925,
+                "principal": 17641.666666666668,
                 "startY": 2025.75,
                 "endY": 2027.75,
-                "couponsPaid": 0,
-                "couponAnnual": 3810.6,
-                "matured": false
-              }
-            ],
-            "amount": 50000
-          }
-        ]
-      },
-      "out": {
-        "finalValue": 56100.49999999971,
-        "profit": 6100.499999999709,
-        "years": 1.8333333333332575,
-        "cagr": 6.480710990766547
-      }
-    },
-    {
-      "S": {
-        "amount": 10000,
-        "startId": "2025-02",
-        "strat": "single",
-        "mat": 1,
-        "donor": true,
-        "reinvest": true
-      },
-      "res": {
-        "blocks": [
-          {
-            "legs": [
-              {
-                "startId": "2025-02",
-                "startLabel": "Feb 2025",
-                "mat": 1,
-                "rate": 7.95,
-                "principal": 10000,
-                "startY": 2025.0833333333333,
-                "endY": 2026.0833333333333,
-                "couponsPaid": 1,
-                "couponAnnual": 795,
+                "couponsPaid": 2,
+                "couponAnnual": 1270.2,
                 "matured": true
               },
               {
-                "startId": "2026-02",
-                "startLabel": "Feb 2026",
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
                 "mat": 2,
-                "rate": 7.15,
-                "principal": 10795,
-                "startY": 2026.0833333333333,
-                "endY": 2028.0833333333333,
-                "couponsPaid": 0,
-                "couponAnnual": 771.8425,
-                "matured": false
+                "rate": 6.3,
+                "principal": 20182.06666666667,
+                "startY": 2027.75,
+                "endY": 2029.75,
+                "couponsPaid": 2,
+                "couponAnnual": 1271.4702000000002,
+                "matured": true
               }
             ],
-            "amount": 10000
+            "amount": 16666.666666666668
+          },
+          {
+            "legs": [
+              {
+                "startId": "2024-10",
+                "startLabel": "Oct 2024",
+                "mat": 5,
+                "rate": 7,
+                "principal": 16666.666666666668,
+                "startY": 2024.75,
+                "endY": 2029.75,
+                "couponsPaid": 5,
+                "couponAnnual": 1166.6666666666667,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          },
+          {
+            "legs": [
+              {
+                "startId": "2024-10",
+                "startLabel": "Oct 2024",
+                "mat": 5,
+                "rate": 7,
+                "principal": 16666.666666666668,
+                "startY": 2024.75,
+                "endY": 2029.75,
+                "couponsPaid": 5,
+                "couponAnnual": 1166.6666666666667,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
           }
         ]
       },
       "out": {
-        "finalValue": 11180.92125,
-        "profit": 1180.9212499999994,
-        "years": 1.5,
-        "cagr": 7.7254687252338305
+        "finalValue": 67725.00706666667,
+        "profit": 17725.007066666672,
+        "years": 5,
+        "cagr": 6.25657448174084
       }
     },
     {
       "S": {
-        "amount": 30000,
-        "startId": "2025-02",
+        "amount": 50000,
+        "startId": "2024-10",
         "strat": "ladder",
         "mat": 5,
         "donor": false,
-        "reinvest": true
+        "reinvest": true,
+        "currency": "EUR"
       },
       "res": {
         "blocks": [
           {
             "legs": [
               {
-                "startId": "2025-02",
-                "startLabel": "Feb 2025",
+                "startId": "2024-10",
+                "startLabel": "Oct 2024",
                 "mat": 1,
-                "rate": 6.95,
-                "principal": 10000,
-                "startY": 2025.0833333333333,
-                "endY": 2026.0833333333333,
+                "rate": 3.95,
+                "principal": 16666.666666666668,
+                "startY": 2024.75,
+                "endY": 2025.75,
                 "couponsPaid": 1,
-                "couponAnnual": 695,
+                "couponAnnual": 658.3333333333335,
                 "matured": true
               },
               {
-                "startId": "2026-02",
-                "startLabel": "Feb 2026",
-                "mat": 2,
-                "rate": 6.15,
-                "principal": 10695,
-                "startY": 2026.0833333333333,
-                "endY": 2028.0833333333333,
-                "couponsPaid": 0,
-                "couponAnnual": 657.7425,
-                "matured": false
-              }
-            ],
-            "amount": 10000
-          },
-          {
-            "legs": [
-              {
-                "startId": "2025-02",
-                "startLabel": "Feb 2025",
+                "startId": "2025-10",
+                "startLabel": "Oct 2025",
                 "mat": 3,
-                "rate": 7.65,
-                "principal": 10000,
-                "startY": 2025.0833333333333,
-                "endY": 2028.0833333333333,
-                "couponsPaid": 1,
-                "couponAnnual": 765,
-                "matured": false
+                "rate": 4.15,
+                "principal": 17325,
+                "startY": 2025.75,
+                "endY": 2028.75,
+                "couponsPaid": 3,
+                "couponAnnual": 718.9875,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 3,
+                "rate": 3.9,
+                "principal": 19481.9625,
+                "startY": 2028.75,
+                "endY": 2031.75,
+                "couponsPaid": 3,
+                "couponAnnual": 759.7965375,
+                "matured": true
               }
             ],
-            "amount": 10000
+            "amount": 16666.666666666668
           },
           {
             "legs": [
               {
-                "startId": "2025-02",
-                "startLabel": "Feb 2025",
+                "startId": "2024-10",
+                "startLabel": "Oct 2024",
                 "mat": 5,
-                "rate": 7.95,
-                "principal": 10000,
-                "startY": 2025.0833333333333,
-                "endY": 2030.0833333333333,
-                "couponsPaid": 1,
-                "couponAnnual": 795,
-                "matured": false
+                "rate": 5,
+                "principal": 16666.666666666668,
+                "startY": 2024.75,
+                "endY": 2029.75,
+                "couponsPaid": 5,
+                "couponAnnual": 833.3333333333335,
+                "matured": true
               }
             ],
-            "amount": 10000
+            "amount": 16666.666666666668
+          },
+          {
+            "legs": [
+              {
+                "startId": "2024-10",
+                "startLabel": "Oct 2024",
+                "mat": 5,
+                "rate": 5,
+                "principal": 16666.666666666668,
+                "startY": 2024.75,
+                "endY": 2029.75,
+                "couponsPaid": 5,
+                "couponAnnual": 833.3333333333335,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
           }
         ]
       },
       "out": {
-        "finalValue": 33363.87125,
-        "profit": 3363.8712499999965,
-        "years": 1.5,
-        "cagr": 7.342108365729483
+        "finalValue": 63428.018779166676,
+        "profit": 13428.018779166676,
+        "years": 7,
+        "cagr": 3.456726944787225
       }
     },
     {
@@ -1633,9 +4355,10 @@
         "amount": 50000,
         "startId": "2025-06",
         "strat": "single",
-        "mat": 6,
+        "mat": 5,
         "donor": false,
-        "reinvest": false
+        "reinvest": true,
+        "currency": "RON"
       },
       "res": {
         "blocks": [
@@ -1644,14 +4367,26 @@
               {
                 "startId": "2025-06",
                 "startLabel": "Jun 2025",
-                "mat": 6,
-                "rate": 7.95,
+                "mat": 4,
+                "rate": 7.7,
                 "principal": 50000,
                 "startY": 2025.4166666666667,
-                "endY": 2031.4166666666667,
-                "couponsPaid": 1,
-                "couponAnnual": 3975,
-                "matured": false
+                "endY": 2029.4166666666667,
+                "couponsPaid": 4,
+                "couponAnnual": 3850,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 4,
+                "rate": 6.85,
+                "principal": 65400,
+                "startY": 2029.4166666666667,
+                "endY": 2033.4166666666667,
+                "couponsPaid": 4,
+                "couponAnnual": 4479.9,
+                "matured": true
               }
             ],
             "amount": 50000
@@ -1659,10 +4394,604 @@
         ]
       },
       "out": {
-        "finalValue": 54637.499999999396,
-        "profit": 4637.499999999396,
-        "years": 1.166666666666515,
-        "cagr": 7.899104813455793
+        "finalValue": 83319.6,
+        "profit": 33319.600000000006,
+        "years": 8,
+        "cagr": 6.59139511875837
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-06",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "res": {
+        "blocks": [
+          {
+            "legs": [
+              {
+                "startId": "2025-06",
+                "startLabel": "Jun 2025",
+                "mat": 5,
+                "rate": 5.6,
+                "principal": 50000,
+                "startY": 2025.4166666666667,
+                "endY": 2030.4166666666667,
+                "couponsPaid": 5,
+                "couponAnnual": 2800,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 5,
+                "rate": 4.8,
+                "principal": 64000,
+                "startY": 2030.4166666666667,
+                "endY": 2035.4166666666667,
+                "couponsPaid": 5,
+                "couponAnnual": 3072,
+                "matured": true
+              }
+            ],
+            "amount": 50000
+          }
+        ]
+      },
+      "out": {
+        "finalValue": 79360,
+        "profit": 29360,
+        "years": 10,
+        "cagr": 4.728085758143563
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-06",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "res": {
+        "blocks": [
+          {
+            "legs": [
+              {
+                "startId": "2025-06",
+                "startLabel": "Jun 2025",
+                "mat": 2,
+                "rate": 7.35,
+                "principal": 16666.666666666668,
+                "startY": 2025.4166666666667,
+                "endY": 2027.4166666666667,
+                "couponsPaid": 2,
+                "couponAnnual": 1225,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 2,
+                "rate": 6.3,
+                "principal": 19116.666666666668,
+                "startY": 2027.4166666666667,
+                "endY": 2029.4166666666667,
+                "couponsPaid": 2,
+                "couponAnnual": 1204.35,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 2,
+                "rate": 6.3,
+                "principal": 21525.36666666667,
+                "startY": 2029.4166666666667,
+                "endY": 2031.4166666666667,
+                "couponsPaid": 2,
+                "couponAnnual": 1356.0981,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          },
+          {
+            "legs": [
+              {
+                "startId": "2025-06",
+                "startLabel": "Jun 2025",
+                "mat": 4,
+                "rate": 7.7,
+                "principal": 16666.666666666668,
+                "startY": 2025.4166666666667,
+                "endY": 2029.4166666666667,
+                "couponsPaid": 4,
+                "couponAnnual": 1283.3333333333335,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 4,
+                "rate": 6.85,
+                "principal": 21800,
+                "startY": 2029.4166666666667,
+                "endY": 2033.4166666666667,
+                "couponsPaid": 4,
+                "couponAnnual": 1493.3,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          },
+          {
+            "legs": [
+              {
+                "startId": "2025-06",
+                "startLabel": "Jun 2025",
+                "mat": 6,
+                "rate": 7.95,
+                "principal": 16666.666666666668,
+                "startY": 2025.4166666666667,
+                "endY": 2031.4166666666667,
+                "couponsPaid": 6,
+                "couponAnnual": 1325,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          }
+        ]
+      },
+      "out": {
+        "finalValue": 76627.42953333334,
+        "profit": 26627.429533333343,
+        "years": 8,
+        "cagr": 5.481617695175278
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2025-06",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "res": {
+        "blocks": [
+          {
+            "legs": [
+              {
+                "startId": "2025-06",
+                "startLabel": "Jun 2025",
+                "mat": 2,
+                "rate": 3.9,
+                "principal": 16666.666666666668,
+                "startY": 2025.4166666666667,
+                "endY": 2027.4166666666667,
+                "couponsPaid": 2,
+                "couponAnnual": 650,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 3,
+                "rate": 3.9,
+                "principal": 17966.666666666668,
+                "startY": 2027.4166666666667,
+                "endY": 2030.4166666666667,
+                "couponsPaid": 3,
+                "couponAnnual": 700.7,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 3,
+                "rate": 3.9,
+                "principal": 20068.76666666667,
+                "startY": 2030.4166666666667,
+                "endY": 2033.4166666666667,
+                "couponsPaid": 3,
+                "couponAnnual": 782.6819000000002,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          },
+          {
+            "legs": [
+              {
+                "startId": "2025-06",
+                "startLabel": "Jun 2025",
+                "mat": 5,
+                "rate": 5.6,
+                "principal": 16666.666666666668,
+                "startY": 2025.4166666666667,
+                "endY": 2030.4166666666667,
+                "couponsPaid": 5,
+                "couponAnnual": 933.3333333333333,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 5,
+                "rate": 4.8,
+                "principal": 21333.333333333336,
+                "startY": 2030.4166666666667,
+                "endY": 2035.4166666666667,
+                "couponsPaid": 5,
+                "couponAnnual": 1024.0000000000002,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          },
+          {
+            "legs": [
+              {
+                "startId": "2025-06",
+                "startLabel": "Jun 2025",
+                "mat": 7,
+                "rate": 6.5,
+                "principal": 16666.666666666668,
+                "startY": 2025.4166666666667,
+                "endY": 2032.4166666666667,
+                "couponsPaid": 7,
+                "couponAnnual": 1083.3333333333335,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          }
+        ]
+      },
+      "out": {
+        "finalValue": 73120.14570000001,
+        "profit": 23120.14570000001,
+        "years": 10,
+        "cagr": 3.8739637736743937
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "res": {
+        "blocks": [
+          {
+            "legs": [
+              {
+                "startId": "2026-02",
+                "startLabel": "Feb 2026",
+                "mat": 4,
+                "rate": 6.75,
+                "principal": 50000,
+                "startY": 2026.0833333333333,
+                "endY": 2030.0833333333333,
+                "couponsPaid": 4,
+                "couponAnnual": 3375,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 4,
+                "rate": 6.85,
+                "principal": 63500,
+                "startY": 2030.0833333333333,
+                "endY": 2034.0833333333333,
+                "couponsPaid": 4,
+                "couponAnnual": 4349.75,
+                "matured": true
+              }
+            ],
+            "amount": 50000
+          }
+        ]
+      },
+      "out": {
+        "finalValue": 80899,
+        "profit": 30899,
+        "years": 8,
+        "cagr": 6.199297423778605
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "single",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "res": {
+        "blocks": [
+          {
+            "legs": [
+              {
+                "startId": "2026-02",
+                "startLabel": "Feb 2026",
+                "mat": 3,
+                "rate": 3.6,
+                "principal": 50000,
+                "startY": 2026.0833333333333,
+                "endY": 2029.0833333333333,
+                "couponsPaid": 3,
+                "couponAnnual": 1800,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 5,
+                "rate": 4.8,
+                "principal": 55400,
+                "startY": 2029.0833333333333,
+                "endY": 2034.0833333333333,
+                "couponsPaid": 5,
+                "couponAnnual": 2659.2,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 5,
+                "rate": 4.8,
+                "principal": 68696,
+                "startY": 2034.0833333333333,
+                "endY": 2039.0833333333333,
+                "couponsPaid": 5,
+                "couponAnnual": 3297.408,
+                "matured": true
+              }
+            ],
+            "amount": 50000
+          }
+        ]
+      },
+      "out": {
+        "finalValue": 85183.04000000001,
+        "profit": 35183.04000000001,
+        "years": 13,
+        "cagr": 4.1834422063994126
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "RON"
+      },
+      "res": {
+        "blocks": [
+          {
+            "legs": [
+              {
+                "startId": "2026-02",
+                "startLabel": "Feb 2026",
+                "mat": 2,
+                "rate": 6.15,
+                "principal": 16666.666666666668,
+                "startY": 2026.0833333333333,
+                "endY": 2028.0833333333333,
+                "couponsPaid": 2,
+                "couponAnnual": 1025.0000000000002,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 2,
+                "rate": 6.3,
+                "principal": 18716.666666666668,
+                "startY": 2028.0833333333333,
+                "endY": 2030.0833333333333,
+                "couponsPaid": 2,
+                "couponAnnual": 1179.15,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 2,
+                "rate": 6.3,
+                "principal": 21074.966666666667,
+                "startY": 2030.0833333333333,
+                "endY": 2032.0833333333333,
+                "couponsPaid": 2,
+                "couponAnnual": 1327.7229,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          },
+          {
+            "legs": [
+              {
+                "startId": "2026-02",
+                "startLabel": "Feb 2026",
+                "mat": 4,
+                "rate": 6.75,
+                "principal": 16666.666666666668,
+                "startY": 2026.0833333333333,
+                "endY": 2030.0833333333333,
+                "couponsPaid": 4,
+                "couponAnnual": 1125.0000000000002,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 4,
+                "rate": 6.85,
+                "principal": 21166.666666666668,
+                "startY": 2030.0833333333333,
+                "endY": 2034.0833333333333,
+                "couponsPaid": 4,
+                "couponAnnual": 1449.9166666666665,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          },
+          {
+            "legs": [
+              {
+                "startId": "2026-02",
+                "startLabel": "Feb 2026",
+                "mat": 6,
+                "rate": 7.25,
+                "principal": 16666.666666666668,
+                "startY": 2026.0833333333333,
+                "endY": 2032.0833333333333,
+                "couponsPaid": 6,
+                "couponAnnual": 1208.3333333333335,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          }
+        ]
+      },
+      "out": {
+        "finalValue": 74613.41246666668,
+        "profit": 24613.412466666676,
+        "years": 8,
+        "cagr": 5.13101619940437
+      }
+    },
+    {
+      "S": {
+        "amount": 50000,
+        "startId": "2026-02",
+        "strat": "ladder",
+        "mat": 5,
+        "donor": false,
+        "reinvest": true,
+        "currency": "EUR"
+      },
+      "res": {
+        "blocks": [
+          {
+            "legs": [
+              {
+                "startId": "2026-02",
+                "startLabel": "Feb 2026",
+                "mat": 3,
+                "rate": 3.6,
+                "principal": 16666.666666666668,
+                "startY": 2026.0833333333333,
+                "endY": 2029.0833333333333,
+                "couponsPaid": 3,
+                "couponAnnual": 600.0000000000001,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 3,
+                "rate": 3.9,
+                "principal": 18466.666666666668,
+                "startY": 2029.0833333333333,
+                "endY": 2032.0833333333333,
+                "couponsPaid": 3,
+                "couponAnnual": 720.2,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 3,
+                "rate": 3.9,
+                "principal": 20627.26666666667,
+                "startY": 2032.0833333333333,
+                "endY": 2035.0833333333333,
+                "couponsPaid": 3,
+                "couponAnnual": 804.4634000000001,
+                "matured": true
+              },
+              {
+                "startId": "2026-07",
+                "startLabel": "Jul 2026",
+                "mat": 3,
+                "rate": 3.9,
+                "principal": 23040.65686666667,
+                "startY": 2035.0833333333333,
+                "endY": 2038.0833333333333,
+                "couponsPaid": 3,
+                "couponAnnual": 898.5856178000001,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          },
+          {
+            "legs": [
+              {
+                "startId": "2026-02",
+                "startLabel": "Feb 2026",
+                "mat": 10,
+                "rate": 6,
+                "principal": 16666.666666666668,
+                "startY": 2026.0833333333333,
+                "endY": 2036.0833333333333,
+                "couponsPaid": 10,
+                "couponAnnual": 1000,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          },
+          {
+            "legs": [
+              {
+                "startId": "2026-02",
+                "startLabel": "Feb 2026",
+                "mat": 10,
+                "rate": 6,
+                "principal": 16666.666666666668,
+                "startY": 2026.0833333333333,
+                "endY": 2036.0833333333333,
+                "couponsPaid": 10,
+                "couponAnnual": 1000,
+                "matured": true
+              }
+            ],
+            "amount": 16666.666666666668
+          }
+        ]
+      },
+      "out": {
+        "finalValue": 79069.74705340002,
+        "profit": 29069.747053400017,
+        "years": 12,
+        "cagr": 3.89309768666235
       }
     }
   ]

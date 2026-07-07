@@ -27,9 +27,15 @@
       <label>Data de start</label>
       <div class="seg" id="startSeg" role="group"></div>
 
+      <label>Monedă</label>
+      <div class="seg" id="currencySeg" role="group">
+        <button data-ccy="RON" aria-pressed="true">RON (lei)</button>
+        <button data-ccy="EUR">EUR (euro)</button>
+      </div>
+
       <!-- BACKTESTER CONTROLS -->
       <div id="backtestControls">
-        <label for="amount">Sumă investită (RON)</label>
+        <label for="amount">Sumă investită (<span class="ccyLabel">RON</span>)</label>
         <input type="number" id="amount" value="50000" min="500" step="500" />
 
         <label>Strategie</label>
@@ -43,10 +49,10 @@
           <div class="seg" id="matSeg" role="group"></div>
         </div>
 
-        <label class="check">
+        <label class="check" id="donorWrap">
           <input type="checkbox" id="donor" />
           <span>Donator de sânge
-            <small>+1 punct la dobândă (tranșa specială 2 ani), prag minim 500 lei</small>
+            <small>+1 punct la dobândă (tranșa specială 2 ani), prag minim 500 lei. Doar pentru emisiunile în lei.</small>
           </span>
         </label>
 
@@ -60,7 +66,7 @@
 
       <!-- PLANNER CONTROLS -->
       <div id="planControls" style="display: none">
-        <label for="monthly">Contribuție lunară (RON)</label>
+        <label for="monthly">Contribuție lunară (<span class="ccyLabel">RON</span>)</label>
         <input type="number" id="monthly" value="1000" min="100" step="100" />
 
         <label>Orizont</label>
@@ -78,10 +84,10 @@
           <button data-r="long">Lung</button>
         </div>
 
-        <label class="check">
+        <label class="check" id="donorEligWrap">
           <input type="checkbox" id="donorElig" />
           <span>Sunt donator de sânge
-            <small>Cumpără tranșa specială (~+1 pp) când domină; prag minim 500 lei</small>
+            <small>Cumpără tranșa specială (~+1 pp) când domină; prag minim 500 lei. Doar pentru emisiunile în lei.</small>
           </span>
         </label>
 

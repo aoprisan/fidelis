@@ -1,5 +1,12 @@
-import { END } from "../data/history";
-import { byId, couponFor, idToYear, issuanceAtOrAfter, matsAt } from "./history";
+import type { Currency } from "../data/history";
+import {
+  byId,
+  couponFor,
+  idToYear,
+  issuanceAtOrAfter,
+  matsAt,
+  maxMatAt,
+} from "./history";
 
 /** Investment strategy. */
 export type Strategy = "single" | "ladder";
@@ -12,6 +19,7 @@ export interface SimParams {
   mat: number;
   donor: boolean;
   reinvest: boolean;
+  currency: Currency;
 }
 
 /** One holding period: principal held to maturity paying an annual coupon. */
@@ -23,10 +31,10 @@ export interface Leg {
   principal: number;
   startY: number;
   endY: number;
-  /** Whole coupons actually paid before the horizon. */
+  /** Whole coupons paid over the term (equals `mat`, since legs are held to maturity). */
   couponsPaid: number;
   couponAnnual: number;
-  /** Whether the leg fully matured within the horizon. */
+  /** Whether the leg fully matured (always true — legs are held to maturity). */
   matured: boolean;
 }
 
@@ -50,11 +58,17 @@ export interface Summary {
 }
 
 /**
- * Core simulation: a deterministic reducer over successive issuances.
+ * Core simulation: a deterministic reducer over successive issuances, held to
+ * maturity.
  *
- * A leg holds `principal` to maturity, paying an annual (tax-free) coupon. At
- * maturity, if reinvesting, principal plus all coupons compound into the next
- * equivalent issuance. Returns the ordered chain of legs.
+ * A leg holds `principal` to maturity, paying an annual (tax-free) coupon; every
+ * leg runs to its full term, so all its coupons are paid. When `reinvest` is on,
+ * at each maturity the principal plus all coupons compound into the edition
+ * current at that moment, and the chain keeps rolling until it reaches the
+ * horizon target — the longest maturity available at the start issuance (so a
+ * short bought bond is shown rolled out over a comparable span). Past the last
+ * real issuance the terms of the final known edition are reused (frozen rates),
+ * mirroring the forward planner. Returns the ordered chain of legs.
  */
 export function simulateLeg(
   startId: string,
@@ -62,67 +76,57 @@ export function simulateLeg(
   targetMat: number,
   donor: boolean,
   reinvest: boolean,
+  currency: Currency = "RON",
 ): Leg[] {
   const legs: Leg[] = [];
-  let curId = startId;
+  let startY = idToYear(startId);
+  let editionId = startId;
   let cap = principal;
+  // Reinvestment horizon: hold roughly one longest-bond span from the start.
+  const target = idToYear(startId) + maxMatAt(startId, currency);
   let guard = 0;
   while (guard++ < 12) {
-    const h = byId[curId];
-    if (!h) break;
-    const { rate, mat } = couponFor(curId, targetMat, donor);
-    const startY = idToYear(curId);
+    const ed = byId[editionId];
+    if (!ed) break;
+    const { rate, mat } = couponFor(editionId, targetMat, donor, currency);
     const endY = startY + mat;
-    // coupons actually paid before the horizon
-    const couponsPaid = Math.max(0, Math.min(mat, Math.floor(END - startY)));
     const couponAnnual = (cap * rate) / 100;
     legs.push({
-      startId: curId,
-      startLabel: h.label,
+      startId: editionId,
+      startLabel: ed.label,
       mat,
       rate,
       principal: cap,
       startY,
       endY,
-      couponsPaid,
+      // Held to maturity: every scheduled coupon is paid.
+      couponsPaid: mat,
       couponAnnual,
-      matured: endY <= END,
+      matured: true,
     });
-    if (!reinvest || endY > END) break;
-    // roll over: capital + all coupons compounded
+    if (!reinvest || endY >= target - 1e-9) break;
+    // roll over: capital + all coupons compounded, reinvested at maturity
     cap = cap + couponAnnual * mat;
-    curId = issuanceAtOrAfter(endY).id;
-    if (idToYear(curId) < endY - 0.001) break;
-    targetMat = donor ? 2 : targetMat;
+    startY = endY;
+    editionId = issuanceAtOrAfter(endY).id;
   }
   return legs;
 }
 
 /**
- * Value today (at the horizon) of a chain of legs.
+ * Value of a chain of legs at its final maturity.
  *
  * Rollover compounds prior coupons into each leg's principal, so the realized
- * value is that of the final leg: a matured leg contributes principal plus all
- * its coupons; a still-running leg contributes principal plus linearly accrued
- * coupon on the elapsed time.
+ * value is that of the final (matured) leg: its principal plus all its coupons.
  */
 export function valueOf(legs: Leg[]): number {
-  let v = 0;
-  for (const leg of legs) {
-    if (leg.matured) {
-      v = leg.principal + leg.couponAnnual * leg.mat;
-    } else {
-      const elapsed = END - leg.startY;
-      const accrued = leg.couponAnnual * elapsed;
-      v = leg.principal + accrued;
-    }
-  }
-  return v;
+  const last = legs[legs.length - 1];
+  return last ? last.principal + last.couponAnnual * last.mat : 0;
 }
 
 /** Single-issuance strategy: the whole amount in one leg chain. */
 export function runSingle(p: SimParams): SimResult {
-  const legs = simulateLeg(p.startId, p.amount, p.mat, p.donor, p.reinvest);
+  const legs = simulateLeg(p.startId, p.amount, p.mat, p.donor, p.reinvest, p.currency);
   return { blocks: [{ legs, amount: p.amount }] };
 }
 
@@ -131,13 +135,14 @@ export function runSingle(p: SimParams): SimResult {
  * longest maturities available at the start issuance.
  */
 export function runLadder(p: SimParams): SimResult {
-  const mats = matsAt(p.startId);
-  const chosen = p.donor
-    ? [2, 2, 2]
-    : [mats[0], mats[Math.floor(mats.length / 2)], mats[mats.length - 1]];
+  const mats = matsAt(p.startId, p.currency);
+  const chosen =
+    p.donor && p.currency === "RON"
+      ? [2, 2, 2]
+      : [mats[0], mats[Math.floor(mats.length / 2)], mats[mats.length - 1]];
   const per = p.amount / 3;
   const blocks = chosen.map((m) => ({
-    legs: simulateLeg(p.startId, per, m, p.donor, p.reinvest),
+    legs: simulateLeg(p.startId, per, m, p.donor, p.reinvest, p.currency),
     amount: per,
   }));
   return { blocks };
@@ -155,13 +160,28 @@ export function finalValueOf(res: SimResult): number {
   return finalValue;
 }
 
+/**
+ * The run's horizon (decimal year): the latest maturity across all blocks. With
+ * a ladder, shorter rungs mature earlier and — if not reinvested — sit as cash
+ * until the longest rung matures; the CAGR is measured against this horizon.
+ */
+export function horizonOf(res: SimResult): number {
+  let end = -Infinity;
+  for (const b of res.blocks)
+    for (const leg of b.legs) end = Math.max(end, leg.endY);
+  return end === -Infinity ? 0 : end;
+}
+
 /** Compute headline figures (final value, profit, horizon years, CAGR). */
 export function summarize(p: SimParams): Summary {
   const res = run(p);
   const invested = p.amount;
   const finalValue = finalValueOf(res);
   const profit = finalValue - invested;
-  const years = END - idToYear(p.startId);
-  const cagr = years > 0 ? (Math.pow(finalValue / invested, 1 / years) - 1) * 100 : 0;
+  const years = horizonOf(res) - idToYear(p.startId);
+  const cagr =
+    years > 0 && invested > 0
+      ? (Math.pow(finalValue / invested, 1 / years) - 1) * 100
+      : 0;
   return { finalValue, profit, years, cagr };
 }

@@ -17,6 +17,7 @@ const base: PlanParams = {
   risk: "balanced",
   donorEligible: false,
   reinvest: true,
+  currency: "RON",
 };
 
 describe("pickMaturity", () => {
@@ -174,6 +175,25 @@ describe("plan — donor edge", () => {
     expect(r.donorUsedCount).toBe(0);
     expect(r.donorBlockedCount).toBeGreaterThan(0);
     r.purchases.forEach((b) => expect(b.donor).toBe(false));
+  });
+});
+
+describe("plan — EUR currency", () => {
+  it("buys from the EUR tranche table and never fires the donor tranche", () => {
+    // Aug 2025 EUR = {2:3.10, 5:5.25, 10:6.50}; balanced pick = 5y @ 5.25.
+    const r = plan({
+      ...base,
+      startId: "2025-08",
+      horizonYears: 1 / 12,
+      risk: "balanced",
+      currency: "EUR",
+      donorEligible: true, // ignored: donor tranches are RON-only
+    });
+    expect(r.purchases[0].rate).toBeCloseTo(5.25, 9);
+    expect(r.purchases[0].mat).toBe(5);
+    expect(r.purchases[0].donor).toBe(false);
+    expect(r.donorUsedCount).toBe(0);
+    expect(r.donorBlockedCount).toBe(0);
   });
 });
 

@@ -32,6 +32,9 @@
  * NOTE: verify the official final terms on `sourceUrl` before subscribing.
  */
 
+/** Currency a tranche is denominated in. Donor tranches exist only for RON. */
+export type Currency = "RON" | "EUR";
+
 /** Official Ministry of Finance program page for Fidelis government bonds. */
 export const MF_SOURCE =
   "https://mfinante.gov.ro/ro/web/trezor/titluri-de-stat-fidelis";

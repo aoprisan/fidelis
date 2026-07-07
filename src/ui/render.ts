@@ -1,7 +1,6 @@
-import { END } from "../data/history";
 import { idToYear } from "../sim/history";
 import { DONOR_MIN, plan, type PlanParams } from "../sim/planner";
-import { finalValueOf, run, type Leg, type SimParams } from "../sim/simulate";
+import { horizonOf, run, summarize, type Leg, type SimParams } from "../sim/simulate";
 import { fmt, fmt2 } from "./format";
 
 /** DOM targets the render layer writes into. */
@@ -54,21 +53,26 @@ function timelineHTML(
       .join("")}</div></div>${extra}`;
 }
 
-function headlineHTML(finalValue: number, profit: number, cagr: number): string {
+function headlineHTML(
+  finalValue: number,
+  profit: number,
+  cagr: number,
+  ccy: string,
+): string {
   return `
-    <div class="stat"><div class="k">Valoare azi</div><div class="v gold num">${fmt(finalValue)} RON</div></div>
-    <div class="stat"><div class="k">Câștig net (neimpozabil)</div><div class="v pos num">+${fmt(profit)} RON</div></div>
+    <div class="stat"><div class="k">Valoare la scadență</div><div class="v gold num">${fmt(finalValue)} ${ccy}</div></div>
+    <div class="stat"><div class="k">Câștig net (neimpozabil)</div><div class="v pos num">+${fmt(profit)} ${ccy}</div></div>
     <div class="stat"><div class="k">Randament anualizat</div><div class="v num">${fmt2(cagr)}%</div></div>`;
 }
 
-function vizHTML(allLegs: Leg[], startId: string): string {
+function vizHTML(allLegs: Leg[], startId: string, maxY: number): string {
   const bars: TimelineBar[] = allLegs.map((leg) => ({
     label: `${leg.startLabel} · ${leg.mat}a`,
     startY: leg.startY,
     endY: leg.endY,
     text: `${leg.rate}%`,
   }));
-  return timelineHTML("Cronologie emisiuni & maturități", bars, idToYear(startId), END);
+  return timelineHTML("Cronologie emisiuni & maturități", bars, idToYear(startId), maxY);
 }
 
 function detailHTML(allLegs: Leg[]): string {
@@ -95,25 +99,22 @@ function detailHTML(allLegs: Leg[]): string {
 /** Run the simulation for the given params and paint the results. */
 export function render(params: SimParams, els: RenderTargets): void {
   const res = run(params);
-  const invested = params.amount;
-  const finalValue = finalValueOf(res);
-  const profit = finalValue - invested;
-  const years = END - idToYear(params.startId);
-  const cagr = years > 0 ? (Math.pow(finalValue / invested, 1 / years) - 1) * 100 : 0;
+  const { finalValue, profit, cagr } = summarize(params);
+  const maxY = horizonOf(res);
 
   const allLegs = res.blocks.flatMap((b) => b.legs);
 
-  els.headline.innerHTML = headlineHTML(finalValue, profit, cagr);
-  els.viz.innerHTML = vizHTML(allLegs, params.startId);
+  els.headline.innerHTML = headlineHTML(finalValue, profit, cagr, params.currency);
+  els.viz.innerHTML = vizHTML(allLegs, params.startId, maxY);
   els.detail.innerHTML = detailHTML(allLegs);
 }
 
 // ── Ladder planner ──────────────────────────────────────────────────────────
 
-function planHeadlineHTML(r: ReturnType<typeof plan>): string {
+function planHeadlineHTML(r: ReturnType<typeof plan>, ccy: string): string {
   return `
-    <div class="stat"><div class="k">Valoare la orizont</div><div class="v gold num">${fmt(r.finalValue)} RON</div></div>
-    <div class="stat"><div class="k">Câștig net (neimpozabil)</div><div class="v pos num">+${fmt(r.profit)} RON</div></div>
+    <div class="stat"><div class="k">Valoare la orizont</div><div class="v gold num">${fmt(r.finalValue)} ${ccy}</div></div>
+    <div class="stat"><div class="k">Câștig net (neimpozabil)</div><div class="v pos num">+${fmt(r.profit)} ${ccy}</div></div>
     <div class="stat"><div class="k">Randament (IRR)</div><div class="v num">${fmt2(r.cagr)}%</div></div>`;
 }
 
@@ -122,6 +123,7 @@ function returnsTrackHTML(
   schedule: ReturnType<typeof plan>["schedule"],
   minY: number,
   maxY: number,
+  ccy: string,
 ): string {
   const span = maxY - minY || 1;
   const dots = schedule
@@ -129,7 +131,7 @@ function returnsTrackHTML(
       const left = ((e.year - minY) / span) * 100;
       const cls = e.kind === "principal" ? "rmark principal" : "rmark coupon";
       const kind = e.kind === "principal" ? "capital" : "cupon";
-      return `<div class="${cls}" style="left:${left}%" title="${kind} +${fmt(e.amount)} RON"></div>`;
+      return `<div class="${cls}" style="left:${left}%" title="${kind} +${fmt(e.amount)} ${ccy}"></div>`;
     })
     .join("");
   return `
@@ -169,7 +171,7 @@ function planVizHTML(r: ReturnType<typeof plan>, p: PlanParams): string {
     text: `${b.rate}%`,
     tone: b.donor ? "donor" : undefined,
   }));
-  const returns = returnsTrackHTML(r.schedule, minY, maxY);
+  const returns = returnsTrackHTML(r.schedule, minY, maxY, p.currency);
   return (
     planCalloutHTML(r) +
     timelineHTML("Plan de achiziții (o tranșă / lună)", bars, minY, maxY, returns)
@@ -224,7 +226,7 @@ function yearLabel(y: number): string {
 /** Run the ladder planner for the given params and paint the results. */
 export function renderPlan(params: PlanParams, els: RenderTargets): void {
   const r = plan(params);
-  els.headline.innerHTML = planHeadlineHTML(r);
+  els.headline.innerHTML = planHeadlineHTML(r, params.currency);
   els.viz.innerHTML = planVizHTML(r, params);
   els.detail.innerHTML = planDetailHTML(r);
 }

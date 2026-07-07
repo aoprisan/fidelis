@@ -1,12 +1,14 @@
 /**
  * Regression guard over the full scenario matrix (every start date x strategy x
- * donor x reinvest) plus a few detailed leg dumps. `__fixtures__/golden.json`
- * was originally captured from the ORIGINAL single-file backtester, then
- * deliberately re-baselined onto the CORRECTED MF rate history (commit 641dab5,
- * which fixed several coupons the original app had wrong). It now locks in that
- * corrected baseline: if any of these outputs change, an observed output
- * changed. Regenerate it deliberately (never to silence a failure) when a rate
- * or the math intentionally changes.
+ * donor x reinvest x currency) plus a few detailed leg dumps.
+ * `__fixtures__/golden.json` was originally captured from the ORIGINAL
+ * single-file backtester, re-baselined onto the CORRECTED MF rate history
+ * (commit 641dab5), and then re-baselined again when the backtester moved from a
+ * fixed mid-2026 horizon to the HOLD-TO-MATURITY model and gained EUR tranches
+ * (every leg now runs its full term; the horizon is the run's own last
+ * maturity). It locks in that baseline: if any of these outputs change, an
+ * observed output changed. Regenerate it deliberately (never to silence a
+ * failure) when a rate or the math intentionally changes.
  */
 import { describe, expect, it } from "vitest";
 import { run, summarize, type SimParams } from "./simulate";
@@ -31,7 +33,7 @@ interface Detail {
 const data = golden as unknown as { cases: Case[]; details: Detail[] };
 
 const label = (S: SimParams) =>
-  `${S.startId} ${S.strat} donor=${S.donor} reinvest=${S.reinvest} mat=${S.mat} amount=${S.amount}`;
+  `${S.startId} ${S.currency} ${S.strat} donor=${S.donor} reinvest=${S.reinvest} mat=${S.mat} amount=${S.amount}`;
 
 describe("golden regression — summary figures", () => {
   it.each(data.cases.map((c) => [label(c.S), c] as const))("%s", (_name, c) => {
