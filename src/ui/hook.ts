@@ -9,15 +9,15 @@ export function initHook(): void {
   const host = document.getElementById("hook");
   if (!host) return;
   const latest = HISTORY[HISTORY.length - 1];
-  const mats = Object.keys(latest.ron)
+  const mats = Object.keys(latest.maturities)
     .map(Number)
     .sort((a, b) => a - b);
   const chips = mats
-    .map((m) => `<span class="hook-rate"><b>${latest.ron[m]}%</b> · ${m} ani</span>`)
+    .map((m) => `<span class="hook-rate"><b>${latest.maturities[m]}%</b> · ${m} ani</span>`)
     .join("");
   const donor =
-    latest.donor != null
-      ? `<span class="hook-rate hook-donor"><b>${latest.donor}%</b> · 2 ani, donatori</span>`
+    latest.donorRate != null
+      ? `<span class="hook-rate hook-donor"><b>${latest.donorRate}%</b> · ${latest.donorMaturity ?? 2} ani, donatori</span>`
       : "";
   host.innerHTML = `
     <p class="hook-eyebrow">Ultimele dobânzi cunoscute · ${latest.label}</p>

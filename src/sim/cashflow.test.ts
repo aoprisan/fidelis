@@ -11,6 +11,7 @@ const params = (over: Partial<SimParams> = {}): SimParams => ({
   mat: 1,
   donor: false,
   reinvest: false,
+  currency: "RON",
   ...over,
 });
 
@@ -22,7 +23,7 @@ describe("couponSchedule", () => {
     const principals = events.filter((e) => e.kind === "principal");
     expect(coupons).toHaveLength(1);
     expect(principals).toHaveLength(1);
-    expect(coupons[0].amount).toBeCloseTo((10000 * 6.0) / 100, 9); // Oct 2024, 1y = 6.0%
+    expect(coupons[0].amount).toBeCloseTo((10000 * 5.85) / 100, 9); // Oct 2024, 1y = 5.85%
     expect(coupons[0].t).toBeCloseTo(idToYear("2024-10") + 1, 9);
     expect(principals[0].amount).toBeCloseTo(10000, 9);
     expect(events.every((e) => !e.reinvested)).toBe(true);

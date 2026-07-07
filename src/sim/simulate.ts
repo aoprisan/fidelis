@@ -1,4 +1,4 @@
-import { END } from "../data/history";
+import { END, type Currency } from "../data/history";
 import { byId, couponFor, idToYear, issuanceAtOrAfter, matsAt } from "./history";
 
 /** Investment strategy. */
@@ -12,6 +12,8 @@ export interface SimParams {
   mat: number;
   donor: boolean;
   reinvest: boolean;
+  /** Tranche currency. Donor tranches exist only for RON. */
+  currency: Currency;
   /**
    * Recurring contribution plan: the issuance months in which `amount` is
    * invested (the same amount each month), sorted ascending. When present and
@@ -78,6 +80,7 @@ export function simulateLeg(
   targetMat: number,
   donor: boolean,
   reinvest: boolean,
+  currency: Currency = "RON",
 ): Leg[] {
   const legs: Leg[] = [];
   let curId = startId;
@@ -86,7 +89,7 @@ export function simulateLeg(
   while (guard++ < 12) {
     const h = byId[curId];
     if (!h) break;
-    const { rate, mat } = couponFor(curId, targetMat, donor);
+    const { rate, mat } = couponFor(curId, targetMat, donor, currency);
     const startY = idToYear(curId);
     const endY = startY + mat;
     // coupons actually paid before the horizon
@@ -182,7 +185,7 @@ export function trajectory(res: SimResult): ValuePoint[] {
 
 /** Single-issuance strategy: the whole amount in one leg chain. */
 export function runSingle(p: SimParams): SimResult {
-  const legs = simulateLeg(p.startId, p.amount, p.mat, p.donor, p.reinvest);
+  const legs = simulateLeg(p.startId, p.amount, p.mat, p.donor, p.reinvest, p.currency);
   return { blocks: [{ legs, amount: p.amount }] };
 }
 
@@ -191,13 +194,14 @@ export function runSingle(p: SimParams): SimResult {
  * longest maturities available at the start issuance.
  */
 export function runLadder(p: SimParams): SimResult {
-  const mats = matsAt(p.startId);
-  const chosen = p.donor
-    ? [2, 2, 2]
-    : [mats[0], mats[Math.floor(mats.length / 2)], mats[mats.length - 1]];
+  const mats = matsAt(p.startId, p.currency);
+  const chosen =
+    p.donor && p.currency === "RON"
+      ? [2, 2, 2]
+      : [mats[0], mats[Math.floor(mats.length / 2)], mats[mats.length - 1]];
   const per = p.amount / 3;
   const blocks = chosen.map((m) => ({
-    legs: simulateLeg(p.startId, per, m, p.donor, p.reinvest),
+    legs: simulateLeg(p.startId, per, m, p.donor, p.reinvest, p.currency),
     amount: per,
   }));
   return { blocks };

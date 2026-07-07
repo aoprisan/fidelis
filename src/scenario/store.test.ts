@@ -18,6 +18,7 @@ const params: SimParams = {
   mat: 5,
   donor: false,
   reinvest: true,
+  currency: "RON",
 };
 
 const make = (id: string, name: string, t = 1000): Scenario => ({

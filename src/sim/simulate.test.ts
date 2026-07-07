@@ -34,24 +34,27 @@ describe("matsAt", () => {
 
 describe("couponFor", () => {
   it("returns the exact rate when the target maturity exists", () => {
-    expect(couponFor("2025-02", 5, false)).toEqual({ rate: 7.7, mat: 5 });
-    expect(couponFor("2025-02", 3, false)).toEqual({ rate: 7.4, mat: 3 });
+    expect(couponFor("2025-02", 5, false)).toEqual({ rate: 7.95, mat: 5 });
+    expect(couponFor("2025-02", 3, false)).toEqual({ rate: 7.65, mat: 3 });
   });
 
   it("falls back to the nearest maturity across the 1/3/5 -> 2/4/6 switch", () => {
     // Jun 2025 only offers 2/4/6; a target of 5 snaps to the nearest (4).
-    expect(couponFor("2025-06", 5, false)).toEqual({ rate: 8.0, mat: 4 });
+    expect(couponFor("2025-06", 5, false)).toEqual({ rate: 7.7, mat: 4 });
     // target 1 snaps to 2
-    expect(couponFor("2025-06", 1, false)).toEqual({ rate: 7.6, mat: 2 });
+    expect(couponFor("2025-06", 1, false)).toEqual({ rate: 7.35, mat: 2 });
   });
 
-  it("uses the donor tranche (2y) when donor is set and available", () => {
-    expect(couponFor("2025-02", 5, true)).toEqual({ rate: 8.25, mat: 2 });
+  it("uses the donor tranche at its own maturity when donor is set", () => {
+    // Feb 2025's donor tranche is 1-year @ 7.95%.
+    expect(couponFor("2025-02", 5, true)).toEqual({ rate: 7.95, mat: 1 });
+    // From Jun 2025 the donor tranche moved to 2-year @ 8.35%.
+    expect(couponFor("2025-06", 5, true)).toEqual({ rate: 8.35, mat: 2 });
   });
 
-  it("ignores donor when that issuance has no donor tranche", () => {
-    // Aug 2024 has donor: null
-    expect(couponFor("2024-08", 5, true)).toEqual({ rate: 7.0, mat: 5 });
+  it("ignores donor for EUR (donor tranches are RON-only)", () => {
+    // EUR at Feb 2025 offers 2/7y; target 5 snaps to 7, donor flag has no effect.
+    expect(couponFor("2025-02", 5, true, "EUR")).toEqual({ rate: 6.25, mat: 7 });
   });
 });
 
@@ -62,28 +65,28 @@ describe("issuanceAtOrAfter", () => {
   });
 
   it("returns the last issuance when the year is past the table", () => {
-    expect(issuanceAtOrAfter(2099).id).toBe("2025-12");
+    expect(issuanceAtOrAfter(2099).id).toBe("2026-07");
   });
 });
 
 describe("simulateLeg — coupon math", () => {
   it("computes a single non-maturing leg's annual coupon", () => {
-    // 50000 at 7.70% (Feb 2025, 5y) -> 3850/yr, matures 2030 (> horizon)
+    // 50000 at 7.95% (Feb 2025, 5y) -> 3975/yr, matures 2030 (> horizon)
     const legs = simulateLeg("2025-02", 50000, 5, false, true);
     expect(legs).toHaveLength(1);
-    expect(legs[0].rate).toBe(7.7);
-    expect(legs[0].couponAnnual).toBeCloseTo(3850, 9);
+    expect(legs[0].rate).toBe(7.95);
+    expect(legs[0].couponAnnual).toBeCloseTo(3975, 9);
     expect(legs[0].matured).toBe(false);
     expect(legs[0].couponsPaid).toBe(1);
   });
 
   it("rolls over and compounds coupons on reinvestment", () => {
-    // Oct 2024, 1y at 6.00% -> matures Oct 2025, rolls into next issuance.
+    // Oct 2024, 1y at 5.85% -> matures Oct 2025, rolls into next issuance.
     const legs = simulateLeg("2024-10", 50000, 1, false, true);
     expect(legs.length).toBeGreaterThan(1);
-    // first leg pays 6% of 50000 = 3000; rolled capital = 50000 + 3000 = 53000
-    expect(legs[0].couponAnnual).toBeCloseTo(3000, 9);
-    expect(legs[1].principal).toBeCloseTo(53000, 9);
+    // first leg pays 5.85% of 50000 = 2925; rolled capital = 50000 + 2925 = 52925
+    expect(legs[0].couponAnnual).toBeCloseTo(2925, 9);
+    expect(legs[1].principal).toBeCloseTo(52925, 9);
   });
 
   it("does not roll over when reinvest is false", () => {
@@ -95,15 +98,15 @@ describe("simulateLeg — coupon math", () => {
 describe("valueOf", () => {
   it("values a matured leg as principal plus all coupons", () => {
     const legs = simulateLeg("2024-10", 50000, 1, false, false);
-    // 50000 + 3000*1
-    expect(valueOf(legs)).toBeCloseTo(53000, 9);
+    // 50000 + 2925*1
+    expect(valueOf(legs)).toBeCloseTo(52925, 9);
   });
 
   it("values a running leg with linearly accrued coupon", () => {
     // Feb 2025 5y: elapsed to horizon = END - startY = 1.5 years
     const legs = simulateLeg("2025-02", 50000, 5, false, true);
-    // 50000 + 3850 * 1.5
-    expect(valueOf(legs)).toBeCloseTo(55775, 9);
+    // 50000 + 3975 * 1.5
+    expect(valueOf(legs)).toBeCloseTo(55962.5, 9);
   });
 });
 
@@ -113,8 +116,8 @@ describe("valueAt", () => {
     const startY = legs[0].startY;
     expect(valueAt(legs, startY - 1)).toBeCloseTo(50000, 9);
     expect(valueAt(legs, startY)).toBeCloseTo(50000, 9);
-    // half a year in: 50000 + 3850 * 0.5
-    expect(valueAt(legs, startY + 0.5)).toBeCloseTo(51925, 9);
+    // half a year in: 50000 + 3975 * 0.5
+    expect(valueAt(legs, startY + 0.5)).toBeCloseTo(51987.5, 9);
   });
 
   it("agrees with valueOf at the horizon", () => {
@@ -135,6 +138,7 @@ describe("trajectory", () => {
     mat: 5,
     donor: false,
     reinvest: true,
+    currency: "RON",
   };
 
   it("starts at the invested amount and ends at the final value", () => {
@@ -169,14 +173,15 @@ describe("summarize — CAGR math", () => {
     mat: 5,
     donor: false,
     reinvest: true,
+    currency: "RON",
   };
 
   it("computes final value, profit, horizon years and CAGR", () => {
     const s = summarize(base);
-    expect(s.finalValue).toBeCloseTo(55775, 9);
-    expect(s.profit).toBeCloseTo(5775, 9);
+    expect(s.finalValue).toBeCloseTo(55962.5, 9);
+    expect(s.profit).toBeCloseTo(5962.5, 9);
     expect(s.years).toBeCloseTo(1.5, 12);
-    expect(s.cagr).toBeCloseTo(7.558907681514748, 9);
+    expect(s.cagr).toBeCloseTo(7.799828196310954, 9);
   });
 
   it("CAGR is (final/invested)^(1/years) - 1, in percent", () => {
@@ -185,10 +190,10 @@ describe("summarize — CAGR math", () => {
     expect(s.cagr).toBeCloseTo(expected, 12);
   });
 
-  it("donor 2y tranche summary", () => {
+  it("donor tranche summary", () => {
     const s = summarize({ ...base, amount: 10000, mat: 1, donor: true });
-    expect(s.finalValue).toBeCloseTo(11237.5, 9);
-    expect(s.cagr).toBeCloseTo(8.088577951636754, 9);
+    expect(s.finalValue).toBeCloseTo(11180.92125, 9);
+    expect(s.cagr).toBeCloseTo(7.7254687252338305, 9);
   });
 
   it("ladder splits into three equal tranches", () => {
@@ -196,8 +201,8 @@ describe("summarize — CAGR math", () => {
     expect(res.blocks).toHaveLength(3);
     res.blocks.forEach((b) => expect(b.amount).toBeCloseTo(10000, 9));
     const s = summarize({ ...base, amount: 30000, strat: "ladder" });
-    expect(s.finalValue).toBeCloseTo(32940, 9);
-    expect(s.cagr).toBeCloseTo(6.431020596933856, 9);
+    expect(s.finalValue).toBeCloseTo(33363.87125, 9);
+    expect(s.cagr).toBeCloseTo(7.342108365729483, 9);
   });
 
   it("runSingle produces exactly one block", () => {
@@ -235,6 +240,7 @@ describe("recurring contribution plans", () => {
     mat: 5,
     donor: false,
     reinvest: false,
+    currency: "RON",
     plan: ["2025-02", "2025-03"],
   };
 
@@ -251,9 +257,9 @@ describe("recurring contribution plans", () => {
   });
 
   it("aggregates the final value across contributions", () => {
-    // Feb 5y @7.70% -> 10000 + 770*1.5 = 11155; Mar 5y @7.80% -> 10000 + 780*(17/12)
+    // Feb 5y @7.95% -> 10000 + 795*1.5 = 11192.5; Mar 5y @7.80% -> 10000 + 780*(17/12)
     const marAccrued = 780 * (END - (2025 + 2 / 12));
-    expect(finalValueOf(run(base))).toBeCloseTo(11155 + 10000 + marAccrued, 6);
+    expect(finalValueOf(run(base))).toBeCloseTo(11192.5 + 10000 + marAccrued, 6);
   });
 
   it("summarizes invested as amount x contributions and uses a money-weighted return", () => {

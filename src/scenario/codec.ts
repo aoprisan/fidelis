@@ -1,4 +1,4 @@
-import { FIRST_SELECTABLE } from "../data/history";
+import { FIRST_SELECTABLE, type Currency } from "../data/history";
 import { byId, matsAt } from "../sim/history";
 import type { SimParams, Strategy } from "../sim/simulate";
 
@@ -10,12 +10,15 @@ import type { SimParams, Strategy } from "../sim/simulate";
 
 const STRATEGIES: readonly Strategy[] = ["single", "ladder"];
 
-/** Pick a valid maturity for a start issuance, snapping to the default (5y). */
-function resolveMat(startId: string, raw: unknown): number {
-  const mats = matsAt(startId);
+/** Pick a valid maturity for a start issuance, snapping to a sensible default. */
+function resolveMat(startId: string, raw: unknown, currency: Currency): number {
+  const mats = matsAt(startId, currency);
   const m = Number(raw);
   if (mats.includes(m)) return m;
-  return mats.includes(5) ? 5 : mats[mats.length - 1];
+  // RON's canonical default is the 5-year; EUR has no 5y at every issuance, so
+  // fall back to the longest tranche available.
+  if (currency === "RON" && mats.includes(5)) return 5;
+  return mats[mats.length - 1];
 }
 
 /**
@@ -63,13 +66,17 @@ export function sanitizeParams(raw: unknown): SimParams | null {
   const amount = Number(r.amount);
   if (!Number.isFinite(amount) || amount < 0) return null;
 
+  // Default to RON so legacy links (minted before EUR support) still decode.
+  const currency: Currency = r.currency === "EUR" ? "EUR" : "RON";
+
   const params: SimParams = {
     amount,
     startId,
     strat,
-    mat: resolveMat(startId, r.mat),
-    donor: !!r.donor,
+    mat: resolveMat(startId, r.mat, currency),
+    donor: currency === "EUR" ? false : !!r.donor,
     reinvest: !!r.reinvest,
+    currency,
   };
   if (plan) params.plan = plan;
   return params;
@@ -84,6 +91,7 @@ export function encodeParams(p: SimParams): string {
     m: String(p.mat),
     d: p.donor ? "1" : "0",
     r: p.reinvest ? "1" : "0",
+    c: p.currency,
   };
   // Only emit the plan for recurring scenarios, so lump-sum links stay compact
   // and round-trip to an object without a `plan` key.
@@ -101,6 +109,7 @@ export function decodeParams(query: string): SimParams | null {
     mat: q.get("m"),
     donor: q.get("d") === "1",
     reinvest: q.get("r") === "1",
+    currency: q.get("c") ?? undefined,
     plan: q.get("p") ?? undefined,
   });
 }

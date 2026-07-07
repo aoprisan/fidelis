@@ -9,6 +9,7 @@ const base: SimParams = {
   mat: 5,
   donor: false,
   reinvest: true,
+  currency: "RON",
 };
 
 describe("encode/decode round-trip", () => {

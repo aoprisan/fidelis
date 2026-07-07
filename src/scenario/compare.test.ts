@@ -16,6 +16,7 @@ const base: SimParams = {
   mat: 5,
   donor: false,
   reinvest: true,
+  currency: "RON",
 };
 
 const inputs: CompareInput[] = [
@@ -28,7 +29,7 @@ describe("buildComparison", () => {
     const series = buildComparison(inputs);
     expect(series).toHaveLength(2);
     expect(series[0].id).toBe("a");
-    expect(series[0].summary.finalValue).toBeCloseTo(55775, 6);
+    expect(series[0].summary.finalValue).toBeCloseTo(55962.5, 6);
     expect(series[0].points[0].value).toBeCloseTo(50000, 6);
     expect(series[0].points[series[0].points.length - 1].value).toBeCloseTo(
       series[0].summary.finalValue,
@@ -43,7 +44,7 @@ describe("indexPoints", () => {
     const idx = indexPoints(series[0].points);
     expect(idx[0].value).toBeCloseTo(100, 9);
     // final index = finalValue / invested * 100
-    expect(idx[idx.length - 1].value).toBeCloseTo((55775 / 50000) * 100, 6);
+    expect(idx[idx.length - 1].value).toBeCloseTo((55962.5 / 50000) * 100, 6);
   });
 
   it("makes different-sized scenarios directly comparable on one scale", () => {
@@ -75,7 +76,7 @@ describe("boundsOf", () => {
     // B starts at 2024-10 (earliest) and everything ends at the horizon
     expect(b.minT).toBeCloseTo(series[1].points[0].t, 9);
     expect(b.minV).toBeLessThanOrEqual(10000);
-    expect(b.maxV).toBeCloseTo(55775, 6);
+    expect(b.maxV).toBeCloseTo(55962.5, 6);
   });
 
   it("returns null when there are no points", () => {

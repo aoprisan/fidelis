@@ -18,6 +18,7 @@ const lump = (over: Partial<SimParams> = {}): SimParams => ({
   mat: 5,
   donor: false,
   reinvest: true,
+  currency: "RON",
   ...over,
 });
 
