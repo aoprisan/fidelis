@@ -13,7 +13,7 @@ export const idToYear = (id: string): number => {
 
 /** Available maturities (years) at a given issuance, ascending. */
 export function matsAt(id: string): number[] {
-  return Object.keys(byId[id].ron)
+  return Object.keys(byId[id].maturities)
     .map(Number)
     .sort((a, b) => a - b);
 }
@@ -27,20 +27,23 @@ export interface Coupon {
 /**
  * Pick the coupon for a chosen target maturity at a given issuance, falling
  * back to the closest available maturity (this handles the 1/3/5 -> 2/4/6
- * switch). A donor tranche, when present, always maps to the 2-year rate.
+ * switch). A donor tranche, when present, maps to its own maturity — which is
+ * 1-year for 2024/early-2025 issuances and 2-year from Jun 2025 onward.
  */
 export function couponFor(id: string, targetMat: number, donor: boolean): Coupon {
   const h = byId[id];
-  if (donor && h.donor != null) return { rate: h.donor, mat: 2 };
+  if (donor && h.donorRate != null)
+    return { rate: h.donorRate, mat: h.donorMaturity ?? 2 };
   const avail = matsAt(id);
   // exact
-  if (h.ron[targetMat] != null) return { rate: h.ron[targetMat], mat: targetMat };
+  if (h.maturities[targetMat] != null)
+    return { rate: h.maturities[targetMat], mat: targetMat };
   // nearest maturity
   const best = avail.reduce(
     (a, b) => (Math.abs(b - targetMat) < Math.abs(a - targetMat) ? b : a),
     avail[0],
   );
-  return { rate: h.ron[best], mat: best };
+  return { rate: h.maturities[best], mat: best };
 }
 
 /** Find the issuance at or after a decimal year (used for reinvestment). */
