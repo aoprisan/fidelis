@@ -124,6 +124,29 @@ input:focus, select:focus { border-color: var(--gold); }
 
 .laddertitle { font-family: var(--mono); font-size: 11px; letter-spacing:0.18em; text-transform: uppercase; color: var(--muted); margin: 26px 0 12px; }
 
+/* growth chart */
+.growthchart {
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 8px 4px;
+}
+.growthchart svg { display: block; width: 100%; height: auto; }
+.growthchart .gc-grid { stroke: var(--line); stroke-width: 1; }
+.growthchart .gc-line {
+  fill: none; stroke: var(--gold); stroke-width: 2;
+  stroke-linejoin: round; stroke-linecap: round;
+}
+.growthchart .gc-base { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.7; }
+.growthchart .gc-drop { stroke: var(--gold); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0.5; }
+.growthchart .gc-end { fill: var(--gold); stroke: var(--ink-2); stroke-width: 2; }
+.growthchart .gc-ylab { fill: var(--muted); font-family: var(--mono); font-size: 10px; text-anchor: end; }
+.growthchart .gc-xlab { fill: var(--muted); font-family: var(--mono); font-size: 10px; }
+.growthchart .gc-baselab { fill: var(--muted); font-family: var(--mono); font-size: 10px; }
+.growthchart .gc-tag rect { fill: var(--panel); stroke: var(--gold); stroke-width: 1; }
+.growthchart .gc-tagk { fill: var(--muted); font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.1em; }
+.growthchart .gc-tagv { fill: var(--gold); font-family: var(--mono); font-size: 13px; font-weight: 700; }
+
 /* ladder viz */
 .ladder { position: relative; }
 .lane { display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 12px; margin-bottom: 8px; }

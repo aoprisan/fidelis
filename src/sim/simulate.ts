@@ -49,6 +49,14 @@ export interface Summary {
   cagr: number;
 }
 
+/** One sample on the value-over-time curve. */
+export interface ValuePoint {
+  /** Decimal year. */
+  t: number;
+  /** Portfolio value at that instant. */
+  value: number;
+}
+
 /**
  * Core simulation: a deterministic reducer over successive issuances.
  *
@@ -118,6 +126,50 @@ export function valueOf(legs: Leg[]): number {
     }
   }
   return v;
+}
+
+/**
+ * Value of a leg chain at an arbitrary instant `t` (decimal year).
+ *
+ * Same model as {@link valueOf}, generalized to any point in time: before the
+ * chain starts it is worth its principal; within the active leg it is principal
+ * plus linearly accrued coupon; on rollover the next leg's principal already
+ * carries the compounded coupons, so the curve is continuous. Evaluated at the
+ * horizon it agrees with {@link valueOf}.
+ */
+export function valueAt(legs: Leg[], t: number): number {
+  if (legs.length === 0) return 0;
+  if (t <= legs[0].startY) return legs[0].principal;
+  let active = legs[0];
+  for (const leg of legs) {
+    if (leg.startY <= t) active = leg;
+    else break;
+  }
+  const cap = Math.min(t, Math.min(active.endY, END));
+  const elapsed = Math.max(0, cap - active.startY);
+  return active.principal + active.couponAnnual * elapsed;
+}
+
+/**
+ * Portfolio value over time across all blocks, as a polyline from the start
+ * year to the horizon. The aggregate value is piecewise-linear in `t`, so
+ * sampling at every leg boundary reproduces the exact curve. The first point is
+ * the invested amount; the last equals {@link finalValueOf}.
+ */
+export function trajectory(res: SimResult): ValuePoint[] {
+  const legs = res.blocks.flatMap((b) => b.legs);
+  if (legs.length === 0) return [];
+  const start = Math.min(...legs.map((l) => l.startY));
+  const breaks = new Set<number>([start, END]);
+  for (const leg of legs) {
+    breaks.add(leg.startY);
+    breaks.add(Math.min(leg.endY, END));
+  }
+  const ts = [...breaks].filter((t) => t >= start && t <= END).sort((a, b) => a - b);
+  return ts.map((t) => ({
+    t,
+    value: res.blocks.reduce((sum, b) => sum + valueAt(b.legs, t), 0),
+  }));
 }
 
 /** Single-issuance strategy: the whole amount in one leg chain. */

@@ -40,6 +40,7 @@ export function createApp(initial?: SimParams | null): AppController {
 
   const targets: RenderTargets = {
     headline: el("headline"),
+    chart: el("chart"),
     viz: el("viz"),
     detail: el("detail"),
   };

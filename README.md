@@ -29,6 +29,7 @@ src/
     *.test.ts         Vitest unit tests
   ui/               Render layer (DOM only; imports sim/scenario, never the reverse).
     format.ts · render.ts · app.ts · styles.css
+    render.ts         headline stats · value-over-time growth chart (SVG) · timeline · detail table
     scenarios.ts      save / edit / rename / delete panel
     export.ts         canvas "report card" → PNG / PDF / Web Share
     pdf.ts            tiny dependency-free PDF writer (+ pdf.test.ts)
@@ -38,6 +39,18 @@ src/
 The `sim/` and `scenario/` cores are pure and side-effect-free, so the math and
 serialization are unit-testable in isolation and the UI is a thin projection of
 them.
+
+## Scenario graphics
+
+Each scenario is drawn three ways, all from the same pure simulation core:
+
+- **Growth chart** — a value-over-time curve (`trajectory()` in `sim/simulate.ts`,
+  rendered as a dependency-free inline SVG) showing the holding climb from the
+  invested amount to today's value, with a dashed "invested" baseline. For a
+  ladder it sums the value across all rungs. The same curve is painted onto the
+  PNG / PDF export so the report card matches the page.
+- **Timeline** — a Gantt-style lane per issuance/maturity (`vizHTML`).
+- **Detail table** — per-tranche coupon, principal and status.
 
 ## Scenarios: save, edit, export & share
 

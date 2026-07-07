@@ -1,11 +1,19 @@
 import { END } from "../data/history";
 import { idToYear } from "../sim/history";
-import { finalValueOf, run, type Leg, type SimParams } from "../sim/simulate";
-import { fmt, fmt2 } from "./format";
+import {
+  finalValueOf,
+  run,
+  trajectory,
+  type Leg,
+  type SimParams,
+  type ValuePoint,
+} from "../sim/simulate";
+import { fmt, fmt2, fmtK } from "./format";
 
 /** DOM targets the render layer writes into. */
 export interface RenderTargets {
   headline: HTMLElement;
+  chart: HTMLElement;
   viz: HTMLElement;
   detail: HTMLElement;
 }
@@ -15,6 +23,104 @@ function headlineHTML(finalValue: number, profit: number, cagr: number): string 
     <div class="stat"><div class="k">Valoare azi</div><div class="v gold num">${fmt(finalValue)} RON</div></div>
     <div class="stat"><div class="k">Câștig net (neimpozabil)</div><div class="v pos num">+${fmt(profit)} RON</div></div>
     <div class="stat"><div class="k">Randament anualizat</div><div class="v num">${fmt2(cagr)}%</div></div>`;
+}
+
+/** Value-over-time growth chart as a self-contained, responsive inline SVG. */
+function growthChartHTML(points: ValuePoint[], invested: number): string {
+  if (points.length < 2) return "";
+
+  // viewBox geometry (scaled to fit by width:100% in CSS).
+  const W = 720;
+  const H = 250;
+  const m = { top: 18, right: 18, bottom: 26, left: 54 };
+  const px0 = m.left;
+  const px1 = W - m.right;
+  const py0 = m.top;
+  const py1 = H - m.bottom;
+
+  const minT = points[0].t;
+  const maxT = points[points.length - 1].t;
+  const tSpan = Math.max(maxT - minT, 1e-6);
+
+  const values = points.map((p) => p.value);
+  const dataMin = Math.min(invested, ...values);
+  const dataMax = Math.max(invested, ...values);
+  const pad = dataMax - dataMin > 0 ? dataMax - dataMin : Math.max(dataMax * 0.02, 1);
+  const yLo = Math.max(0, dataMin - pad * 0.6);
+  const yHi = dataMax + pad * 0.35;
+  const ySpan = Math.max(yHi - yLo, 1e-6);
+
+  const sx = (t: number): number => px0 + ((t - minT) / tSpan) * (px1 - px0);
+  const sy = (v: number): number => py1 - ((v - yLo) / ySpan) * (py1 - py0);
+
+  const round = (n: number): number => Math.round(n * 100) / 100;
+  const line = points.map((p, i) => `${i ? "L" : "M"}${round(sx(p.t))} ${round(sy(p.value))}`).join(" ");
+  const area = `${line} L${round(px1)} ${round(py1)} L${round(px0)} ${round(py1)} Z`;
+
+  // horizontal grid + y labels
+  const rows = 4;
+  const grid: string[] = [];
+  const yLabels: string[] = [];
+  for (let i = 0; i <= rows; i++) {
+    const v = yLo + (ySpan * i) / rows;
+    const yy = round(sy(v));
+    grid.push(`<line x1="${px0}" y1="${yy}" x2="${px1}" y2="${yy}" class="gc-grid" />`);
+    yLabels.push(`<text x="${px0 - 8}" y="${yy + 3.5}" class="gc-ylab">${fmtK(v)}</text>`);
+  }
+
+  // x ticks at whole years within range
+  const xTicks: string[] = [];
+  for (let yr = Math.ceil(minT); yr <= Math.floor(maxT); yr++) {
+    const xx = round(sx(yr));
+    xTicks.push(
+      `<line x1="${xx}" y1="${py1}" x2="${xx}" y2="${py1 + 4}" class="gc-grid" />` +
+        `<text x="${xx}" y="${py1 + 16}" class="gc-xlab" text-anchor="middle">${yr}</text>`,
+    );
+  }
+
+  // invested baseline
+  const byBase = round(sy(invested));
+  const baseline =
+    byBase >= py0 && byBase <= py1
+      ? `<line x1="${px0}" y1="${byBase}" x2="${px1}" y2="${byBase}" class="gc-base" />
+         <text x="${px1}" y="${byBase - 6}" text-anchor="end" class="gc-baselab">Investit · ${fmtK(invested)}</text>`
+      : "";
+
+  // end marker + value tag
+  const last = points[points.length - 1];
+  const ex = round(sx(last.t));
+  const ey = round(sy(last.value));
+  const tagW = 96;
+  const tagX = Math.min(ex + 10, px1 - tagW);
+  const endTag = `
+    <line x1="${ex}" y1="${ey}" x2="${ex}" y2="${py1}" class="gc-drop" />
+    <g class="gc-tag" transform="translate(${round(tagX)}, ${round(Math.max(ey - 30, py0))})">
+      <rect width="${tagW}" height="34" rx="3" />
+      <text x="9" y="14" class="gc-tagk">VALOARE AZI</text>
+      <text x="9" y="28" class="gc-tagv">${fmt(last.value)}</text>
+    </g>
+    <circle cx="${ex}" cy="${ey}" r="4" class="gc-end" />`;
+
+  return `
+    <div class="laddertitle">Evoluția valorii în timp</div>
+    <div class="growthchart">
+      <svg viewBox="0 0 ${W} ${H}" role="img"
+           aria-label="Grafic al evoluției valorii investiției de la ${fmt(invested)} la ${fmt(last.value)} RON">
+        <defs>
+          <linearGradient id="gcFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(216,165,74,0.34)" />
+            <stop offset="100%" stop-color="rgba(216,165,74,0.02)" />
+          </linearGradient>
+        </defs>
+        ${grid.join("")}
+        ${xTicks.join("")}
+        <path d="${area}" fill="url(#gcFill)" />
+        <path d="${line}" class="gc-line" />
+        ${baseline}
+        ${endTag}
+        ${yLabels.join("")}
+      </svg>
+    </div>`;
 }
 
 function vizHTML(allLegs: Leg[], startId: string): string {
@@ -74,6 +180,7 @@ export function render(params: SimParams, els: RenderTargets): void {
   const allLegs = res.blocks.flatMap((b) => b.legs);
 
   els.headline.innerHTML = headlineHTML(finalValue, profit, cagr);
+  els.chart.innerHTML = growthChartHTML(trajectory(res), invested);
   els.viz.innerHTML = vizHTML(allLegs, params.startId);
   els.detail.innerHTML = detailHTML(allLegs);
 }
