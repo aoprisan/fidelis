@@ -1,6 +1,6 @@
 import { idToYear } from "../sim/history";
 import { DONOR_MIN, plan, type PlanParams } from "../sim/planner";
-import { horizonOf, run, summarize, type Leg, type SimParams } from "../sim/simulate";
+import { run, summarize, type Leg, type SimParams } from "../sim/simulate";
 import { fmt, fmt2 } from "./format";
 
 /** DOM targets the render layer writes into. */
@@ -10,69 +10,98 @@ export interface RenderTargets {
   detail: HTMLElement;
 }
 
-/** One bar on the shared timeline component. */
-interface TimelineBar {
-  label: string;
-  startY: number;
-  endY: number;
-  text: string;
-  /** Visual tone; "donor" highlights the blood-donor tranche. */
-  tone?: "donor";
+/** Currency code → the banknote-denomination word used on the certificate face. */
+const ccyWord = (ccy: string): string => (ccy === "EUR" ? "euro" : "lei");
+
+/** A section title with a trailing dashed rule (the register/coupon headings). */
+const sectionTitle = (label: string): string =>
+  `<div class="section-title">${label}</div>`;
+
+/** A decimal year to a `MMM YYYY`-ish label (month resolved from the fraction). */
+function yearLabel(y: number): string {
+  const year = Math.floor(y + 1e-9);
+  const month = Math.round((y - year) * 12); // 0-based
+  const names = ["Ian", "Feb", "Mar", "Apr", "Mai", "Iun", "Iul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const mi = ((month % 12) + 12) % 12;
+  return `${names[mi]} ${year + Math.floor(month / 12)}`;
 }
 
-/**
- * The shared timeline component: a lane per bar over the [minY, maxY] window,
- * plus a year axis. Used by both the backtester and the ladder planner.
- */
-function timelineHTML(
-  title: string,
-  bars: TimelineBar[],
-  minY: number,
-  maxY: number,
-  extra = "",
-): string {
-  const span = maxY - minY || 1;
-  const lanes = bars
-    .map((b) => {
-      const left = ((b.startY - minY) / span) * 100;
-      const width = Math.max(0, ((Math.min(b.endY, maxY) - b.startY) / span) * 100);
-      const cls = b.tone === "donor" ? "bar donor" : "bar";
-      return `<div class="lane">
-      <div class="lbl">${b.label}</div>
-      <div class="track"><div class="${cls}" style="left:${left}%;width:${width}%">${b.text}</div></div>
-    </div>`;
-    })
-    .join("");
-  const tickYears: number[] = [];
-  for (let y = Math.ceil(minY); y <= Math.floor(maxY); y++) tickYears.push(y);
-  return `
-    <div class="laddertitle">${title}</div>
-    <div class="ladder">${lanes}</div>
-    <div class="axis"><div></div><div class="ticks">${tickYears
-      .map((y) => `<span>${y}</span>`)
-      .join("")}</div></div>${extra}`;
-}
+// ── the certificate face ─────────────────────────────────────────────────────
 
-function headlineHTML(
-  finalValue: number,
+function certHTML(
+  value: number,
   profit: number,
   cagr: number,
+  years: number,
   ccy: string,
 ): string {
+  const profitCls = profit >= 0 ? "pos" : "neg";
+  const sign = profit >= 0 ? "+" : "−";
   return `
-    <div class="stat"><div class="k">Valoare la scadență</div><div class="v gold num">${fmt(finalValue)} ${ccy}</div></div>
-    <div class="stat"><div class="k">Câștig net (neimpozabil)</div><div class="v pos num">+${fmt(profit)} ${ccy}</div></div>
-    <div class="stat"><div class="k">Randament anualizat</div><div class="v num">${fmt2(cagr)}%</div></div>`;
+    <div class="cert__flag">
+      <span class="micro">Valoare la scadență</span>
+      <span class="cert__free">Cupon neimpozabil</span>
+    </div>
+    <div class="denom stamp-in">
+      <span class="denom__num">${fmt(value)}</span>
+      <span class="denom__ccy">${ccyWord(ccy)}</span>
+    </div>
+    <div class="cert__supp">
+      <div class="supp">
+        <span class="supp__k">Câștig net</span>
+        <span class="supp__v ${profitCls}">${sign}${fmt(Math.abs(profit))} ${ccyWord(ccy)}</span>
+      </div>
+      <div class="supp">
+        <span class="supp__k">Randament p.a.</span>
+        <span class="supp__v">${fmt2(cagr)}%</span>
+      </div>
+      <div class="supp">
+        <span class="supp__k">Perioadă</span>
+        <span class="supp__v">${fmt2(years)} ani</span>
+      </div>
+    </div>`;
 }
 
-function vizHTML(allLegs: Leg[], startId: string, maxY: number): string {
-  const bars: TimelineBar[] = allLegs.map((leg) => ({
-    label: `${leg.startLabel} · ${leg.mat}a`,
-    startY: leg.startY,
-    endY: leg.endY,
-    text: `${leg.rate}%`,
-  }));
-  return timelineHTML("Cronologie emisiuni & maturități", bars, idToYear(startId), maxY);
+// ── the coupon strip (signature) ─────────────────────────────────────────────
+
+/** One detachable interest coupon on the strip. */
+interface Coupon {
+  /** Sequence label shown on the tear-off stub. */
+  no: string;
+  /** Issue → maturity period, e.g. "Feb 2025 → 2030". */
+  period: string;
+  /** Annual coupon rate, %. */
+  rate: number;
+  /** Maturity in years. */
+  mat: number;
+  /** Annual coupon value in the tranche currency. */
+  couponAnnual: number;
+  matured: boolean;
+  donor?: boolean;
+}
+
+function couponHTML(c: Coupon): string {
+  const cls =
+    "coupon" + (c.donor ? " coupon--donor" : "") + (c.matured ? " coupon--matured" : "");
+  const stamp = c.matured ? `<span class="coupon__stamp">încasat</span>` : "";
+  return `
+    <div class="${cls}">
+      <div class="coupon__stub"><span>Cupon ${c.no}</span></div>
+      <div class="coupon__face">
+        <div class="coupon__period">${c.period}</div>
+        <div class="coupon__rate">${fmt2(c.rate)}%</div>
+        <div class="coupon__mat">${c.mat} ani${c.donor ? " · donator" : ""}</div>
+        <div class="coupon__foot">
+          <span class="coupon__k">Cupon / an</span>
+          <span class="coupon__val">${fmt(c.couponAnnual)}</span>
+        </div>
+      </div>
+      ${stamp}
+    </div>`;
+}
+
+function couponStripHTML(title: string, coupons: Coupon[]): string {
+  return sectionTitle(title) + `<div class="coupons">${coupons.map(couponHTML).join("")}</div>`;
 }
 
 function detailHTML(allLegs: Leg[]): string {
@@ -84,12 +113,12 @@ function detailHTML(allLegs: Leg[]): string {
       <td class="num">${leg.rate.toFixed(2)}%</td>
       <td class="num">${fmt(leg.principal)}</td>
       <td class="num">${fmt(leg.couponAnnual)}</td>
-      <td class="num">${leg.matured ? "scadent" : "în curs"}</td>
+      <td>${leg.matured ? "scadent" : "în curs"}</td>
     </tr>`,
     )
     .join("");
   return `
-    <div class="laddertitle">Detaliu pe tranșe</div>
+    ${sectionTitle("Registrul emisiunilor")}
     <table class="detail">
       <thead><tr><th>Emisiune</th><th>Scad.</th><th>Dobândă</th><th>Principal</th><th>Cupon/an</th><th>Status</th></tr></thead>
       <tbody>${rows}</tbody>
@@ -99,48 +128,51 @@ function detailHTML(allLegs: Leg[]): string {
 /** Run the simulation for the given params and paint the results. */
 export function render(params: SimParams, els: RenderTargets): void {
   const res = run(params);
-  const { finalValue, profit, cagr } = summarize(params);
-  const maxY = horizonOf(res);
+  const { finalValue, profit, cagr, years } = summarize(params);
 
   const allLegs = res.blocks.flatMap((b) => b.legs);
+  const coupons: Coupon[] = allLegs.map((leg, i) => ({
+    no: String(i + 1).padStart(2, "0"),
+    period: `${leg.startLabel} → ${Math.round(leg.endY)}`,
+    rate: leg.rate,
+    mat: leg.mat,
+    couponAnnual: leg.couponAnnual,
+    matured: leg.matured,
+  }));
 
-  els.headline.innerHTML = headlineHTML(finalValue, profit, cagr, params.currency);
-  els.viz.innerHTML = vizHTML(allLegs, params.startId, maxY);
+  els.headline.innerHTML = certHTML(finalValue, profit, cagr, years, params.currency);
+  els.viz.innerHTML = couponStripHTML("Cupoane · cronologie emisiuni", coupons);
   els.detail.innerHTML = detailHTML(allLegs);
 }
 
 // ── Ladder planner ──────────────────────────────────────────────────────────
 
-function planHeadlineHTML(r: ReturnType<typeof plan>, ccy: string): string {
+function planCertHTML(r: ReturnType<typeof plan>, ccy: string): string {
+  const profitCls = r.profit >= 0 ? "pos" : "neg";
+  const sign = r.profit >= 0 ? "+" : "−";
   return `
-    <div class="stat"><div class="k">Valoare la orizont</div><div class="v gold num">${fmt(r.finalValue)} ${ccy}</div></div>
-    <div class="stat"><div class="k">Câștig net (neimpozabil)</div><div class="v pos num">+${fmt(r.profit)} ${ccy}</div></div>
-    <div class="stat"><div class="k">Randament (IRR)</div><div class="v num">${fmt2(r.cagr)}%</div></div>`;
-}
-
-/** The capital-return schedule rendered as dots on the shared timeline axis. */
-function returnsTrackHTML(
-  schedule: ReturnType<typeof plan>["schedule"],
-  minY: number,
-  maxY: number,
-  ccy: string,
-): string {
-  const span = maxY - minY || 1;
-  const dots = schedule
-    .map((e) => {
-      const left = ((e.year - minY) / span) * 100;
-      const cls = e.kind === "principal" ? "rmark principal" : "rmark coupon";
-      const kind = e.kind === "principal" ? "capital" : "cupon";
-      return `<div class="${cls}" style="left:${left}%" title="${kind} +${fmt(e.amount)} ${ccy}"></div>`;
-    })
-    .join("");
-  return `
-    <div class="laddertitle">Calendar retururi de capital</div>
-    <div class="lane">
-      <div class="lbl">Retururi</div>
-      <div class="track rtrack">${dots}</div>
+    <div class="cert__flag">
+      <span class="micro">Valoare la orizont</span>
+      <span class="cert__free">Cupon neimpozabil</span>
     </div>
-    <div class="rlegend"><span class="rmark coupon"></span>cupon anual&nbsp;&nbsp;<span class="rmark principal"></span>capital la scadență</div>`;
+    <div class="denom stamp-in">
+      <span class="denom__num">${fmt(r.finalValue)}</span>
+      <span class="denom__ccy">${ccyWord(ccy)}</span>
+    </div>
+    <div class="cert__supp">
+      <div class="supp">
+        <span class="supp__k">Câștig net</span>
+        <span class="supp__v ${profitCls}">${sign}${fmt(Math.abs(r.profit))} ${ccyWord(ccy)}</span>
+      </div>
+      <div class="supp">
+        <span class="supp__k">Randament (IRR)</span>
+        <span class="supp__v">${fmt2(r.cagr)}%</span>
+      </div>
+      <div class="supp">
+        <span class="supp__k">Orizont</span>
+        <span class="supp__v">${fmt2(r.years)} ani</span>
+      </div>
+    </div>`;
 }
 
 function planCalloutHTML(r: ReturnType<typeof plan>): string {
@@ -161,20 +193,52 @@ function planCalloutHTML(r: ReturnType<typeof plan>): string {
   return `<div class="callout">${bits.join(" ")}</div>`;
 }
 
+/** The capital-return schedule as marks on an engraved calendar axis. */
+function calendarHTML(
+  schedule: ReturnType<typeof plan>["schedule"],
+  minY: number,
+  maxY: number,
+  ccy: string,
+): string {
+  const span = maxY - minY || 1;
+  const marks = schedule
+    .map((e) => {
+      const left = ((e.year - minY) / span) * 100;
+      const cls = e.kind === "principal" ? "cal-mark cal-mark--principal" : "cal-mark cal-mark--coupon";
+      const kind = e.kind === "principal" ? "capital" : "cupon";
+      return `<div class="${cls}" style="left:${left}%" title="${kind} +${fmt(e.amount)} ${ccy}"></div>`;
+    })
+    .join("");
+  const ticks: number[] = [];
+  for (let y = Math.ceil(minY); y <= Math.floor(maxY); y++) ticks.push(y);
+  return `
+    ${sectionTitle("Calendar retururi de capital")}
+    <div class="calendar">
+      <div class="cal-axis">${marks}</div>
+      <div class="cal-ticks">${ticks.map((y) => `<span>${y}</span>`).join("")}</div>
+      <div class="cal-legend">
+        <span><span class="cal-dot cal-dot--coupon"></span>cupon anual</span>
+        <span><span class="cal-dot cal-dot--principal"></span>capital la scadență</span>
+      </div>
+    </div>`;
+}
+
 function planVizHTML(r: ReturnType<typeof plan>, p: PlanParams): string {
   const minY = idToYear(p.startId);
   const maxY = minY + r.years;
-  const bars: TimelineBar[] = r.purchases.map((b) => ({
-    label: `${b.buyLabel} · ${b.mat}a${b.donor ? " ★" : ""}`,
-    startY: b.year,
-    endY: b.maturesYear,
-    text: `${b.rate}%`,
-    tone: b.donor ? "donor" : undefined,
+  const coupons: Coupon[] = r.purchases.map((b, i) => ({
+    no: String(i + 1).padStart(2, "0"),
+    period: `${b.buyLabel} → ${Math.round(b.maturesYear)}`,
+    rate: b.rate,
+    mat: b.mat,
+    couponAnnual: Math.round((b.amount * b.rate) / 100),
+    matured: b.maturesYear <= maxY + 1e-9,
+    donor: b.donor,
   }));
-  const returns = returnsTrackHTML(r.schedule, minY, maxY, p.currency);
   return (
     planCalloutHTML(r) +
-    timelineHTML("Plan de achiziții (o tranșă / lună)", bars, minY, maxY, returns)
+    couponStripHTML("Cupoane · plan de achiziții (o tranșă / lună)", coupons) +
+    calendarHTML(r.schedule, minY, maxY, p.currency)
   );
 }
 
@@ -183,7 +247,7 @@ function planDetailHTML(r: ReturnType<typeof plan>): string {
     .map(
       (b) => `<tr>
       <td>${b.buyLabel}</td>
-      <td>${b.mat} ani${b.donor ? " ★" : ""}</td>
+      <td>${b.mat} ani${b.donor ? " · donator" : ""}</td>
       <td class="num">${b.rate.toFixed(2)}%</td>
       <td class="num">${fmt(b.amount)}</td>
       <td>${b.buyLabel} → ${yearLabel(b.maturesYear)}</td>
@@ -202,31 +266,22 @@ function planDetailHTML(r: ReturnType<typeof plan>): string {
     )
     .join("");
   return `
-    <div class="laddertitle">Ce cumperi în fiecare lună</div>
+    ${sectionTitle("Ce cumperi în fiecare lună")}
     <table class="detail">
       <thead><tr><th>Emisiune</th><th>Scad.</th><th>Dobândă</th><th>Sumă</th><th>Interval</th></tr></thead>
       <tbody>${buys}</tbody>
     </table>
-    <div class="laddertitle">Calendar retururi de capital</div>
+    ${sectionTitle("Jurnal retururi de capital")}
     <table class="detail">
       <thead><tr><th>Când</th><th>Tip</th><th>Sumă</th><th>Din emisiunea</th><th>Destinație</th></tr></thead>
       <tbody>${events || `<tr><td colspan="5">Niciun retur în orizontul ales.</td></tr>`}</tbody>
     </table>`;
 }
 
-/** A decimal year to a `MMM YYYY`-ish label (month resolved from the fraction). */
-function yearLabel(y: number): string {
-  const year = Math.floor(y + 1e-9);
-  const month = Math.round((y - year) * 12); // 0-based
-  const names = ["Ian", "Feb", "Mar", "Apr", "Mai", "Iun", "Iul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const mi = ((month % 12) + 12) % 12;
-  return `${names[mi]} ${year + Math.floor(month / 12)}`;
-}
-
 /** Run the ladder planner for the given params and paint the results. */
 export function renderPlan(params: PlanParams, els: RenderTargets): void {
   const r = plan(params);
-  els.headline.innerHTML = planHeadlineHTML(r, params.currency);
+  els.headline.innerHTML = planCertHTML(r, params.currency);
   els.viz.innerHTML = planVizHTML(r, params);
   els.detail.innerHTML = planDetailHTML(r);
 }
