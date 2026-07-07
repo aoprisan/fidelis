@@ -18,36 +18,80 @@
     <div class="panel" id="controls">
       <h2>Parametri</h2>
 
-      <label for="amount">Sumă investită (RON)</label>
-      <input type="number" id="amount" value="50000" min="500" step="500" />
+      <label>Mod</label>
+      <div class="seg" id="modeSeg" role="group">
+        <button data-mode="backtest" aria-pressed="true">Backtester</button>
+        <button data-mode="plan">Planificator scară</button>
+      </div>
 
       <label>Data de start</label>
       <div class="seg" id="startSeg" role="group"></div>
 
-      <label>Strategie</label>
-      <div class="seg" id="stratSeg" role="group">
-        <button data-strat="single" aria-pressed="true">O emisiune</button>
-        <button data-strat="ladder">Scară (ladder)</button>
+      <!-- BACKTESTER CONTROLS -->
+      <div id="backtestControls">
+        <label for="amount">Sumă investită (RON)</label>
+        <input type="number" id="amount" value="50000" min="500" step="500" />
+
+        <label>Strategie</label>
+        <div class="seg" id="stratSeg" role="group">
+          <button data-strat="single" aria-pressed="true">O emisiune</button>
+          <button data-strat="ladder">Scară (ladder)</button>
+        </div>
+
+        <div id="matWrap">
+          <label>Maturitate</label>
+          <div class="seg" id="matSeg" role="group"></div>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" id="donor" />
+          <span>Donator de sânge
+            <small>+1 punct la dobândă (tranșa specială 2 ani), prag minim 500 lei</small>
+          </span>
+        </label>
+
+        <label class="check">
+          <input type="checkbox" id="reinvest" checked />
+          <span>Reinvestește la scadență
+            <small>Capitalul + cupoanele intră în emisiunea curentă echivalentă</small>
+          </span>
+        </label>
       </div>
 
-      <div id="matWrap">
-        <label>Maturitate</label>
-        <div class="seg" id="matSeg" role="group"></div>
+      <!-- PLANNER CONTROLS -->
+      <div id="planControls" style="display: none">
+        <label for="monthly">Contribuție lunară (RON)</label>
+        <input type="number" id="monthly" value="1000" min="100" step="100" />
+
+        <label>Orizont</label>
+        <div class="seg" id="horizonSeg" role="group">
+          <button data-h="1">1 an</button>
+          <button data-h="2">2 ani</button>
+          <button data-h="3" aria-pressed="true">3 ani</button>
+          <button data-h="5">5 ani</button>
+        </div>
+
+        <label>Preferință maturitate</label>
+        <div class="seg" id="riskSeg" role="group">
+          <button data-r="short">Scurt</button>
+          <button data-r="balanced" aria-pressed="true">Echilibrat</button>
+          <button data-r="long">Lung</button>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" id="donorElig" />
+          <span>Sunt donator de sânge
+            <small>Cumpără tranșa specială (~+1 pp) când domină; prag minim 500 lei</small>
+          </span>
+        </label>
+
+        <label class="check">
+          <input type="checkbox" id="planReinvest" checked />
+          <span>Reinvestește automat
+            <small>Cupoanele și capitalul returnat cumpără emisiunea curentă</small>
+          </span>
+        </label>
       </div>
-
-      <label class="check">
-        <input type="checkbox" id="donor" />
-        <span>Donator de sânge
-          <small>+1 punct la dobândă (tranșa specială 2 ani), prag minim 500 lei</small>
-        </span>
-      </label>
-
-      <label class="check">
-        <input type="checkbox" id="reinvest" checked />
-        <span>Reinvestește la scadență
-          <small>Capitalul + cupoanele intră în emisiunea curentă echivalentă</small>
-        </span>
-      </label>
     </div>
 
     <!-- RESULTS -->

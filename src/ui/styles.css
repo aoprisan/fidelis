@@ -140,6 +140,30 @@ input:focus, select:focus { border-color: var(--gold); }
 .axis { display:grid; grid-template-columns: 96px 1fr; gap:12px; margin-top:4px;}
 .axis .ticks { display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; color:var(--muted);}
 
+/* donor tranche bar — green, to stand out from the gold regular tranches */
+.bar.donor {
+  background: linear-gradient(90deg, rgba(87,185,138,.9), rgba(87,185,138,.45));
+  border-right: 2px solid var(--green);
+}
+
+/* capital-return schedule track (dots on the shared timeline) */
+.rtrack { height: 18px; background: var(--ink-2); }
+.rmark { position: absolute; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; }
+.rmark.coupon { background: var(--gold); }
+.rmark.principal { background: var(--green); width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; box-shadow: 0 0 0 1px var(--ink-2); }
+.rlegend {
+  display: flex; align-items: center; gap: 6px; margin: 8px 0 0 108px;
+  font-family: var(--mono); font-size: 10px; color: var(--muted);
+}
+.rlegend .rmark { position: static; margin: 0; }
+
+/* planner summary callout */
+.callout {
+  margin: 4px 0 18px; padding: 11px 14px; border-left: 2px solid var(--green);
+  background: rgba(87,185,138,.07); font-size: 12.5px; color: var(--paper); line-height: 1.55;
+}
+.callout b { color: var(--green); }
+
 table.detail { width: 100%; border-collapse: collapse; margin-top: 10px; font-family: var(--mono); font-size: 12.5px; }
 table.detail th, table.detail td { text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--line); }
 table.detail th { color: var(--muted); font-weight: 600; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
