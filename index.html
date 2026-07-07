@@ -1,26 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Fidelis Backtester — Randament istoric titluri de stat</title>
+<meta name="theme-color" content="#e7e2d3" />
+<title>Fidelis — Certificat de randament · titluri de stat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,900;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
 </head>
 <body>
-<div class="wrap">
-  <header class="masthead">
-    <p class="eyebrow">Titluri de stat · Program FIDELIS</p>
-    <h1>Cât ai fi câștigat?<br /><span class="thin">Simulator de randament istoric</span></h1>
-    <p class="sub">Alege o sumă, o dată de start și o strategie. Calculul folosește dobânzile reale ale emisiunilor Fidelis din 2024–2025, cu cupon anual neimpozabil și randament compus la reinvestire.</p>
+<div class="doc">
+  <div class="doc__frame" aria-hidden="true"></div>
+
+  <!-- MASTHEAD — the head of the certificate -->
+  <header class="mast">
+    <div class="mast__rule">
+      <span class="micro">Ministerul Finanțelor · Trezoreria Statului</span>
+      <span class="micro">Titluri de stat · seria FIDELIS · 2024–2026</span>
+    </div>
+    <div class="mast__main">
+      <div class="mast__seal" aria-hidden="true">
+        <span class="mast__seal-txt">titlu<br />de<br />stat</span>
+      </div>
+      <div class="mast__title">
+        <h1 class="wordmark">Fidelis</h1>
+        <p class="tagline"><b>Cât ai fi câștigat?</b> Un certificat de randament pentru titlurile de stat, calculat pe dobânzile reale ale emisiunilor 2024–2026.</p>
+      </div>
+    </div>
     <div class="hook" id="hook"></div>
   </header>
 
-  <div class="grid">
-    <!-- CONTROLS -->
-    <div class="panel" id="controls">
-      <h2>Parametri</h2>
+  <div class="sheet">
+    <!-- TERMS OF SUBSCRIPTION — the controls -->
+    <aside class="panel terms" id="controls">
+      <div class="terms__head">
+        <h2>Condiții de subscriere</h2>
+        <span class="micro">completați</span>
+      </div>
 
       <label for="amount" id="amountLabel">Sumă investită (RON)</label>
       <input type="number" id="amount" value="50000" min="500" step="500" />
+
+      <label>Monedă</label>
+      <div class="seg" id="currencySeg" role="group">
+        <button data-ccy="RON" aria-pressed="true">RON (lei)</button>
+        <button data-ccy="EUR">EUR (euro)</button>
+      </div>
 
       <label>Contribuție</label>
       <div class="seg" id="contribSeg" role="group">
@@ -29,8 +58,8 @@
       </div>
 
       <div id="startWrap">
-        <label>Data de start</label>
-        <div class="seg" id="startSeg" role="group"></div>
+        <label>Data emisiunii</label>
+        <div class="seg seg--dates" id="startSeg" role="group"></div>
       </div>
 
       <div id="planWrap" hidden>
@@ -41,7 +70,7 @@
             <button id="planClear" type="button" class="plan-tool" title="Păstrează doar prima lună">Golește</button>
           </div>
         </div>
-        <div class="seg plan-grid" id="planSeg" role="group"></div>
+        <div class="seg seg--dates plan-grid" id="planSeg" role="group"></div>
         <p class="plan-hint" id="planHint"></p>
       </div>
 
@@ -56,10 +85,10 @@
         <div class="seg" id="matSeg" role="group"></div>
       </div>
 
-      <label class="check">
+      <label class="check" id="donorWrap">
         <input type="checkbox" id="donor" />
         <span>Donator de sânge
-          <small>+1 punct la dobândă (tranșa specială 2 ani), prag minim 500 lei</small>
+          <small>Tranșă specială cu dobândă mai mare, prag minim 500 lei. Doar pentru emisiunile în lei.</small>
         </span>
       </label>
 
@@ -82,17 +111,17 @@
         </div>
         <div id="scList" class="sc-list"></div>
       </div>
-    </div>
+    </aside>
 
-    <!-- RESULTS -->
-    <div>
+    <!-- CERTIFICATE BODY — the results -->
+    <section class="cert-col">
       <div class="toolbar" id="actions" role="group" aria-label="Export și partajare">
         <button id="dlPng" type="button">PNG</button>
         <button id="dlPdf" type="button">PDF</button>
         <button id="shareImg" type="button">Partajează</button>
         <button id="copyLink" type="button">Copiază link</button>
       </div>
-      <div class="headline" id="headline"></div>
+      <div class="cert" id="headline"></div>
       <div id="chart"></div>
       <div id="bench"></div>
       <div id="viz"></div>
@@ -126,7 +155,7 @@
 
         <details>
           <summary>Tranșa pentru donatorii de sânge</summary>
-          <p>Cine a donat sânge în perioada indicată în prospect primește acces la o tranșă specială de 2 ani cu dobândă mai mare (istoric, în jur de +1 punct procentual peste tranșa standard de 2 ani), cu prag minim redus la 500 lei. Bifează „Donator de sânge” în simulator ca să vezi efectul.</p>
+          <p>Cine a donat sânge în perioada indicată în prospect primește acces la o tranșă specială cu dobândă mai mare (istoric, în jur de +1 punct procentual peste tranșa standard echivalentă), cu prag minim redus la 500 lei. Bifează „Donator de sânge” în simulator ca să vezi efectul.</p>
         </details>
 
         <details>
@@ -135,14 +164,17 @@
         </details>
       </section>
 
-      <div class="disclaimer" id="disc">
-        Instrument educativ. Nu este consultanță de investiții sau recomandare. Randamentele istorice nu garantează rezultate viitoare. Verifică termenii finali oficiali pe mfinante.gov.ro înainte de a subscrie.
+      <div class="colophon">
+        <div class="stamp" aria-hidden="true"><span>uz<br />educativ</span></div>
+        <p class="disclaimer" id="disc">
+          Instrument educativ. Nu este consultanță de investiții sau recomandare. Randamentele istorice nu garantează rezultate viitoare. Verifică termenii finali oficiali pe mfinante.gov.ro înainte de a subscrie.
+        </p>
       </div>
 
       <p class="note">
-        <b>Sursă dobânzi:</b> comunicatele Ministerului Finanțelor pentru emisiunile Fidelis 2024–2025. Câștigurile din dobânzi și cele de capital sunt <b>neimpozabile</b> și exceptate de CASS. La mijlocul lui 2025 structura maturităților în lei a fost reorganizată (2 / 4 / 6 ani în loc de 1 / 3 / 5). Pentru lunile fără emisiune se folosește ultima dobândă disponibilă. Modelul presupune cupon fix plătit anual și deținere până la scadență (nu modelează vânzarea anticipată pe bursă la preț de piață). Comparația cu depozitul folosește dobânda medie la depozitele noi la termen în lei ale populației (BNR), capitalizare anuală și impozit de 10% pe dobândă; valorile reale folosesc indicele prețurilor de consum (INS) — ambele serii sunt aproximări lunare, de verificat pe sursele oficiale.
+        <b>Sursă dobânzi:</b> comunicatele Ministerului Finanțelor pentru emisiunile Fidelis 2024–2026. Câștigurile din dobânzi și cele de capital sunt <b>neimpozabile</b> și exceptate de CASS. La mijlocul lui 2025 structura maturităților în lei a fost reorganizată (2 / 4 / 6 ani în loc de 1 / 3 / 5). Pentru lunile fără emisiune se folosește ultima dobândă disponibilă. Modelul presupune cupon fix plătit anual și deținere până la scadență (nu modelează vânzarea anticipată pe bursă la preț de piață). Comparația cu depozitul folosește dobânda medie la depozitele noi la termen în lei ale populației (BNR), capitalizare anuală și impozit de 10% pe dobândă; valorile reale folosesc indicele prețurilor de consum (INS) — ambele serii sunt aproximări lunare, de verificat pe sursele oficiale.
       </p>
-    </div>
+    </section>
   </div>
 </div>
 <script type="module" src="/src/main.ts"></script>

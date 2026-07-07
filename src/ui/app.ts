@@ -13,6 +13,9 @@ const el = <T extends HTMLElement>(id: string): T => {
 /** Issuances offered as start / contribution months. */
 const SELECTABLE = HISTORY.filter((h) => h.id >= FIRST_SELECTABLE);
 
+/** The denomination word shown on amount labels for a currency. */
+const ccyWord = (ccy: string): string => (ccy === "EUR" ? "euro" : "lei");
+
 /** The default scenario shown on first load. */
 export const DEFAULT_PARAMS: SimParams = {
   amount: 50000,
@@ -119,11 +122,12 @@ export function createApp(initial?: SimParams | null): AppController {
 
   function updatePlanHint() {
     const n = S.plan?.length ?? 0;
+    const w = ccyWord(S.currency);
     el("planHint").textContent =
       n > 0
-        ? `Investești ${fmt(S.amount)} RON în fiecare din ${n} ${
+        ? `Investești ${fmt(S.amount)} ${w} în fiecare din ${n} ${
             n === 1 ? "lună" : "luni"
-          } · total ${fmt(S.amount * n)} RON.`
+          } · total ${fmt(S.amount * n)} ${w}.`
         : "";
   }
 
@@ -164,16 +168,50 @@ export function createApp(initial?: SimParams | null): AppController {
       );
     el("startWrap").hidden = rec;
     el("planWrap").hidden = !rec;
-    el("amountLabel").textContent = rec ? "Sumă / lună (RON)" : "Sumă investită (RON)";
+    const w = ccyWord(S.currency);
+    el("amountLabel").textContent = rec ? `Sumă / lună (${w})` : `Sumă investită (${w})`;
     if (rec) buildPlan();
     else buildStart();
+  }
+
+  // --- currency (RON / EUR) --------------------------------------------------
+
+  function bindCurrency() {
+    el("currencySeg")
+      .querySelectorAll<HTMLButtonElement>("button")
+      .forEach((b) => {
+        b.onclick = () => {
+          S.currency = b.dataset.ccy as SimParams["currency"];
+          applyCurrency();
+          buildMat();
+          paint();
+        };
+      });
+  }
+
+  /** Reflect the currency: relabel amount, hide the RON-only donor tranche. */
+  function applyCurrency() {
+    const eur = S.currency === "EUR";
+    el("currencySeg")
+      .querySelectorAll<HTMLButtonElement>("button")
+      .forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.ccy === S.currency)));
+    el("donorWrap").style.display = eur ? "none" : "flex";
+    if (eur && S.donor) {
+      S.donor = false;
+      el<HTMLInputElement>("donor").checked = false;
+    }
+    // amount label + plan hint carry the currency word
+    const rec = isRecurring();
+    const w = ccyWord(S.currency);
+    el("amountLabel").textContent = rec ? `Sumă / lună (${w})` : `Sumă investită (${w})`;
+    updatePlanHint();
   }
 
   // --- maturity & strategy ---------------------------------------------------
 
   function buildMat() {
     const seg = el("matSeg");
-    const mats = matsAt(S.startId);
+    const mats = matsAt(S.startId, S.currency);
     if (!mats.includes(S.mat)) S.mat = mats.includes(5) ? 5 : mats[mats.length - 1];
     seg.innerHTML = mats
       .map((m) => `<button data-m="${m}" aria-pressed="${m === S.mat}">${m} ani</button>`)
@@ -227,11 +265,13 @@ export function createApp(initial?: SimParams | null): AppController {
     el<HTMLInputElement>("donor").checked = S.donor;
     el<HTMLInputElement>("reinvest").checked = S.reinvest;
     syncStrat();
+    applyCurrency();
     buildMat();
     syncMode();
   }
 
   bindContrib();
+  bindCurrency();
   bindStrat();
   syncControls();
   paint();

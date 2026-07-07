@@ -1,7 +1,5 @@
-import { END } from "../data/history";
 import { benchmarkSummary, deflate, depositTrajectory } from "../sim/benchmark";
 import { couponSchedule, scheduleByYear, type CashEvent } from "../sim/cashflow";
-import { idToYear } from "../sim/history";
 import {
   contributionMonths,
   run,
@@ -24,11 +22,43 @@ export interface RenderTargets {
   calendar: HTMLElement;
 }
 
-function headlineHTML(finalValue: number, profit: number, cagr: number): string {
+/** Currency code → the banknote-denomination word on the certificate face. */
+const ccyWord = (ccy: string): string => (ccy === "EUR" ? "euro" : "lei");
+
+/** The engraved certificate face: the value-today denomination + supporting figures. */
+function certHTML(
+  finalValue: number,
+  profit: number,
+  cagr: number,
+  years: number,
+  ccy: string,
+): string {
+  const profitCls = profit >= 0 ? "pos" : "neg";
+  const sign = profit >= 0 ? "+" : "−";
+  const w = ccyWord(ccy);
   return `
-    <div class="stat"><div class="k">Valoare azi</div><div class="v gold num">${fmt(finalValue)} RON</div></div>
-    <div class="stat"><div class="k">Câștig net (neimpozabil)</div><div class="v pos num">+${fmt(profit)} RON</div></div>
-    <div class="stat"><div class="k">Randament anualizat</div><div class="v num">${fmt2(cagr)}%</div></div>`;
+    <div class="cert__flag">
+      <span class="micro">Valoare azi</span>
+      <span class="cert__free">Cupon neimpozabil</span>
+    </div>
+    <div class="denom stamp-in">
+      <span class="denom__num">${fmt(finalValue)}</span>
+      <span class="denom__ccy">${w}</span>
+    </div>
+    <div class="cert__supp">
+      <div class="supp">
+        <span class="supp__k">Câștig net</span>
+        <span class="supp__v ${profitCls}">${sign}${fmt(Math.abs(profit))} ${w}</span>
+      </div>
+      <div class="supp">
+        <span class="supp__k">Randament p.a.</span>
+        <span class="supp__v">${fmt2(cagr)}%</span>
+      </div>
+      <div class="supp">
+        <span class="supp__k">Perioadă</span>
+        <span class="supp__v">${fmt2(years)} ani</span>
+      </div>
+    </div>`;
 }
 
 /** Value-over-time growth chart as a self-contained, responsive inline SVG. */
@@ -114,8 +144,8 @@ function growthChartHTML(points: ValuePoint[], invested: number): string {
            aria-label="Grafic al evoluției valorii investiției de la ${fmt(invested)} la ${fmt(last.value)} RON">
         <defs>
           <linearGradient id="gcFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="rgba(216,165,74,0.34)" />
-            <stop offset="100%" stop-color="rgba(216,165,74,0.02)" />
+            <stop offset="0%" stop-color="rgba(44,97,70,0.30)" />
+            <stop offset="100%" stop-color="rgba(44,97,70,0.02)" />
           </linearGradient>
         </defs>
         ${grid.join("")}
@@ -129,28 +159,32 @@ function growthChartHTML(points: ValuePoint[], invested: number): string {
     </div>`;
 }
 
-function vizHTML(allLegs: Leg[], startId: string): string {
-  const minY = idToYear(startId);
-  const maxY = END;
-  const span = maxY - minY;
-  const lanes = allLegs
-    .map((leg) => {
-      const left = ((leg.startY - minY) / span) * 100;
-      const width = ((Math.min(leg.endY, maxY) - leg.startY) / span) * 100;
-      return `<div class="lane">
-      <div class="lbl">${leg.startLabel} · ${leg.mat}a</div>
-      <div class="track"><div class="bar" style="left:${left}%;width:${width}%">${leg.rate}%</div></div>
+/** The signature: each leg rendered as a detachable interest coupon. */
+function vizHTML(allLegs: Leg[]): string {
+  const coupons = allLegs
+    .map((leg, i) => {
+      const no = String(i + 1).padStart(2, "0");
+      const cls = "coupon" + (leg.matured ? " coupon--matured" : "");
+      const stamp = leg.matured ? `<span class="coupon__stamp">încasat</span>` : "";
+      return `
+    <div class="${cls}">
+      <div class="coupon__stub"><span>Cupon ${no}</span></div>
+      <div class="coupon__face">
+        <div class="coupon__period">${leg.startLabel} → ${Math.round(leg.endY)}</div>
+        <div class="coupon__rate">${fmt2(leg.rate)}%</div>
+        <div class="coupon__mat">${leg.mat} ani</div>
+        <div class="coupon__foot">
+          <span class="coupon__k">Cupon / an</span>
+          <span class="coupon__val">${fmt(leg.couponAnnual)}</span>
+        </div>
+      </div>
+      ${stamp}
     </div>`;
     })
     .join("");
-  const tickYears: number[] = [];
-  for (let y = Math.ceil(minY); y <= Math.floor(maxY); y++) tickYears.push(y);
   return `
-    <div class="laddertitle">Cronologie emisiuni & maturități</div>
-    <div class="ladder">${lanes}</div>
-    <div class="axis"><div></div><div class="ticks">${tickYears
-      .map((y) => `<span>${y}</span>`)
-      .join("")}</div></div>`;
+    <div class="laddertitle">Cupoane · cronologie emisiuni</div>
+    <div class="coupons">${coupons}</div>`;
 }
 
 function detailHTML(allLegs: Leg[]): string {
@@ -207,21 +241,26 @@ export function render(params: SimParams, els: RenderTargets): void {
   // For a recurring plan the invested capital is the amount times the number of
   // contributions; the baseline and figures reflect the whole committed plan.
   const invested = params.amount * contributionMonths(params).length;
-  const { finalValue, profit, cagr } = summarizeOf(params, res);
+  const { finalValue, profit, cagr, years } = summarizeOf(params, res);
 
   const allLegs = res.blocks.flatMap((b) => b.legs);
   const points = trajectory(res);
 
-  els.headline.innerHTML = headlineHTML(finalValue, profit, cagr);
+  els.headline.innerHTML = certHTML(finalValue, profit, cagr, years, params.currency);
   els.chart.innerHTML = growthChartHTML(points, invested);
-  els.bench.innerHTML = benchmarkSectionHTML(
-    points,
-    depositTrajectory(params),
-    deflate(points),
-    invested,
-    benchmarkSummary(params, points),
-  );
-  els.viz.innerHTML = vizHTML(allLegs, params.startId);
+  // The deposit/inflation benchmark is denominated in RON (BNR deposit rates,
+  // INS CPI) — it is meaningless against a EUR tranche, so omit it there.
+  els.bench.innerHTML =
+    params.currency === "EUR"
+      ? ""
+      : benchmarkSectionHTML(
+          points,
+          depositTrajectory(params),
+          deflate(points),
+          invested,
+          benchmarkSummary(params, points),
+        );
+  els.viz.innerHTML = vizHTML(allLegs);
   els.detail.innerHTML = detailHTML(allLegs);
   els.calendar.innerHTML = calendarHTML(couponSchedule(res, params));
 }

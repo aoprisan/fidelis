@@ -1,12 +1,10 @@
 /**
  * Regression guard over the full scenario matrix (every start date x strategy x
  * donor x reinvest x currency) plus a few detailed leg dumps.
- * `__fixtures__/golden.json` was originally captured from the ORIGINAL
- * single-file backtester, re-baselined onto the CORRECTED MF rate history
- * (commit 641dab5), and then re-baselined again when the backtester moved from a
- * fixed mid-2026 horizon to the HOLD-TO-MATURITY model and gained EUR tranches
- * (every leg now runs its full term; the horizon is the run's own last
- * maturity). It locks in that baseline: if any of these outputs change, an
+ * `__fixtures__/golden.json` was re-baselined when the redesign branch merged
+ * into main: the CORRECTED MF rate history + EUR tranches + 2026 data, run
+ * through main's END-anchored horizon model (each leg accrues/matures relative
+ * to `END`, mid-2026). It locks in that baseline: if any output changes, an
  * observed output changed. Regenerate it deliberately (never to silence a
  * failure) when a rate or the math intentionally changes.
  */

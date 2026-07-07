@@ -20,15 +20,17 @@ import { fmt, fmt2, fmtK } from "./format";
  */
 
 /** Distinct, dark-theme-legible line colors, cycled across selected series. */
+// A categorical palette tuned for the certificate paper ground: treasury
+// green, seal oxblood, brass, then muted secondaries that stay legible on ivory.
 const SERIES_COLORS = [
-  "#d8a54a", // gold
-  "#57b98a", // green
-  "#6aa9e0", // blue
-  "#c98bdb", // violet
-  "#e0906a", // coral
-  "#8bd0c0", // teal
-  "#c7b45e", // olive
-  "#a0a8d8", // periwinkle
+  "#2c6146", // treasury green
+  "#9e2b1e", // seal oxblood
+  "#9c7a2e", // brass
+  "#3f6790", // slate blue
+  "#7d5185", // plum
+  "#2f7d72", // teal
+  "#6f6a2e", // olive
+  "#b5623c", // terracotta
 ];
 
 const CURRENT_ID = "__current__";
@@ -248,7 +250,7 @@ function chartHTML(
       const last = pts[pts.length - 1];
       return `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.9"
                 stroke-linejoin="round" stroke-linecap="round"><title>${escapeHtml(s.name)}</title></path>
-        <circle cx="${r(sx(last.t))}" cy="${r(sy(last.value))}" r="3.5" fill="${color}" stroke="#131f33" stroke-width="1.5" />`;
+        <circle cx="${r(sx(last.t))}" cy="${r(sy(last.value))}" r="3.5" fill="${color}" stroke="#ddd6c2" stroke-width="1.5" />`;
     })
     .join("");
 

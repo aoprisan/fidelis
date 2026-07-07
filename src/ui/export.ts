@@ -22,20 +22,25 @@ import { buildImagePdf } from "./pdf";
  * saved as a PNG, wrapped into a one-page PDF, or handed to the Web Share API.
  */
 
-// Palette, mirrored from styles.css so the export matches the live view.
+// Palette, mirrored from styles.css so the export matches the live view. The
+// live design is a security-printed certificate: dark ink on light paper, so
+// `ink`/`paper` are the light ground and the dark text respectively (they are
+// each other's roles inverted vs a dark theme), `green` carries value accents,
+// `gold` is brass structure, `red` is the seal oxblood.
 const C = {
-  ink: "#0c1524",
-  ink2: "#131f33",
-  panel: "#182740",
-  line: "#26374f",
-  gold: "#d8a54a",
-  paper: "#eef2f6",
-  muted: "#8ba0bb",
-  green: "#57b98a",
-  red: "#d97066",
+  ink: "#e7e2d3", // page background (banknote paper)
+  ink2: "#ddd6c2", // inset wells (chart panels, lane tracks)
+  panel: "#f1ecde", // raised card face
+  line: "#cabfa3", // hairline
+  gold: "#9c7a2e", // brass — structural accents
+  paper: "#1c2b22", // primary text (intaglio ink)
+  muted: "#77796a",
+  green: "#2c6146", // treasury green — values / gains
+  red: "#9e2b1e", // seal oxblood — losses
 };
-const MONO = 'ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace';
-const SANS = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+const SERIF = '"Fraunces", Georgia, "Times New Roman", serif';
+const MONO = '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+const SANS = '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
 
 const STRAT_LABEL: Record<SimParams["strat"], string> = {
   single: "O emisiune",
@@ -57,7 +62,7 @@ function paramsLine(p: SimParams): string {
           `${fmt(p.amount)} RON/lună × ${p.plan.length}`,
           `${byId[p.plan[0]].label}–${byId[p.plan[p.plan.length - 1]].label}`,
         ]
-      : [`${fmt(p.amount)} RON`, byId[p.startId].label];
+      : [`${fmt(p.amount)} ${p.currency === "EUR" ? "euro" : "lei"}`, byId[p.startId].label];
   bits.push(STRAT_LABEL[p.strat]);
   if (p.strat === "single") bits.push(`${p.mat} ani`);
   if (p.donor) bits.push("Donator");
@@ -77,6 +82,7 @@ export function drawReport(
   const legs: Leg[] = res.blocks.flatMap((b) => b.legs);
   const s = summarize(params);
   const finalValue = finalValueOf(res);
+  const w = params.currency === "EUR" ? "euro" : "lei";
   const invested = params.amount * contributionMonths(params).length;
 
   // --- layout pass: collect draw ops while advancing the y cursor ---------
@@ -96,7 +102,7 @@ export function drawReport(
   const titleY = y;
   ops.push((c) => {
     c.fillStyle = C.paper;
-    c.font = `700 30px ${SANS}`;
+    c.font = `900 32px ${SERIF}`;
     c.fillText(title, P, titleY + 24);
   });
   y += 42;
@@ -120,8 +126,8 @@ export function drawReport(
 
   // headline stats (three cards)
   const cards: Array<{ k: string; v: string; color: string }> = [
-    { k: "VALOARE AZI", v: `${fmt(finalValue)} RON`, color: C.gold },
-    { k: "CÂȘTIG NET (NEIMPOZABIL)", v: `+${fmt(s.profit)} RON`, color: C.green },
+    { k: "VALOARE AZI", v: `${fmt(finalValue)} ${w}`, color: C.green },
+    { k: "CÂȘTIG NET (NEIMPOZABIL)", v: `+${fmt(s.profit)} ${w}`, color: C.green },
     { k: "RANDAMENT ANUALIZAT", v: `${fmt2(s.cagr)}%`, color: C.paper },
   ];
   const cardsY = y;
@@ -140,22 +146,23 @@ export function drawReport(
     y += chartH + 30;
   }
 
-  // benchmark comparison (Fidelis vs taxed deposit vs inflation)
-  if (points.length >= 2) {
+  // benchmark comparison (Fidelis vs taxed deposit vs inflation) — the deposit
+  // and CPI series are RON-denominated, so this is omitted for EUR tranches.
+  if (points.length >= 2 && params.currency !== "EUR") {
     const bs = benchmarkSummary(params, points);
     const series: BenchSeries[] = [
       { points: depositTrajectory(params), color: C.muted, dash: [], width: 1.5 },
-      { points: deflate(points), color: C.gold, dash: [5, 4], width: 1.5 },
-      { points, color: C.gold, dash: [], width: 2 },
+      { points: deflate(points), color: C.green, dash: [5, 4], width: 1.5 },
+      { points, color: C.green, dash: [], width: 2 },
     ];
     ops.push(sectionTitle("FIDELIS VS DEPOZIT BANCAR VS INFLAȚIE", y));
     y += 20;
     const legendY = y;
     ops.push((c) =>
       drawBenchLegend(c, legendY, [
-        { color: C.gold, dash: [], label: `Fidelis · ${fmtK(finalValue)}` },
+        { color: C.green, dash: [], label: `Fidelis · ${fmtK(finalValue)}` },
         { color: C.muted, dash: [], label: `Depozit (net de impozit) · ${fmtK(bs.depositFinal)}` },
-        { color: C.gold, dash: [5, 4], label: `Fidelis, valoare reală · ${fmtK(bs.realFinal)}` },
+        { color: C.green, dash: [5, 4], label: `Fidelis, valoare reală · ${fmtK(bs.realFinal)}` },
       ]),
     );
     y += 22;
@@ -365,6 +372,12 @@ export function drawReport(
   ctx.scale(dpr, dpr);
   ctx.fillStyle = C.ink;
   ctx.fillRect(0, 0, W, height);
+  // certificate double security border
+  ctx.strokeStyle = C.line;
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(14, 14, W - 28, height - 28);
+  ctx.lineWidth = 1;
+  ctx.strokeRect(19, 19, W - 38, height - 38);
   ctx.textBaseline = "alphabetic";
   ctx.textAlign = "left";
   for (const op of ops) op(ctx);
@@ -389,21 +402,30 @@ function drawStatCards(
   valueSize: number,
 ): void {
   const inner = W - 2 * P;
-  const gap = 1;
+  const gap = 12;
   const cw = (inner - 2 * gap) / 3;
-  c.fillStyle = C.line;
-  c.fillRect(P, yTop, inner, cardH);
   cards.forEach((card, i) => {
     const cx = P + i * (cw + gap);
+    // raised card face: light fill + subtle drop shadow + hairline keyline
+    c.save();
+    c.shadowColor = "rgba(28,43,34,0.12)";
+    c.shadowBlur = 8;
+    c.shadowOffsetY = 2;
     c.fillStyle = C.panel;
-    c.fillRect(cx, yTop, cw, cardH);
+    roundRect(c, cx, yTop, cw, cardH, 2);
+    c.fill();
+    c.restore();
+    c.strokeStyle = C.line;
+    c.lineWidth = 1;
+    roundRect(c, cx, yTop, cw, cardH, 2);
+    c.stroke();
     c.fillStyle = C.muted;
-    c.font = `10px ${MONO}`;
+    c.font = `600 10px ${MONO}`;
     tracking(c, "0.12em");
     c.fillText(card.k, cx + 16, yTop + 24);
     tracking(c, "0em");
     c.fillStyle = card.color;
-    c.font = `700 ${valueSize}px ${MONO}`;
+    c.font = `700 ${valueSize}px ${SERIF}`;
     c.fillText(card.v, cx + 16, yTop + cardH - 18);
   });
 }
@@ -566,16 +588,16 @@ function drawLane(
   const bx = trackX + left;
   const bw = Math.max(width, 2);
   const grad = c.createLinearGradient(bx, 0, bx + bw, 0);
-  grad.addColorStop(0, "rgba(216,165,74,0.85)");
-  grad.addColorStop(1, "rgba(216,165,74,0.45)");
+  grad.addColorStop(0, "rgba(44,97,70,0.85)");
+  grad.addColorStop(1, "rgba(44,97,70,0.45)");
   c.save();
   roundRect(c, trackX, laneY, trackW, laneH, 3);
   c.clip();
   c.fillStyle = grad;
   c.fillRect(bx, laneY, bw, laneH);
-  c.fillStyle = C.gold;
+  c.fillStyle = C.green;
   c.fillRect(bx + bw - 2, laneY, 2, laneH);
-  c.fillStyle = C.ink;
+  c.fillStyle = C.panel;
   c.font = `700 11px ${MONO}`;
   c.fillText(`${leg.rate}%`, bx + 8, laneY + laneH / 2 + 4);
   c.restore();
@@ -655,8 +677,8 @@ function drawGrowthChart(
   c.lineTo(px0, py1);
   c.closePath();
   const grad = c.createLinearGradient(0, py0, 0, py1);
-  grad.addColorStop(0, "rgba(216,165,74,0.34)");
-  grad.addColorStop(1, "rgba(216,165,74,0.02)");
+  grad.addColorStop(0, "rgba(44,97,70,0.30)");
+  grad.addColorStop(1, "rgba(44,97,70,0.02)");
   c.fillStyle = grad;
   c.fill();
 
@@ -668,7 +690,7 @@ function drawGrowthChart(
     if (i === 0) c.moveTo(xx, yy);
     else c.lineTo(xx, yy);
   });
-  c.strokeStyle = C.gold;
+  c.strokeStyle = C.green;
   c.lineWidth = 2;
   c.lineJoin = "round";
   c.stroke();
@@ -696,7 +718,7 @@ function drawGrowthChart(
   const last = points[points.length - 1];
   const ex = sx(last.t);
   const ey = sy(last.value);
-  c.fillStyle = C.gold;
+  c.fillStyle = C.green;
   c.beginPath();
   c.arc(ex, ey, 4, 0, Math.PI * 2);
   c.fill();
@@ -857,13 +879,34 @@ export function initExport(app: AppController, getTitle: () => string): void {
 
   const current = () => drawReport(app.getParams(), getTitle());
 
+  // Canvas 2D does not trigger web-font loading, so ensure Fraunces + Inter are
+  // resolved before painting — otherwise the first export falls back to a
+  // system font. `document.fonts` is guarded for older browsers.
+  const ensureFonts = async (): Promise<void> => {
+    const fonts = (document as Document & { fonts?: FontFaceSet }).fonts;
+    if (!fonts) return;
+    try {
+      await Promise.all([
+        fonts.load('900 32px "Fraunces"'),
+        fonts.load('600 13px "Fraunces"'),
+        fonts.load('600 13px "Inter"'),
+        fonts.load('700 13px "Inter"'),
+      ]);
+    } catch {
+      /* fall back to system fonts */
+    }
+  };
+  void ensureFonts(); // warm the cache on load
+
   pngBtn?.addEventListener("click", async () => {
+    await ensureFonts();
     const { canvas } = current();
     download(await canvasToPngBlob(canvas), `${slug(getTitle())}.png`);
     flash(pngBtn, "Descărcat ✓");
   });
 
-  pdfBtn?.addEventListener("click", () => {
+  pdfBtn?.addEventListener("click", async () => {
+    await ensureFonts();
     const { canvas } = current();
     download(canvasToPdfBlob(canvas), `${slug(getTitle())}.pdf`);
     flash(pdfBtn, "Descărcat ✓");
@@ -880,6 +923,7 @@ export function initExport(app: AppController, getTitle: () => string): void {
       shareBtn.style.display = "none";
     } else {
       shareBtn.addEventListener("click", async () => {
+        await ensureFonts();
         const { canvas } = current();
         const blob = await canvasToPngBlob(canvas);
         const file = new File([blob], `${slug(getTitle())}.png`, { type: "image/png" });

@@ -5,9 +5,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 A single-page **historic-yield simulator** for Romania's Fidelis government-bond
-program (RON tranches, 2024–2025). Vite + TypeScript, **no framework, zero
-runtime dependencies**. Builds to a static site deployed to GitHub Pages. The UI
-is in Romanian.
+program (**RON + EUR** tranches, **2024–2026**). Vite + TypeScript, **no
+framework, zero runtime JS dependencies**. Builds to a static site deployed to
+GitHub Pages. The UI is in Romanian.
+
+The visual identity is a **security-printed government-bond certificate** —
+banknote-paper ground, intaglio ink, treasury green + seal oxblood, Fraunces +
+Inter type, and a detachable interest-coupon strip as the signature element (see
+`src/ui/styles.css`). The only non-self-contained asset is the Google Fonts
+`<link>` in `index.html`; everything else is inlined.
 
 ## Commands
 
@@ -64,20 +70,30 @@ unit-testable without a DOM; the UI is a thin projection of them.
   headline annualized return is the **money-weighted IRR** (`irr()`), *not*
   `final/invested` CAGR (which would overstate it); a single-month plan reduces
   exactly to the lump-sum CAGR. Preserve this distinction when touching return math.
+- **Currency.** `SimParams.currency` (`RON`|`EUR`) selects the tranche table
+  (`h.maturities` vs `h.eur`) via `couponFor`/`matsAt`. Donor tranches are
+  RON-only (forced off in EUR), and the deposit/inflation benchmark is RON-only
+  (BNR/INS series), so `render.ts` and `export.ts` omit it for EUR.
 - **Maturity switch.** Mid-2025 the 1/3/5-year RON tranches were replaced by
   2/4/6-year ones; rate/maturity lookup handles this fallback. Months without an
   issuance reuse the last available rate.
+- **Horizon.** The backtester is **END-anchored** (`END`, mid-2026 in
+  `data/history.ts`): legs accrue/mature relative to that fixed horizon, which is
+  what `trajectory`, `benchmark`, and `cashflow` assume. Do not switch to a
+  hold-to-maturity model without reworking those.
 - Coupons are annual, fixed, tax-free (CASS-exempt), held to maturity — no
   early-sale-at-market modeling.
 
 ## Tests: golden regression guard
 
-`src/sim/golden.test.ts` replays the **original single-file app's** outputs across
-the full scenario matrix (every start × strategy × donor × reinvest, plus leg
-dumps) from `src/sim/__fixtures__/golden.json`. **Any change to simulation output
-fails this test.** If you intentionally change the math, the fixture must be
-regenerated deliberately and the change justified — do not blindly update it to
-make the suite pass. `pdf.ts` and each pure module carry their own `*.test.ts`.
+`src/sim/golden.test.ts` locks in the current sim output across the full scenario
+matrix (every start × strategy × donor × reinvest × **currency**, plus leg dumps)
+from `src/sim/__fixtures__/golden.json`. **Any change to simulation output fails
+this test.** If you intentionally change the math or the rate table, the fixture
+must be regenerated deliberately and the change justified — do not blindly update
+it to make the suite pass. `pdf.ts` and each pure module carry their own
+`*.test.ts`; when rates change, the hand-verified numbers in `simulate.test.ts` /
+`cashflow.test.ts` / `compare.test.ts` need updating alongside.
 
 ## Deployment
 
