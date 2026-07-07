@@ -30,6 +30,25 @@ export interface StorageLike {
 /** Storage key; versioned so the shape can evolve without clobbering. */
 export const STORAGE_KEY = "fidelis.scenarios.v1";
 
+/**
+ * `localStorage` when it is usable, else an in-memory shim (private mode / SSR).
+ * Shared so every panel reads and writes the same saved-scenario list.
+ */
+export function safeStorage(): StorageLike {
+  try {
+    const t = "__fidelis_probe__";
+    localStorage.setItem(t, "1");
+    localStorage.removeItem(t);
+    return localStorage;
+  } catch {
+    const mem = new Map<string, string>();
+    return {
+      getItem: (k) => mem.get(k) ?? null,
+      setItem: (k, v) => void mem.set(k, v),
+    };
+  }
+}
+
 /** Coerce untrusted input into a valid `Scenario`, or drop it. */
 function sanitizeScenario(raw: unknown): Scenario | null {
   if (!raw || typeof raw !== "object") return null;

@@ -1,8 +1,10 @@
 import "./ui/styles.css";
 import { createApp } from "./ui/app";
 import { initScenarios } from "./ui/scenarios";
+import { initCompare } from "./ui/compare";
 import { initExport } from "./ui/export";
 import { decodeParams, encodeParams } from "./scenario/codec";
+import { ScenarioStore, safeStorage } from "./scenario/store";
 
 /** Read a shared scenario off the URL hash (`#s?...`), if present and valid. */
 function paramsFromHash() {
@@ -20,5 +22,9 @@ app.subscribe((p) => {
   }
 });
 
-const panel = initScenarios(app);
+// One shared store so the save panel and the comparison view stay in sync.
+const store = new ScenarioStore(safeStorage());
+let compare: { refresh(): void } | undefined;
+const panel = initScenarios(app, store, () => compare?.refresh());
+compare = initCompare(app, store, () => panel.currentTitle());
 initExport(app, panel.currentTitle);

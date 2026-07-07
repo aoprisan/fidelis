@@ -26,11 +26,13 @@ src/
   scenario/         Pure scenario layer (no DOM).
     codec.ts          encode/decode/sanitize params for share links & storage
     store.ts          named-scenario CRUD over a StorageLike (localStorage)
+    compare.ts        build/index/bound value curves for multi-scenario comparison
     *.test.ts         Vitest unit tests
   ui/               Render layer (DOM only; imports sim/scenario, never the reverse).
     format.ts · render.ts · app.ts · styles.css
     render.ts         headline stats · value-over-time growth chart (SVG) · timeline · detail table
     scenarios.ts      save / edit / rename / delete panel
+    compare.ts        "Compară scenarii" view — overlaid curves + side-by-side table
     export.ts         canvas "report card" → PNG / PDF / Web Share
     pdf.ts            tiny dependency-free PDF writer (+ pdf.test.ts)
   main.ts           Entry point: mounts the app, wires the share-link hash.
@@ -51,6 +53,22 @@ Each scenario is drawn three ways, all from the same pure simulation core:
   PNG / PDF export so the report card matches the page.
 - **Timeline** — a Gantt-style lane per issuance/maturity (`vizHTML`).
 - **Detail table** — per-tranche coupon, principal and status.
+
+## Compare scenarios
+
+The **Compară scenarii** view overlays the value curves of the current
+scenario and any saved ones on a single chart, with a side-by-side table of
+amount, start, strategy, final value, profit and annualized return (the best
+return is flagged). Pick which scenarios to include with the chips; the chart
+updates live as you change the controls. Toggle between:
+
+- **RON** — absolute value curves.
+- **Index 100** — every curve rebased to `100` at its start (dashed reference
+  line), so scenarios of different sizes compare on the same performance scale.
+
+The comparison maths (`buildComparison` · `indexPoints` · `boundsOf` ·
+`bestByCagr`) lives in the pure `scenario/compare.ts`; `ui/compare.ts` is only
+the DOM/SVG projection.
 
 ## Scenarios: save, edit, export & share
 

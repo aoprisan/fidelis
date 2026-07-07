@@ -1,6 +1,6 @@
 import { byId } from "../sim/history";
 import type { SimParams } from "../sim/simulate";
-import { ScenarioStore, type StorageLike } from "../scenario/store";
+import { ScenarioStore } from "../scenario/store";
 import type { AppController } from "./app";
 import { fmt } from "./format";
 
@@ -24,22 +24,6 @@ function newId(): string {
   return `s-${now().toString(36)}-${Math.floor(Math.random() * 1e9).toString(36)}`;
 }
 
-/** Fallback in-memory storage when localStorage is unavailable (e.g. private mode). */
-function safeStorage(): StorageLike {
-  try {
-    const t = "__fidelis_probe__";
-    localStorage.setItem(t, "1");
-    localStorage.removeItem(t);
-    return localStorage;
-  } catch {
-    const mem = new Map<string, string>();
-    return {
-      getItem: (k) => mem.get(k) ?? null,
-      setItem: (k, v) => void mem.set(k, v),
-    };
-  }
-}
-
 function summaryLine(p: SimParams): string {
   const strat = p.strat === "ladder" ? "Scară" : `${p.mat}a`;
   const tags = [p.donor ? "donator" : null, p.reinvest ? "reinv." : null]
@@ -53,8 +37,11 @@ export interface ScenarioPanel {
   currentTitle(): string;
 }
 
-export function initScenarios(app: AppController): ScenarioPanel {
-  const store = new ScenarioStore(safeStorage());
+export function initScenarios(
+  app: AppController,
+  store: ScenarioStore,
+  onChange?: () => void,
+): ScenarioPanel {
   const nameInput = el<HTMLInputElement>("scName");
   const saveBtn = el<HTMLButtonElement>("scSave");
   const listEl = el("scList");
@@ -118,6 +105,7 @@ export function initScenarios(app: AppController): ScenarioPanel {
             store.remove(id);
             if (activeId === id) setActive(null);
             render();
+            onChange?.();
           }
         } else if (b.dataset.act === "rename") {
           const s = store.all().find((x) => x.id === id);
@@ -126,6 +114,7 @@ export function initScenarios(app: AppController): ScenarioPanel {
             store.rename(id, next, now());
             if (activeId === id) nameInput.value = next.trim();
             render();
+            onChange?.();
           }
         }
       };
@@ -158,6 +147,7 @@ export function initScenarios(app: AppController): ScenarioPanel {
       setActive(id);
     }
     render();
+    onChange?.();
   };
 
   // A "new / clear" affordance: clicking the label resets the editing target.
