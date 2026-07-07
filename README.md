@@ -23,13 +23,37 @@ src/
     history.ts        idToYear · matsAt · couponFor · issuanceAtOrAfter
     simulate.ts       simulateLeg · valueOf · run · summarize (coupon/CAGR math)
     *.test.ts         Vitest unit + golden-regression tests
-  ui/               Render layer (DOM only; imports sim, never the reverse).
+  scenario/         Pure scenario layer (no DOM).
+    codec.ts          encode/decode/sanitize params for share links & storage
+    store.ts          named-scenario CRUD over a StorageLike (localStorage)
+    *.test.ts         Vitest unit tests
+  ui/               Render layer (DOM only; imports sim/scenario, never the reverse).
     format.ts · render.ts · app.ts · styles.css
-  main.ts           Entry point: mounts the app.
+    scenarios.ts      save / edit / rename / delete panel
+    export.ts         canvas "report card" → PNG / PDF / Web Share
+    pdf.ts            tiny dependency-free PDF writer (+ pdf.test.ts)
+  main.ts           Entry point: mounts the app, wires the share-link hash.
 ```
 
-The `sim/` core is pure and side-effect-free, so the math is unit-testable in
-isolation and the UI is a thin projection of it.
+The `sim/` and `scenario/` cores are pure and side-effect-free, so the math and
+serialization are unit-testable in isolation and the UI is a thin projection of
+them.
+
+## Scenarios: save, edit, export & share
+
+- **Save / edit** — name the current parameters and store them (in
+  `localStorage`). Saved scenarios can be loaded back, updated in place, renamed,
+  or deleted. `scenario/store.ts` keeps the list operations pure; the panel in
+  `ui/scenarios.ts` is only DOM glue.
+- **Share link** — the live parameters are mirrored into the URL hash
+  (`#s?a=…&s=…`), so copying the address (or the **Copiază link** button) shares
+  an exact scenario; opening such a link restores it.
+- **Export PNG / PDF** — the results are painted onto a `<canvas>` "report card"
+  matching the on-page design, then saved as a PNG or wrapped into a one-page PDF.
+  Both are built from scratch — the PDF writer (`ui/pdf.ts`) embeds a JPEG via
+  `/DCTDecode` — so the app keeps **zero runtime dependencies**.
+- **Share** — on browsers that support it, the **Partajează** button hands the
+  PNG to the native Web Share API (files); otherwise it falls back to a download.
 
 ## Development
 

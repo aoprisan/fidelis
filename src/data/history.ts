@@ -52,3 +52,9 @@ export const HISTORY: readonly Issuance[] = [
 
 /** Simulation horizon: mid-2026, expressed in decimal years. */
 export const END = 2026 + 7 / 12;
+
+/**
+ * Earliest issuance offered as a start date in the UI. Issuances before this
+ * one are still used for the rate table but are not selectable start points.
+ */
+export const FIRST_SELECTABLE = "2024-10";
