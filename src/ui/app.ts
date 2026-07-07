@@ -2,6 +2,7 @@ import { HISTORY } from "../data/history";
 import { defaultBase } from "../forecast";
 import { matsAt } from "../sim/history";
 import type { SimParams } from "../sim/simulate";
+import { wireExplain, type ExplainEls } from "./explain";
 import { renderForecast, type ForecastTargets } from "./forecast";
 import { render, type RenderTargets } from "./render";
 
@@ -102,6 +103,14 @@ export function createApp(): void {
   bindStrat();
   buildMat();
   paint();
+
+  const explainEls: ExplainEls = {
+    explainBtn: el<HTMLAnchorElement>("explainBtn"),
+    copyBtn: el<HTMLButtonElement>("copyBtn"),
+    msg: el("explainMsg"),
+  };
+  // Read S at click time so the prompt reflects the live portfolio state.
+  wireExplain(explainEls, () => S);
 
   wireForecast();
 }

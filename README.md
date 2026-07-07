@@ -23,15 +23,29 @@ src/
   sim/              Pure, deterministic simulation core (no DOM).
     history.ts        idToYear · matsAt · couponFor · issuanceAtOrAfter
     simulate.ts       simulateLeg · valueOf · run · summarize (coupon/CAGR math)
+    explain.ts        buildExplainPrompt · claudeDeepLink (state → prompt → URL)
     *.test.ts         Vitest unit + golden-regression tests
   forecast/         Pure, transparent forecast core (no DOM).
     regression.ts     Tiny OLS (normal equations + Gauss–Jordan); no black box.
     forecast.ts       Fit coupons on macro + tenor · 3 scenarios · per-tenor bands
     *.test.ts         Vitest unit + golden tests (coefficients, fit, scenarios)
   ui/               Render layer (DOM only; imports sim/forecast, never the reverse).
-    format.ts · render.ts · forecast.ts · app.ts · styles.css
+    format.ts · render.ts · forecast.ts · explain.ts · app.ts · styles.css
   main.ts           Entry point: mounts the app.
 ```
+
+### Explain my strategy
+
+The results panel has an **"Explică-mi strategia cu Claude ↗"** button that
+serializes the live portfolio state + simulated results into a compact prompt
+and deep-links to a fresh [claude.ai](https://claude.ai) conversation with it
+prefilled (`https://claude.ai/new?q=<prompt>`) — **no API key, no backend**, the
+prompt travels in the URL. It is a real `target="_blank" rel="noopener"` anchor
+whose `href` is refreshed from state at click time, so it is not caught by popup
+blockers. A **"Copiază promptul"** button is the copy-to-clipboard fallback
+(async Clipboard API with a hidden-textarea `execCommand` fallback). The prompt
+builder (`sim/explain.ts`) is pure and unit-tested; it carries the same
+educational, not-investment-advice boundary into the conversation.
 
 The `sim/` core is pure and side-effect-free, so the math is unit-testable in
 isolation and the UI is a thin projection of it.

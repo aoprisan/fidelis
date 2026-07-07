@@ -153,6 +153,20 @@ table.detail tr:last-child td { border-bottom: none; }
   margin-top: 16px; padding: 12px 14px; border-left: 2px solid var(--gold);
   background: rgba(216,165,74,.06); font-size: 12px; color: var(--muted);
 }
+
+/* explain-my-strategy action row */
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 20px; }
+.explain-btn, .copy-btn {
+  font-family: var(--mono); font-size: 13px; padding: 10px 16px;
+  border-radius: 3px; cursor: pointer; transition: all .12s; border: 1px solid var(--line);
+  display: inline-block; text-decoration: none; line-height: 1.2;
+}
+.explain-btn { background: var(--gold); border-color: var(--gold); color: var(--ink); font-weight: 700; }
+.explain-btn:hover { color: var(--ink); }
+.explain-btn:hover { background: #e4b45f; border-color: #e4b45f; }
+.copy-btn { background: var(--ink-2); color: var(--muted); }
+.copy-btn:hover { border-color: var(--gold-dim); color: var(--paper); }
+.explain-msg { font-size: 12px; color: var(--green); flex-basis: 100%; min-height: 16px; }
 a { color: var(--gold); }
 
 /* ============================ forecast module ============================ */
