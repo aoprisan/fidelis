@@ -19,17 +19,56 @@ framework. The layers are strictly separated:
 ```
 src/
   data/history.ts   Typed rate table — one entry per issuance, with source URL.
+  data/macro.ts     Macro drivers per issuance month (NBR rate · CPI · EUR/RON).
   sim/              Pure, deterministic simulation core (no DOM).
     history.ts        idToYear · matsAt · couponFor · issuanceAtOrAfter
     simulate.ts       simulateLeg · valueOf · run · summarize (coupon/CAGR math)
     *.test.ts         Vitest unit + golden-regression tests
-  ui/               Render layer (DOM only; imports sim, never the reverse).
-    format.ts · render.ts · app.ts · styles.css
+  forecast/         Pure, transparent forecast core (no DOM).
+    regression.ts     Tiny OLS (normal equations + Gauss–Jordan); no black box.
+    forecast.ts       Fit coupons on macro + tenor · 3 scenarios · per-tenor bands
+    *.test.ts         Vitest unit + golden tests (coefficients, fit, scenarios)
+  ui/               Render layer (DOM only; imports sim/forecast, never the reverse).
+    format.ts · render.ts · forecast.ts · app.ts · styles.css
   main.ts           Entry point: mounts the app.
 ```
 
 The `sim/` core is pure and side-effect-free, so the math is unit-testable in
 isolation and the UI is a thin projection of it.
+
+## Scenario forecast module
+
+A second, **experimental** module illustrates how Fidelis RON coupons have
+co-moved with the macro backdrop — and deliberately stops short of predicting
+them. It is **educational, not investment advice**: nobody can know future
+coupons (the Ministry of Finance sets them per issuance), and the copy makes
+that boundary prominent.
+
+- **Model.** One transparent ordinary-least-squares regression (`forecast/
+  regression.ts` — normal equations solved by Gauss–Jordan, a few dozen lines,
+  no dependencies, no black box) fitted on every historical `(issuance ×
+  maturity)` coupon joined to that month's macro drivers:
+
+  ```
+  coupon% ≈ β₀ + β₁·NBR + β₂·CPI + β₃·(EUR/RON) + β₄·tenor
+  ```
+
+  Predictors are mean-centered only for numerical stability (two drivers barely
+  move in-sample); coefficients are converted back to raw units, so every β
+  reads in the predictor's own units. The UI shows the fitted formula, R², RMSE,
+  the coefficient table with plain-language interpretations, and the historical
+  coupon support.
+- **Three scenarios, never a point prediction.** `base` holds the latest macro
+  flat; `low` / `high` apply small, fully-visible shifts (a dovier vs. a more
+  stressed macro environment). The headline is the **min–max range per tenor**,
+  with an explicit *extrapolation* flag when a band escapes the historical
+  coupon support.
+- **Honest about its limits.** On this short 2024–25 sample the inflation and
+  policy-rate coefficients come out counterintuitively signed (coupons were
+  trimmed through late 2025 even as CPI rose). Rather than hide that, the module
+  surfaces it — which is exactly why it shows a scenario *range* instead of a
+  single number. The macro series (`data/macro.ts`) are approximate, clearly
+  labelled, and pinned to public BNR/INS sources for verification.
 
 ## Development
 
@@ -52,6 +91,11 @@ Written **before** the refactor and kept green through it:
   single-file app's outputs across the full scenario matrix (every start date ×
   strategy × donor × reinvest, plus detailed leg dumps) captured in
   `sim/__fixtures__/golden.json`. If an observed output changes, this fails.
+- `forecast/regression.test.ts` — the OLS core: exact recovery of a known linear
+  relation (R² = 1), classic slope/intercept, pivoting, singular-matrix guard.
+- `forecast/forecast.test.ts` — the coupon model: the macro join, golden fitted
+  coefficients and fit stats, term-premium monotonicity, scenario shifts, and
+  the per-tenor extrapolation flag.
 
 ## Deployment (GitHub Pages)
 

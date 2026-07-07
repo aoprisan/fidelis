@@ -1,6 +1,8 @@
 import { HISTORY } from "../data/history";
+import { defaultBase } from "../forecast";
 import { matsAt } from "../sim/history";
 import type { SimParams } from "../sim/simulate";
+import { renderForecast, type ForecastTargets } from "./forecast";
 import { render, type RenderTargets } from "./render";
 
 const el = <T extends HTMLElement>(id: string): T => {
@@ -100,4 +102,56 @@ export function createApp(): void {
   bindStrat();
   buildMat();
   paint();
+
+  wireForecast();
+}
+
+/**
+ * Wire the scenario forecast module: three static base-macro inputs feeding a
+ * pure re-render. Kept separate from the backtester state — it has its own
+ * mutable base assumption and its own render targets.
+ */
+function wireForecast(): void {
+  // Mutable base assumption (structurally satisfies the readonly MacroAssumption).
+  const base = { nbr: defaultBase.nbr, cpi: defaultBase.cpi, eurRon: defaultBase.eurRon };
+
+  const targets: ForecastTargets = {
+    bands: el("fcBands"),
+    scenarios: el("fcScenarios"),
+    model: el("fcModel"),
+  };
+
+  const nbr = el<HTMLInputElement>("fcNbr");
+  const cpi = el<HTMLInputElement>("fcCpi");
+  const eur = el<HTMLInputElement>("fcEur");
+
+  const syncInputs = () => {
+    nbr.value = String(base.nbr);
+    cpi.value = String(base.cpi);
+    eur.value = String(base.eurRon);
+  };
+  const paintForecast = () => renderForecast(base, targets);
+
+  nbr.oninput = () => {
+    base.nbr = Number(nbr.value) || 0;
+    paintForecast();
+  };
+  cpi.oninput = () => {
+    base.cpi = Number(cpi.value) || 0;
+    paintForecast();
+  };
+  eur.oninput = () => {
+    base.eurRon = Number(eur.value) || 0;
+    paintForecast();
+  };
+  el<HTMLButtonElement>("fcReset").onclick = () => {
+    base.nbr = defaultBase.nbr;
+    base.cpi = defaultBase.cpi;
+    base.eurRon = defaultBase.eurRon;
+    syncInputs();
+    paintForecast();
+  };
+
+  syncInputs();
+  paintForecast();
 }

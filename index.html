@@ -65,6 +65,45 @@
       </p>
     </div>
   </div>
+
+  <!-- FORECAST -->
+  <section class="forecast" id="forecast">
+    <header class="fc-masthead">
+      <p class="eyebrow">Modul experimental · Scenarii de cupon</p>
+      <h2 class="fc-title">Cupoane Fidelis viitoare — trei scenarii, nu o predicție</h2>
+      <p class="sub">O regresie liniară transparentă, antrenată pe tabelul istoric al cupoanelor plus trei factori macro la momentul emisiunii: dobânda de politică BNR, inflația (CPI) și cursul EUR/RON. Rezultatul este un <b>interval</b> pe trei scenarii, cu toate ipotezele la vedere.</p>
+    </header>
+
+    <div class="boundary" role="note">
+      <b>Educativ, nu consultanță de investiții.</b> Acesta este un exercițiu didactic despre cum au co-variat cupoanele cu condițiile macro în 2024–2025. <b>Nu</b> este o prognoză de piață, o recomandare sau o garanție. Nimeni nu poate ști cupoanele viitoare Fidelis; ele se stabilesc de Ministerul Finanțelor la fiecare emisiune. Seriile macro folosite sunt aproximative și trebuie verificate la sursă (bnr.ro, insse.ro). Nu luați decizii financiare pe baza acestui modul.
+    </div>
+
+    <div class="grid fc-layout">
+      <!-- BASE MACRO CONTROLS -->
+      <div class="panel" id="fcControls">
+        <h2>Ipoteze de bază</h2>
+        <p class="fc-hint">Punctul de plecare pentru toate scenariile. Scenariile „relaxat” și „tensionat” aplică deplasări fixe, afișate pe fiecare card.</p>
+
+        <label for="fcNbr">Dobândă de politică BNR (%)</label>
+        <input type="number" id="fcNbr" step="0.25" min="0" max="20" />
+
+        <label for="fcCpi">Inflație CPI, anual (%)</label>
+        <input type="number" id="fcCpi" step="0.1" min="-5" max="30" />
+
+        <label for="fcEur">Curs EUR/RON (lei/euro)</label>
+        <input type="number" id="fcEur" step="0.01" min="3" max="8" />
+
+        <button id="fcReset" class="fc-reset">Resetează la ultimele valori observate</button>
+      </div>
+
+      <!-- FORECAST RESULTS -->
+      <div>
+        <div id="fcBands"></div>
+        <div id="fcScenarios"></div>
+        <div id="fcModel"></div>
+      </div>
+    </div>
+  </section>
 </div>
 <script type="module" src="/src/main.ts"></script>
 </body>
