@@ -12,6 +12,14 @@ export interface SimParams {
   mat: number;
   donor: boolean;
   reinvest: boolean;
+  /**
+   * Recurring contribution plan: the issuance months in which `amount` is
+   * invested (the same amount each month), sorted ascending. When present and
+   * non-empty the run becomes a series of contributions instead of a single
+   * lump sum; `startId` is kept equal to the first plan month. Absent/empty for
+   * a one-off lump-sum scenario.
+   */
+  plan?: string[];
 }
 
 /** One holding period: principal held to maturity paying an annual coupon. */
@@ -195,9 +203,65 @@ export function runLadder(p: SimParams): SimResult {
   return { blocks };
 }
 
-/** Run the chosen strategy. */
+/**
+ * The contribution schedule: the months in which the amount is invested. For a
+ * recurring plan these are its months; otherwise the single start issuance.
+ */
+export function contributionMonths(p: SimParams): string[] {
+  return p.plan && p.plan.length > 0 ? p.plan : [p.startId];
+}
+
+/**
+ * Run the chosen strategy. For a lump sum this is one contribution at the start
+ * issuance; for a recurring plan the same `amount` is invested at every plan
+ * month, and the resulting capital blocks are concatenated (so summing across
+ * blocks aggregates the whole plan).
+ */
 export function run(p: SimParams): SimResult {
-  return p.strat === "single" ? runSingle(p) : runLadder(p);
+  const strat = p.strat === "single" ? runSingle : runLadder;
+  const blocks = contributionMonths(p).flatMap(
+    (id) => strat(id === p.startId ? p : { ...p, startId: id }).blocks,
+  );
+  return { blocks };
+}
+
+/** One dated cash flow: a signed amount `cf` at decimal year `t`. */
+export interface CashFlow {
+  t: number;
+  cf: number;
+}
+
+/**
+ * Money-weighted annualized return (%) of a dated cash-flow stream, found by
+ * bisection on the net present value. Used for recurring plans, where several
+ * contributions are made on different dates: a single (final/invested) CAGR
+ * would misstate the return because the money was not all invested for the full
+ * horizon. Returns 0 when the flows don't bracket a root (e.g. no net gain).
+ */
+export function irr(flows: CashFlow[]): number {
+  if (flows.length === 0) return 0;
+  const t0 = Math.min(...flows.map((f) => f.t));
+  const npv = (r: number): number =>
+    flows.reduce((s, f) => s + f.cf / Math.pow(1 + r, f.t - t0), 0);
+  let lo = -0.9999;
+  let hi = 10;
+  let flo = npv(lo);
+  const fhi = npv(hi);
+  if (flo === 0) return lo * 100;
+  if (fhi === 0) return hi * 100;
+  if (flo * fhi > 0) return 0; // no sign change → IRR undefined for these flows
+  for (let i = 0; i < 200; i++) {
+    const mid = (lo + hi) / 2;
+    const fm = npv(mid);
+    if (Math.abs(fm) < 1e-7) return mid * 100;
+    if (flo * fm < 0) {
+      hi = mid;
+    } else {
+      lo = mid;
+      flo = fm;
+    }
+  }
+  return ((lo + hi) / 2) * 100;
 }
 
 /** Total horizon value of a run across all blocks. */
@@ -207,13 +271,35 @@ export function finalValueOf(res: SimResult): number {
   return finalValue;
 }
 
-/** Compute headline figures (final value, profit, horizon years, CAGR). */
-export function summarize(p: SimParams): Summary {
-  const res = run(p);
-  const invested = p.amount;
+/**
+ * Compute headline figures from an already-computed run (avoids re-running when
+ * the caller already has the {@link SimResult}). Invested is the amount times
+ * the number of contributions; the horizon runs from the first contribution.
+ * For a single contribution the annualized return is the plain CAGR; for a
+ * recurring plan it is the money-weighted return ({@link irr}) of the
+ * contribution cash flows against the final value.
+ */
+export function summarizeOf(p: SimParams, res: SimResult): Summary {
+  const months = contributionMonths(p);
+  const invested = p.amount * months.length;
   const finalValue = finalValueOf(res);
   const profit = finalValue - invested;
-  const years = END - idToYear(p.startId);
-  const cagr = years > 0 ? (Math.pow(finalValue / invested, 1 / years) - 1) * 100 : 0;
+  const startYear = Math.min(...months.map(idToYear));
+  const years = END - startYear;
+  let cagr: number;
+  if (invested <= 0) {
+    cagr = 0;
+  } else if (months.length <= 1) {
+    cagr = years > 0 ? (Math.pow(finalValue / invested, 1 / years) - 1) * 100 : 0;
+  } else {
+    const flows: CashFlow[] = months.map((id) => ({ t: idToYear(id), cf: -p.amount }));
+    flows.push({ t: END, cf: finalValue });
+    cagr = irr(flows);
+  }
   return { finalValue, profit, years, cagr };
+}
+
+/** Compute headline figures (final value, profit, horizon years, CAGR). */
+export function summarize(p: SimParams): Summary {
+  return summarizeOf(p, run(p));
 }

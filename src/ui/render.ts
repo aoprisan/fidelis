@@ -1,8 +1,9 @@
 import { END } from "../data/history";
 import { idToYear } from "../sim/history";
 import {
-  finalValueOf,
+  contributionMonths,
   run,
+  summarizeOf,
   trajectory,
   type Leg,
   type SimParams,
@@ -171,11 +172,10 @@ function detailHTML(allLegs: Leg[]): string {
 /** Run the simulation for the given params and paint the results. */
 export function render(params: SimParams, els: RenderTargets): void {
   const res = run(params);
-  const invested = params.amount;
-  const finalValue = finalValueOf(res);
-  const profit = finalValue - invested;
-  const years = END - idToYear(params.startId);
-  const cagr = years > 0 ? (Math.pow(finalValue / invested, 1 / years) - 1) * 100 : 0;
+  // For a recurring plan the invested capital is the amount times the number of
+  // contributions; the baseline and figures reflect the whole committed plan.
+  const invested = params.amount * contributionMonths(params).length;
+  const { finalValue, profit, cagr } = summarizeOf(params, res);
 
   const allLegs = res.blocks.flatMap((b) => b.legs);
 

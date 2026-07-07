@@ -29,7 +29,11 @@ function summaryLine(p: SimParams): string {
   const tags = [p.donor ? "donator" : null, p.reinvest ? "reinv." : null]
     .filter(Boolean)
     .join(", ");
-  return `${fmt(p.amount)} RON · ${byId[p.startId].label} · ${strat}${tags ? ` · ${tags}` : ""}`;
+  const when =
+    p.plan && p.plan.length > 1
+      ? `${fmt(p.amount)} RON/lună · ${p.plan.length} luni`
+      : `${fmt(p.amount)} RON · ${byId[p.startId].label}`;
+  return `${when} · ${strat}${tags ? ` · ${tags}` : ""}`;
 }
 
 /** Public handle: exposes the current title used for exports/share. */

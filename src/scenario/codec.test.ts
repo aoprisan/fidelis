@@ -24,6 +24,20 @@ describe("encode/decode round-trip", () => {
   it("tolerates a leading '?' on decode", () => {
     expect(decodeParams(`?${encodeParams(base)}`)).toEqual(base);
   });
+
+  it("does not emit a plan key for a lump-sum scenario", () => {
+    expect(encodeParams(base)).not.toContain("p=");
+  });
+
+  it("round-trips a recurring plan", () => {
+    const p: SimParams = {
+      ...base,
+      amount: 5000,
+      startId: "2025-02",
+      plan: ["2025-02", "2025-03", "2025-05"],
+    };
+    expect(decodeParams(encodeParams(p))).toEqual(p);
+  });
 });
 
 describe("sanitizeParams", () => {
@@ -64,6 +78,30 @@ describe("sanitizeParams", () => {
     expect(sanitizeParams(null)).toBeNull();
     expect(sanitizeParams("nope")).toBeNull();
     expect(sanitizeParams(42)).toBeNull();
+  });
+
+  it("sorts, de-dupes and drops invalid plan months, anchoring the start id", () => {
+    const p = sanitizeParams({
+      ...base,
+      startId: "2099-01", // ignored: the plan anchors the start id
+      plan: ["2025-03", "1999-01", "2025-02", "2024-08", "2025-02"],
+    });
+    // 2024-08 is before FIRST_SELECTABLE and 1999-01 doesn't exist -> dropped
+    expect(p?.plan).toEqual(["2025-02", "2025-03"]);
+    expect(p?.startId).toBe("2025-02");
+  });
+
+  it("treats an all-invalid plan as a lump sum (no plan key)", () => {
+    const p = sanitizeParams({ ...base, plan: ["1999-01", "2024-08"] });
+    expect(p?.plan).toBeUndefined();
+    expect(p?.startId).toBe(base.startId);
+  });
+
+  it("accepts a comma-separated plan string", () => {
+    expect(sanitizeParams({ ...base, plan: "2025-02,2025-03" })?.plan).toEqual([
+      "2025-02",
+      "2025-03",
+    ]);
   });
 });
 

@@ -1,6 +1,7 @@
 import { FIRST_SELECTABLE, HISTORY } from "../data/history";
-import { matsAt } from "../sim/history";
+import { byId, matsAt } from "../sim/history";
 import type { SimParams } from "../sim/simulate";
+import { fmt } from "./format";
 import { render, type RenderTargets } from "./render";
 
 const el = <T extends HTMLElement>(id: string): T => {
@@ -8,6 +9,9 @@ const el = <T extends HTMLElement>(id: string): T => {
   if (!node) throw new Error(`Missing element #${id}`);
   return node as T;
 };
+
+/** Issuances offered as start / contribution months. */
+const SELECTABLE = HISTORY.filter((h) => h.id >= FIRST_SELECTABLE);
 
 /** The default scenario shown on first load. */
 export const DEFAULT_PARAMS: SimParams = {
@@ -48,18 +52,20 @@ export function createApp(initial?: SimParams | null): AppController {
   const subscribers: Array<(p: SimParams) => void> = [];
   const paint = () => {
     render(S, targets);
-    const snapshot = { ...S };
+    const snapshot = { ...S, ...(S.plan ? { plan: [...S.plan] } : {}) };
     subscribers.forEach((cb) => cb(snapshot));
   };
 
+  /** A recurring plan is active when it holds at least one contribution month. */
+  const isRecurring = () => !!(S.plan && S.plan.length > 0);
+
+  // --- start date (lump) -----------------------------------------------------
+
   function buildStart() {
     const seg = el("startSeg");
-    seg.innerHTML = HISTORY.filter((h) => h.id >= FIRST_SELECTABLE)
-      .map(
-        (h) =>
-          `<button data-id="${h.id}" aria-pressed="${h.id === S.startId}">${h.label}</button>`,
-      )
-      .join("");
+    seg.innerHTML = SELECTABLE.map(
+      (h) => `<button data-id="${h.id}" aria-pressed="${h.id === S.startId}">${h.label}</button>`,
+    ).join("");
     seg.querySelectorAll("button").forEach((b) => {
       b.onclick = () => {
         S.startId = (b as HTMLButtonElement).dataset.id!;
@@ -71,6 +77,96 @@ export function createApp(initial?: SimParams | null): AppController {
       };
     });
   }
+
+  // --- contribution plan (recurring) ----------------------------------------
+
+  function buildPlan() {
+    const seg = el("planSeg");
+    const chosen = new Set(S.plan ?? []);
+    seg.innerHTML = SELECTABLE.map(
+      (h) => `<button data-id="${h.id}" aria-pressed="${chosen.has(h.id)}">${h.label}</button>`,
+    ).join("");
+    seg.querySelectorAll("button").forEach((b) => {
+      b.onclick = () => togglePlanMonth((b as HTMLButtonElement).dataset.id!);
+    });
+    updatePlanHint();
+  }
+
+  function togglePlanMonth(id: string) {
+    const set = new Set(S.plan ?? []);
+    if (set.has(id)) {
+      if (set.size <= 1) return; // always keep at least one contribution month
+      set.delete(id);
+    } else {
+      set.add(id);
+    }
+    commitPlan([...set]);
+  }
+
+  /** Adopt a new set of plan months: sort, anchor the start id, re-render. */
+  function commitPlan(ids: string[]) {
+    const sorted = ids.filter((id) => byId[id]).sort();
+    if (sorted.length === 0) return;
+    S.plan = sorted;
+    S.startId = sorted[0]; // keep the start issuance equal to the first month
+    buildPlan();
+    buildMat();
+    paint();
+  }
+
+  function updatePlanHint() {
+    const n = S.plan?.length ?? 0;
+    el("planHint").textContent =
+      n > 0
+        ? `Investești ${fmt(S.amount)} RON în fiecare din ${n} ${
+            n === 1 ? "lună" : "luni"
+          } · total ${fmt(S.amount * n)} RON.`
+        : "";
+  }
+
+  // --- contribution mode (lump vs recurring) --------------------------------
+
+  function bindContrib() {
+    el("contribSeg")
+      .querySelectorAll<HTMLButtonElement>("button")
+      .forEach((b) => {
+        b.onclick = () => (b.dataset.mode === "recurring" ? enterRecurring() : enterLump());
+      });
+    el("planAll").onclick = () => commitPlan(SELECTABLE.map((h) => h.id));
+    el("planClear").onclick = () => commitPlan([S.plan?.[0] ?? S.startId]);
+  }
+
+  function enterRecurring() {
+    if (!isRecurring()) S.plan = [S.startId];
+    syncMode();
+    paint();
+  }
+
+  function enterLump() {
+    if (isRecurring()) {
+      S.startId = S.plan![0];
+      S.plan = undefined;
+    }
+    syncMode();
+    paint();
+  }
+
+  /** Reflect the active mode onto the toggle, panels, amount label and pickers. */
+  function syncMode() {
+    const rec = isRecurring();
+    el("contribSeg")
+      .querySelectorAll<HTMLButtonElement>("button")
+      .forEach((x) =>
+        x.setAttribute("aria-pressed", String(x.dataset.mode === (rec ? "recurring" : "lump"))),
+      );
+    el("startWrap").hidden = rec;
+    el("planWrap").hidden = !rec;
+    el("amountLabel").textContent = rec ? "Sumă / lună (RON)" : "Sumă investită (RON)";
+    if (rec) buildPlan();
+    else buildStart();
+  }
+
+  // --- maturity & strategy ---------------------------------------------------
 
   function buildMat() {
     const seg = el("matSeg");
@@ -110,6 +206,7 @@ export function createApp(initial?: SimParams | null): AppController {
 
   el<HTMLInputElement>("amount").oninput = (e) => {
     S.amount = Math.max(0, Number((e.target as HTMLInputElement).value) || 0);
+    updatePlanHint();
     paint();
   };
   el<HTMLInputElement>("donor").onchange = (e) => {
@@ -126,22 +223,21 @@ export function createApp(initial?: SimParams | null): AppController {
     el<HTMLInputElement>("amount").value = String(S.amount);
     el<HTMLInputElement>("donor").checked = S.donor;
     el<HTMLInputElement>("reinvest").checked = S.reinvest;
-    buildStart();
     syncStrat();
     buildMat();
+    syncMode();
   }
 
-  buildStart();
+  bindContrib();
   bindStrat();
-  syncStrat();
-  buildMat();
   syncControls();
   paint();
 
   return {
-    getParams: () => ({ ...S }),
+    getParams: () => ({ ...S, ...(S.plan ? { plan: [...S.plan] } : {}) }),
     setParams: (p) => {
       Object.assign(S, p);
+      if (!p.plan || p.plan.length === 0) delete S.plan;
       syncControls();
       paint();
     },

@@ -37,6 +37,14 @@ function stratLabel(p: SimParams): string {
   return p.strat === "ladder" ? "Scară" : `${p.mat} ani`;
 }
 
+/** Start column: the single issuance, or the span of a recurring plan. */
+function startLabel(p: SimParams): string {
+  if (p.plan && p.plan.length > 1) {
+    return `${byId[p.plan[0]].label} → ${byId[p.plan[p.plan.length - 1]].label} (${p.plan.length})`;
+  }
+  return byId[p.startId].label;
+}
+
 function escapeHtml(s: string): string {
   return s.replace(
     /[&<>"']/g,
@@ -271,7 +279,7 @@ function tableHTML(series: CompareSeries[], colorOf: Map<string, string>): strin
           ${escapeHtml(s.name)}${isBest ? ' <span class="cmp-tag">cel mai bun</span>' : ""}
         </td>
         <td class="num">${fmt(p.amount)}</td>
-        <td>${escapeHtml(byId[p.startId].label)}</td>
+        <td>${escapeHtml(startLabel(p))}</td>
         <td>${stratLabel(p)}</td>
         <td class="num">${fmt(s.summary.finalValue)}</td>
         <td class="num pos">+${fmt(s.summary.profit)}</td>
