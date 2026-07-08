@@ -36,6 +36,16 @@ describe("initInfo", () => {
     expect(html).toContain("Lungă ·");
   });
 
+  it("draws one small-multiple chart per maturity", () => {
+    const mats = new Set<number>();
+    for (const h of HISTORY) {
+      for (const k of Object.keys(h.maturities)) mats.add(Number(k));
+      for (const k of Object.keys(h.eur)) mats.add(Number(k));
+    }
+    const cells = html.match(/class="mc-cell"/g) ?? [];
+    expect(cells.length).toBe(mats.size);
+  });
+
   it("badges unverified issuances", () => {
     const flagged = HISTORY.filter((h) => h.unverified).length;
     expect(flagged).toBeGreaterThan(0);

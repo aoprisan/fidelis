@@ -141,6 +141,119 @@ function trendChartHTML(ccy: Currency, heading: string): string {
     </figure>`;
 }
 
+// ── per-maturity small multiples ─────────────────────────────────────────────
+
+/** Every maturity offered in either currency, ascending. */
+function allMaturities(): number[] {
+  const set = new Set<number>();
+  for (const h of HISTORY) {
+    for (const m of matsAt(h.id, "RON")) set.add(m);
+    for (const m of matsAt(h.id, "EUR")) set.add(m);
+  }
+  return [...set].sort((a, b) => a - b);
+}
+
+/** Exact coupons for one maturity in one currency, chronological (no fallback). */
+function pointsFor(mat: number, ccy: Currency): TrendPoint[] {
+  const pts: TrendPoint[] = [];
+  for (const h of HISTORY) {
+    const rate = tableOf(h, ccy)[mat];
+    if (rate != null) pts.push({ t: idToYear(h.id), mat, rate });
+  }
+  return pts;
+}
+
+/** Common axes shared by every small multiple so the panels stay comparable. */
+interface Scale {
+  minT: number;
+  maxT: number;
+  yLo: number;
+  yHi: number;
+}
+
+function matChartSVG(mat: number, s: Scale): string {
+  const W = 340;
+  const H = 176;
+  const m = { top: 8, right: 12, bottom: 22, left: 28 };
+  const px0 = m.left;
+  const px1 = W - m.right;
+  const py0 = m.top;
+  const py1 = H - m.bottom;
+
+  const tSpan = Math.max(s.maxT - s.minT, 1e-6);
+  const ySpan = Math.max(s.yHi - s.yLo, 1e-6);
+  const sx = (t: number): number => px0 + ((t - s.minT) / tSpan) * (px1 - px0);
+  const sy = (v: number): number => py1 - ((v - s.yLo) / ySpan) * (py1 - py0);
+
+  const grid: string[] = [];
+  const yLabels: string[] = [];
+  for (let v = s.yLo; v <= s.yHi; v++) {
+    const yy = r(sy(v));
+    grid.push(`<line x1="${px0}" y1="${yy}" x2="${px1}" y2="${yy}" class="gc-grid" />`);
+    yLabels.push(`<text x="${px0 - 6}" y="${yy + 3}" class="gc-ylab">${v}%</text>`);
+  }
+  const xTicks: string[] = [];
+  for (let yr = Math.ceil(s.minT); yr <= Math.floor(s.maxT); yr++) {
+    const xx = r(sx(yr));
+    xTicks.push(`<text x="${xx}" y="${py1 + 15}" class="gc-xlab" text-anchor="middle">${yr}</text>`);
+  }
+
+  const draw = (ccy: Currency, cls: string): string => {
+    const pts = pointsFor(mat, ccy);
+    if (pts.length === 0) return "";
+    const d = pts.map((p, i) => `${i ? "L" : "M"}${r(sx(p.t))} ${r(sy(p.rate))}`).join(" ");
+    const line = pts.length >= 2 ? `<path d="${d}" class="mc-line ${cls}" />` : "";
+    const dots = pts
+      .map((p) => `<circle cx="${r(sx(p.t))}" cy="${r(sy(p.rate))}" r="2" class="mc-dot ${cls}" />`)
+      .join("");
+    return line + dots;
+  };
+
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cuponul pe ${mat} ani în timp">
+    ${grid.join("")}${xTicks.join("")}
+    ${draw("RON", "mc-line--ron")}${draw("EUR", "mc-line--eur")}
+    ${yLabels.join("")}
+  </svg>`;
+}
+
+/** One small line chart per maturity, on a shared scale. */
+function maturityChartsHTML(): string {
+  const mats = allMaturities();
+  const rates: number[] = [];
+  for (const mat of mats) {
+    for (const ccy of ["RON", "EUR"] as const) {
+      for (const p of pointsFor(mat, ccy)) rates.push(p.rate);
+    }
+  }
+  if (rates.length === 0) return "";
+
+  const scale: Scale = {
+    minT: idToYear(HISTORY[0].id),
+    maxT: idToYear(HISTORY[HISTORY.length - 1].id),
+    yLo: Math.floor(Math.min(...rates)),
+    yHi: Math.ceil(Math.max(...rates)),
+  };
+
+  const cells = mats
+    .map(
+      (mat) =>
+        `<figure class="mc-cell"><figcaption class="mc-cap">${mat} ani</figcaption>${matChartSVG(mat, scale)}</figure>`,
+    )
+    .join("");
+
+  return `
+    <section class="info-maturities">
+      <div class="info-maturities__head">
+        <h3>Cuponul pe fiecare maturitate</h3>
+        <div class="mc-legend">
+          <span class="mc-key mc-key--ron">Lei</span>
+          <span class="mc-key mc-key--eur">Euro</span>
+        </div>
+      </div>
+      <div class="mc-grid">${cells}</div>
+    </section>`;
+}
+
 // ── per-issuance coupon bars ─────────────────────────────────────────────────
 
 interface Bar {
@@ -277,6 +390,7 @@ export function initInfo(container: HTMLElement): void {
         ${trendChartHTML("RON", "Cupoane în lei")}
         ${trendChartHTML("EUR", "Cupoane în euro")}
       </div>
+      ${maturityChartsHTML()}
       <div class="info-cards">${cards}</div>
     </div>`;
 }

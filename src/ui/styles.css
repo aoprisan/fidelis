@@ -578,6 +578,59 @@ input[type="number"]:focus-visible {
 .ic-dot.ic-line--mid { fill: var(--brass); }
 .ic-dot.ic-line--long { fill: #3f6790; }
 
+/* per-maturity small multiples */
+.info-maturities { margin-bottom: 30px; }
+.info-maturities__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.info-maturities__head h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--ink);
+}
+.mc-legend { display: flex; gap: 14px; }
+.mc-key { display: inline-flex; align-items: center; font-family: var(--sans); font-size: 11px; color: var(--ink-soft); }
+.mc-key::before { content: ""; width: 14px; height: 3px; border-radius: 2px; margin-right: 6px; background: var(--sw, var(--ink-soft)); }
+.mc-key--ron { --sw: var(--green); }
+.mc-key--eur { --sw: #3f6790; }
+.mc-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 560px) { .mc-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .mc-grid { grid-template-columns: 1fr 1fr 1fr; } }
+.mc-cell {
+  margin: 0;
+  background: var(--paper-inset);
+  border: 1px solid var(--hair-strong);
+  padding: 8px 8px 4px;
+}
+.mc-cap {
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-align: center;
+  margin-bottom: 2px;
+}
+.mc-cell svg { display: block; width: 100%; height: auto; }
+.mc-cell .gc-grid { stroke: var(--hair-strong); stroke-width: 1; }
+.mc-cell .gc-ylab, .mc-cell .gc-xlab { fill: var(--muted); font-family: var(--sans); font-size: 9px; }
+.mc-cell .gc-ylab { text-anchor: end; }
+.mc-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.mc-line--ron { stroke: var(--green); }
+.mc-line--eur { stroke: #3f6790; }
+.mc-dot { stroke-width: 0; }
+.mc-dot.mc-line--ron { fill: var(--green); }
+.mc-dot.mc-line--eur { fill: #3f6790; }
+
 .info-cards { display: grid; grid-template-columns: 1fr; gap: 14px; }
 @media (min-width: 720px) { .info-cards { grid-template-columns: 1fr 1fr; } }
 .rate-card {
