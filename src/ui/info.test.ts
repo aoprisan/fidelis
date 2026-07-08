@@ -1,0 +1,50 @@
+import { describe, expect, it } from "vitest";
+import { HISTORY } from "../data/history";
+import { initInfo } from "./info";
+
+/**
+ * `initInfo` only assigns `container.innerHTML` (it never reads the DOM back),
+ * so we can exercise it with a minimal stub and assert on the emitted markup —
+ * no jsdom, keeping the suite on the repo's node environment and lean deps.
+ */
+function renderInfo(): string {
+  const host = { innerHTML: "" };
+  initInfo(host as unknown as HTMLElement);
+  return host.innerHTML;
+}
+
+describe("initInfo", () => {
+  const html = renderInfo();
+
+  it("renders exactly one card per issuance", () => {
+    const cards = html.match(/<article class="rate-card">/g) ?? [];
+    expect(cards.length).toBe(HISTORY.length);
+  });
+
+  it("orders cards newest first", () => {
+    const latest = HISTORY[HISTORY.length - 1].label;
+    const oldest = HISTORY[0].label;
+    expect(html.indexOf(latest)).toBeGreaterThanOrEqual(0);
+    expect(html.indexOf(latest)).toBeLessThan(html.indexOf(oldest));
+  });
+
+  it("draws both a RON and a EUR trend chart", () => {
+    expect(html).toContain("Evoluția cupoanelor Cupoane în lei");
+    expect(html).toContain("Evoluția cupoanelor Cupoane în euro");
+    // three tiers named in the legend
+    expect(html).toContain("Scurtă ·");
+    expect(html).toContain("Lungă ·");
+  });
+
+  it("badges unverified issuances", () => {
+    const flagged = HISTORY.filter((h) => h.unverified).length;
+    expect(flagged).toBeGreaterThan(0);
+    const badges = html.match(/class="rc-badge">neverificat</g) ?? [];
+    expect(badges.length).toBe(flagged);
+  });
+
+  it("draws a donor bar for issuances with a donor tranche", () => {
+    expect(HISTORY.some((h) => h.donorRate != null)).toBe(true);
+    expect(html).toContain("rc-bar--donor");
+  });
+});

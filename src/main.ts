@@ -1,6 +1,8 @@
 import "./ui/styles.css";
 import { createApp } from "./ui/app";
 import { initHook } from "./ui/hook";
+import { initInfo } from "./ui/info";
+import { initTabs } from "./ui/tabs";
 import { initScenarios } from "./ui/scenarios";
 import { initCompare } from "./ui/compare";
 import { initExport } from "./ui/export";
@@ -14,7 +16,15 @@ function paramsFromHash() {
 }
 
 initHook();
-const app = createApp(paramsFromHash());
+const shared = paramsFromHash();
+
+// Tabs: land on Plan by default, but on Avansat when the URL carries a shared
+// scenario so share-links open straight onto the simulator, not the placeholder.
+initTabs(shared ? "advanced" : "plan");
+const infoView = document.getElementById("view-info");
+if (infoView) initInfo(infoView);
+
+const app = createApp(shared);
 
 // Keep the address bar shareable: reflect the live parameters into the hash.
 app.subscribe((p) => {

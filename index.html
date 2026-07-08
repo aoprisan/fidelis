@@ -34,6 +34,27 @@
     <div class="hook" id="hook"></div>
   </header>
 
+  <!-- TOP-LEVEL TABS -->
+  <nav class="tabs" id="tabBar" role="tablist" aria-label="Secțiuni">
+    <button data-tab="plan" role="tab" aria-selected="true" aria-controls="view-plan">Plan</button>
+    <button data-tab="info" role="tab" aria-selected="false" aria-controls="view-info">Info</button>
+    <button data-tab="advanced" role="tab" aria-selected="false" aria-controls="view-advanced">Avansat</button>
+  </nav>
+
+  <!-- PLAN — placeholder for a future clean planning experience -->
+  <section class="tabview" id="view-plan" role="tabpanel" aria-labelledby="tabBar">
+    <div class="placeholder">
+      <div class="placeholder__seal" aria-hidden="true"><span>în<br />curând</span></div>
+      <h2>Planificator</h2>
+      <p>Un mod de planificare simplu, pas cu pas, pentru a-ți construi scara de titluri Fidelis. În lucru — între timp, folosește <b>Avansat</b> pentru simulări complete.</p>
+    </div>
+  </section>
+
+  <!-- INFO — interest rates of every Fidelis issuance (filled by initInfo) -->
+  <section class="tabview" id="view-info" role="tabpanel" aria-labelledby="tabBar" hidden></section>
+
+  <!-- ADVANCED — the full simulator -->
+  <section class="tabview" id="view-advanced" role="tabpanel" aria-labelledby="tabBar" hidden>
   <div class="sheet">
     <!-- TERMS OF SUBSCRIPTION — the controls -->
     <aside class="panel terms" id="controls">
@@ -226,6 +247,7 @@
       </p>
     </section>
   </div>
+  </section>
 </div>
 <script type="module" src="/src/main.ts"></script>
 </body>
