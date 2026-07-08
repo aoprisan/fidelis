@@ -1,28 +1,28 @@
 /**
- * The Plan tab (`#view-plan`): a clean, forward-looking earnings model built on
- * the CURRENT Fidelis offer — the most recent edition. Two approaches share one
- * pure core (`sim/offer.ts`):
- *  - `single`: pick amount + currency + one tranche (a maturity, or the
- *    blood-donor tranche in RON);
- *  - `ladder`: pick currency + spread the amount across maturities by weight.
+ * The Plan tab (`#view-plan`): a clean Fidelis earnings model over the current
+ * OR any past edition, contributed once or monthly, as a single tranche or a
+ * weighted ladder, valued to maturity or as of today. A thin projection of the
+ * pure `sim/offer.ts` engine — it owns its controls and paints its own
+ * bond-certificate result, the way `ui/info.ts` owns the Info tab. It never
+ * touches the Advanced backtester / rolling planner.
  *
- * Self-contained, like `ui/info.ts`: it owns its controls and paints its own
- * bond-certificate result into `#planResult`. It never touches the backtester /
- * rolling-planner app in `ui/app.ts`; it only reads the pure `sim/offer.ts`.
  * The inline-SVG growth chart copies the scaffold from `render.ts`, per the
  * codebase's copy-per-chart convention.
  */
 
-import type { Currency } from "../data/history";
+import { FIRST_SELECTABLE, HISTORY, type Currency } from "../data/history";
 import {
   computeOffer,
   currentOffer,
-  offerTranches,
+  editionRungs,
+  slotLabel,
   wealthCurve,
+  type Alloc,
+  type OfferContrib,
+  type OfferHorizon,
   type OfferMode,
   type OfferResult,
-  type OfferTranche,
-  type Rung,
+  type Slot,
 } from "../sim/offer";
 import { fmt, fmt2, fmtK, fmtMonthYear } from "./format";
 
@@ -39,45 +39,44 @@ const press = (buttons: Iterable<Element>, active: Element): void => {
 const ccyWord = (ccy: Currency): string => (ccy === "EUR" ? "euro" : "lei");
 const sectionTitle = (label: string): string => `<div class="section-title">${label}</div>`;
 
+/** Editions offered as a start point, newest first (the newest is "now"). */
+const STARTS = HISTORY.filter((h) => h.id >= FIRST_SELECTABLE).slice().reverse();
+
 interface PlanState {
   currency: Currency;
+  startId: string;
   amount: number;
+  contrib: OfferContrib;
+  horizon: OfferHorizon;
   mode: OfferMode;
-  /** Chosen tranche key for `single`. */
-  pick: string;
-  /** Weight (%) per tranche key for `ladder`; normalised in the core. */
-  weights: Record<string, number>;
+  pick: Slot;
+  weights: Partial<Record<Slot, number>>;
 }
 
-/** Default weights: standard rungs split evenly, donor left out. */
-function defaultWeights(tranches: OfferTranche[]): Record<string, number> {
-  const std = tranches.filter((t) => !t.donor);
+/** Current offer → look forward to maturity; a past edition → mark to today. */
+const defaultHorizon = (startId: string): OfferHorizon =>
+  startId === currentOffer().id ? "maturity" : "now";
+
+/** Default ladder weights: standard rungs even, donor left out. */
+function defaultWeights(startId: string, ccy: Currency): Partial<Record<Slot, number>> {
+  const std = editionRungs(startId, ccy).filter((r) => !r.donor);
   const each = Math.round(100 / Math.max(std.length, 1));
-  const w: Record<string, number> = {};
-  for (const t of tranches) w[t.key] = t.donor ? 0 : each;
+  const w: Partial<Record<Slot, number>> = {};
+  for (const r of std) w[r.slot] = each;
   return w;
 }
 
 export function initPlan(): void {
   const S: PlanState = {
     currency: "RON",
+    startId: currentOffer().id,
     amount: 50000,
+    contrib: "once",
+    horizon: "maturity",
     mode: "single",
-    pick: "",
+    pick: "long",
     weights: {},
   };
-
-  const offer = currentOffer();
-
-  // --- offer summary line ----------------------------------------------------
-
-  function paintOfferLine() {
-    const tranches = offerTranches(S.currency, offer);
-    const top = Math.max(...tranches.map((t) => t.rate));
-    el("poOfferLine").innerHTML =
-      `Oferta curentă · <b>ediția ${offer.label}</b> · ` +
-      `dobânzi ${ccyWord(S.currency) === "euro" ? "în euro" : "în lei"} până la <b>${fmt2(top)}%</b>, neimpozabile.`;
-  }
 
   // --- currency --------------------------------------------------------------
 
@@ -88,22 +87,61 @@ export function initPlan(): void {
         b.onclick = () => {
           S.currency = b.dataset.ccy as Currency;
           press(el("poCcy").children, b);
-          resetForCurrency();
+          resetForEdition();
           paint();
         };
       });
   }
 
-  /** Rebuild the tranche-dependent controls after a currency switch. */
-  function resetForCurrency() {
-    const tranches = offerTranches(S.currency, offer);
-    S.pick = tranches[0].key;
-    S.weights = defaultWeights(tranches);
+  // --- start edition ---------------------------------------------------------
+
+  function buildStart() {
+    const seg = el("poStart");
+    seg.innerHTML = STARTS.map((h, i) => {
+      const tag = i === 0 ? " · acum" : "";
+      return `<button data-id="${h.id}" aria-pressed="${h.id === S.startId}">${h.label}${tag}</button>`;
+    }).join("");
+    seg.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
+      b.onclick = () => {
+        S.startId = b.dataset.id!;
+        S.horizon = defaultHorizon(S.startId);
+        press(seg.children, b);
+        syncHorizon();
+        resetForEdition();
+        paint();
+      };
+    });
+  }
+
+  /** Rebuild the tranche-dependent controls after a currency/edition switch. */
+  function resetForEdition() {
+    const rungs = editionRungs(S.startId, S.currency);
+    if (!rungs.some((r) => r.slot === S.pick)) S.pick = "long";
+    S.weights = defaultWeights(S.startId, S.currency);
+    buildPick();
+    buildWeights();
+    relabelAmount();
+  }
+
+  // --- contribution (once / monthly) ----------------------------------------
+
+  function bindContrib() {
+    el("poContrib")
+      .querySelectorAll<HTMLButtonElement>("button")
+      .forEach((b) => {
+        b.onclick = () => {
+          S.contrib = b.dataset.contrib as OfferContrib;
+          press(el("poContrib").children, b);
+          relabelAmount();
+          paint();
+        };
+      });
+  }
+
+  function relabelAmount() {
     const w = ccyWord(S.currency);
-    el("poAmountLabel").textContent = `Sumă investită (${w})`;
-    buildPick(tranches);
-    buildWeights(tranches);
-    paintOfferLine();
+    el("poAmountLabel").textContent =
+      S.contrib === "monthly" ? `Sumă / lună (${w})` : `Sumă investită (${w})`;
   }
 
   // --- approach (single / ladder) -------------------------------------------
@@ -127,76 +165,100 @@ export function initPlan(): void {
     el("poLadder").hidden = !ladder;
   }
 
+  // --- horizon (până azi / la scadență) -------------------------------------
+
+  function bindHorizon() {
+    el("poHorizon")
+      .querySelectorAll<HTMLButtonElement>("button")
+      .forEach((b) => {
+        b.onclick = () => {
+          S.horizon = b.dataset.hz as OfferHorizon;
+          press(el("poHorizon").children, b);
+          paint();
+        };
+      });
+  }
+
+  function syncHorizon() {
+    const seg = el("poHorizon");
+    const btn = [...seg.children].find(
+      (x) => (x as HTMLButtonElement).dataset.hz === S.horizon,
+    );
+    if (btn) press(seg.children, btn);
+  }
+
   // --- single: tranche picker ------------------------------------------------
 
-  function buildPick(tranches: OfferTranche[]) {
+  function buildPick() {
     const seg = el("poPick");
-    seg.innerHTML = tranches
+    seg.innerHTML = editionRungs(S.startId, S.currency)
       .map(
-        (t) =>
-          `<button data-key="${t.key}" aria-pressed="${t.key === S.pick}" class="${
-            t.donor ? "po-tranche--donor" : ""
-          }"><span class="po-tranche__mat">${t.label}</span><span class="po-tranche__rate">${fmt2(
-            t.rate,
+        (r) =>
+          `<button data-slot="${r.slot}" aria-pressed="${r.slot === S.pick}" class="${
+            r.donor ? "po-tranche--donor" : ""
+          }"><span class="po-tranche__mat">${slotLabel(r.slot, r.mat)}</span><span class="po-tranche__rate">${fmt2(
+            r.rate,
           )}%</span></button>`,
       )
       .join("");
     seg.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
       b.onclick = () => {
-        S.pick = b.dataset.key!;
+        S.pick = b.dataset.slot as Slot;
         press(seg.children, b);
         paint();
       };
     });
   }
 
-  // --- ladder: per-rung weights ----------------------------------------------
+  // --- ladder: per-slot weights ----------------------------------------------
 
-  function buildWeights(tranches: OfferTranche[]) {
+  function buildWeights() {
     const box = el("poWeights");
-    box.innerHTML = tranches
+    box.innerHTML = editionRungs(S.startId, S.currency)
       .map(
-        (t) => `
-        <div class="po-weight${t.donor ? " po-weight--donor" : ""}">
-          <span class="po-weight__lab">${t.label}<em>${fmt2(t.rate)}%</em></span>
+        (r) => `
+        <div class="po-weight${r.donor ? " po-weight--donor" : ""}">
+          <span class="po-weight__lab">${slotLabel(r.slot, r.mat)}<em>${fmt2(r.rate)}%</em></span>
           <div class="po-weight__in">
-            <input type="number" data-key="${t.key}" value="${S.weights[t.key] ?? 0}" min="0" max="100" step="5" aria-label="Pondere ${t.label}" />
+            <input type="number" data-slot="${r.slot}" value="${S.weights[r.slot] ?? 0}" min="0" max="100" step="5" aria-label="Pondere ${slotLabel(r.slot, r.mat)}" />
             <span class="po-weight__suf">%</span>
           </div>
-          <span class="po-weight__eff" data-eff="${t.key}"></span>
+          <span class="po-weight__eff" data-eff="${r.slot}"></span>
         </div>`,
       )
       .join("");
     box.querySelectorAll<HTMLInputElement>("input").forEach((inp) => {
       inp.oninput = () => {
-        S.weights[inp.dataset.key!] = Math.max(0, Number(inp.value) || 0);
-        paint(); // re-values effective principals + result, leaves inputs intact
+        S.weights[inp.dataset.slot as Slot] = Math.max(0, Number(inp.value) || 0);
+        paint();
       };
     });
-
     el("poEqual").onclick = () => {
-      S.weights = defaultWeights(tranches);
+      S.weights = defaultWeights(S.startId, S.currency);
       box.querySelectorAll<HTMLInputElement>("input").forEach((inp) => {
-        inp.value = String(S.weights[inp.dataset.key!] ?? 0);
+        inp.value = String(S.weights[inp.dataset.slot as Slot] ?? 0);
       });
       paint();
     };
   }
 
-  /** Update the "→ 20.000 lei" effective-principal readouts without rebuilding inputs. */
+  /** Per-contribution effective principal readouts + a weighted-yield hint. */
   function paintWeightEffects(res: OfferResult) {
     const w = ccyWord(S.currency);
-    const byKey = new Map(res.rungs.map((r) => [r.key, r]));
+    const sum = Object.values(S.weights).reduce((s, v) => s + Math.max(0, v ?? 0), 0);
     el("poWeights")
       .querySelectorAll<HTMLElement>("[data-eff]")
       .forEach((span) => {
-        const r = byKey.get(span.dataset.eff!);
-        span.textContent = r && r.principal > 0 ? `→ ${fmt(Math.round(r.principal))} ${w}` : "—";
+        const wt = Math.max(0, S.weights[span.dataset.eff as Slot] ?? 0);
+        const per = sum > 0 ? S.amount * (wt / sum) : 0;
+        span.textContent = per > 0 ? `→ ${fmt(Math.round(per))} ${w}` : "—";
       });
-    const rungs = res.rungs.filter((r) => r.principal > 0).length;
+    const rungs = new Set(res.allocs.filter((a) => a.principal > 0).map((a) => a.slot)).size;
     el("poWeightHint").textContent =
       rungs > 0
-        ? `Randament mediu ponderat ${fmt2(res.avgCoupon)}% · ${rungs} ${rungs === 1 ? "tranșă" : "tranșe"}.`
+        ? `Randament mediu ponderat ${fmt2(res.avgCoupon)}% · ${rungs} ${rungs === 1 ? "tranșă" : "tranșe"}${
+            S.contrib === "monthly" ? " / lună" : ""
+          }.`
         : "";
   }
 
@@ -214,55 +276,69 @@ export function initPlan(): void {
       currency: S.currency,
       amount: S.amount,
       mode: S.mode,
+      startId: S.startId,
+      contrib: S.contrib,
+      horizon: S.horizon,
       pick: S.pick,
       weights: S.weights,
     });
     if (S.mode === "ladder") paintWeightEffects(res);
-    el("planResult").innerHTML = resultHTML(res, S.mode);
+    el("planResult").innerHTML = resultHTML(res);
   }
 
   // --- wire up ---------------------------------------------------------------
 
   bindCurrency();
+  buildStart();
+  bindContrib();
   bindMode();
-  resetForCurrency();
+  bindHorizon();
+  resetForEdition();
   applyMode();
+  syncHorizon();
   paint();
 }
 
 // ── result painters ──────────────────────────────────────────────────────────
 
-function resultHTML(res: OfferResult, mode: OfferMode): string {
+function resultHTML(res: OfferResult): string {
   return (
     certHTML(res) +
     growthChartHTML(res) +
-    couponStripHTML(res, mode) +
+    couponStripHTML(res) +
     calendarHTML(res) +
-    detailHTML(res, mode)
+    detailHTML(res)
   );
 }
 
 /** The certificate face — the headline the whole plan reduces to. */
 function certHTML(res: OfferResult): string {
   const w = ccyWord(res.currency);
+  const toMaturity = res.horizon === "maturity";
+  const valueLabel = toMaturity ? "Total încasat la scadență" : "Valoare azi — unde ai fi";
+  const profitCls = res.totalInterest >= 0 ? "pos" : "neg";
+  const sign = res.totalInterest >= 0 ? "+" : "−";
+
   const notes: string[] = [];
-  const below = res.rungs.filter((r) => r.belowMin);
+  const below = res.allocs.filter((a) => a.belowMin);
   if (below.length) {
-    notes.push(
-      `Sub pragul minim uzual la ${below.length === 1 ? "tranșa" : "tranșele"} ${below
-        .map((r) => r.label.toLowerCase())
-        .join(", ")}.`,
-    );
+    const which = [...new Set(below.map((a) => a.label.toLowerCase()))].join(", ");
+    notes.push(`Sub pragul minim uzual (${which}).`);
   }
-  if (res.rungs.some((r) => r.donor)) {
+  if (res.allocs.some((a) => a.donor)) {
     notes.push("Include tranșa pentru donatori de sânge (prag minim redus, 500 lei).");
   }
   const note = notes.length ? `<p class="plan-note">${notes.join(" ")}</p>` : "";
 
+  const invested =
+    res.contrib === "monthly"
+      ? `Investești <b>${fmt(Math.round(res.allocs.length ? res.invested / res.contributions : 0))} ${w}/lună</b> în ${res.contributions} ediții din ${res.startLabel} — total <b>${fmt(Math.round(res.invested))} ${w}</b>.`
+      : `Investești <b>${fmt(Math.round(res.invested))} ${w}</b> în ediția ${res.startLabel}.`;
+
   return `
     <div class="cert" id="planCert">
       <div class="cert__flag">
-        <span class="micro">Total încasat la scadență</span>
+        <span class="micro">${valueLabel}</span>
         <span class="cert__free">Cupon neimpozabil</span>
       </div>
       <div class="denom stamp-in">
@@ -271,40 +347,41 @@ function certHTML(res: OfferResult): string {
       </div>
       <div class="cert__supp">
         <div class="supp">
-          <span class="supp__k">Dobânzi totale</span>
-          <span class="supp__v pos">+${fmt(Math.round(res.totalInterest))} ${w}</span>
+          <span class="supp__k">Câștig net</span>
+          <span class="supp__v ${profitCls}">${sign}${fmt(Math.round(Math.abs(res.totalInterest)))} ${w}</span>
         </div>
         <div class="supp">
           <span class="supp__k">Randament (IRR)</span>
           <span class="supp__v">${fmt2(res.yieldPct)}%</span>
         </div>
         <div class="supp">
-          <span class="supp__k">Orizont</span>
-          <span class="supp__v">${res.horizonYears} ani</span>
+          <span class="supp__k">${toMaturity ? "Orizont" : "Perioadă"}</span>
+          <span class="supp__v">${fmt2(res.years)} ani</span>
         </div>
       </div>
-      <p class="plan-invested">Investești <b>${fmt(Math.round(res.invested))} ${w}</b> azi, în ediția ${res.offerLabel}.</p>
+      <p class="plan-invested">${invested}</p>
       ${note}
     </div>`;
 }
 
-/** Each rung rendered as a detachable interest coupon. */
-function couponStripHTML(res: OfferResult, mode: OfferMode): string {
-  const title = mode === "ladder" ? "Cupoane · tranșele scării" : "Cuponul tău";
-  const cards = res.rungs
-    .filter((r) => r.principal > 0)
-    .map((r, i) => {
-      const cls = "coupon" + (r.donor ? " coupon--donor" : "");
+/** For a one-off plan, each rung as a detachable coupon. Skipped when recurring. */
+function couponStripHTML(res: OfferResult): string {
+  if (res.contrib === "monthly") return "";
+  const title = res.allocs.length > 1 ? "Cupoanele tale" : "Cuponul tău";
+  const cards = res.allocs
+    .filter((a) => a.principal > 0)
+    .map((a, i) => {
+      const cls = "coupon" + (a.donor ? " coupon--donor" : "");
       return `
       <div class="${cls}">
         <div class="coupon__stub"><span>Cupon ${String(i + 1).padStart(2, "0")}</span></div>
         <div class="coupon__face">
-          <div class="coupon__period">${fmtMonthYear(res.offerYear)} → ${Math.floor(res.offerYear + r.mat)}</div>
-          <div class="coupon__rate">${fmt2(r.rate)}%</div>
-          <div class="coupon__mat">${r.mat} ani${r.donor ? " · donator" : ""}</div>
+          <div class="coupon__period">${fmtMonthYear(a.buyYear)} → ${Math.floor(a.buyYear + a.mat)}</div>
+          <div class="coupon__rate">${fmt2(a.rate)}%</div>
+          <div class="coupon__mat">${a.mat} ani${a.donor ? " · donator" : ""}</div>
           <div class="coupon__foot">
             <span class="coupon__k">Cupon / an</span>
-            <span class="coupon__val">${fmt(Math.round(r.annualCoupon))}</span>
+            <span class="coupon__val">${fmt(Math.round(a.couponAnnual))}</span>
           </div>
         </div>
       </div>`;
@@ -316,7 +393,6 @@ function couponStripHTML(res: OfferResult, mode: OfferMode): string {
 /** The coupon & principal calendar, grouped by calendar year. */
 function calendarHTML(res: OfferResult): string {
   if (res.flows.length === 0) return "";
-  // Bucket flows by whole calendar year.
   const buckets = new Map<number, { total: number; rows: string[] }>();
   for (const f of res.flows) {
     const yr = Math.floor(f.year + 1e-9);
@@ -324,7 +400,7 @@ function calendarHTML(res: OfferResult): string {
     b.total += f.amount;
     b.rows.push(`<tr>
       <td>${fmtMonthYear(f.year)}</td>
-      <td>${f.mat} ani${res.rungs.find((r) => r.key === f.fromKey)?.donor ? " · donator" : ""}</td>
+      <td>${f.mat} ani${f.donor ? " · donator" : ""}</td>
       <td>${f.kind === "coupon" ? "Cupon" : "Principal"}</td>
       <td class="num">${fmt(Math.round(f.amount))}</td>
     </tr>`);
@@ -347,30 +423,69 @@ function calendarHTML(res: OfferResult): string {
     </table>`;
 }
 
-/** Per-rung breakdown. */
-function detailHTML(res: OfferResult, mode: OfferMode): string {
+/** Per-rung breakdown: per allocation for a lump, aggregated by slot when recurring. */
+function detailHTML(res: OfferResult): string {
   const w = ccyWord(res.currency);
-  const rows = res.rungs
-    .filter((r) => r.principal > 0)
-    .map(
-      (r: Rung) => `<tr>
-      <td>${r.label}</td>
-      <td class="num">${fmt2(r.rate)}%</td>
-      ${mode === "ladder" ? `<td class="num">${fmt2(r.weightPct)}%</td>` : ""}
-      <td class="num">${fmt(Math.round(r.principal))}</td>
-      <td class="num">${fmt(Math.round(r.annualCoupon))}</td>
-      <td class="num">${fmt(Math.round(r.totalInterest))}</td>
-      <td class="num">${fmt(Math.round(r.maturityValue))}</td>
-    </tr>`,
-    )
-    .join("");
-  const weightHead = mode === "ladder" ? "<th>Pondere</th>" : "";
+  const rowsHTML =
+    res.contrib === "monthly" ? aggregatedRows(res) : allocRows(res.allocs);
   return `
     ${sectionTitle("Detaliu pe tranșe")}
     <table class="detail">
-      <thead><tr><th>Tranșă</th><th>Dobândă</th>${weightHead}<th>Principal (${w})</th><th>Cupon/an</th><th>Dobânzi total</th><th>La scadență</th></tr></thead>
-      <tbody>${rows}</tbody>
+      <thead><tr><th>Tranșă</th><th>Dobândă</th><th>Principal (${w})</th><th>Câștig</th><th>Valoare</th></tr></thead>
+      <tbody>${rowsHTML}</tbody>
     </table>`;
+}
+
+function allocRows(allocs: Alloc[]): string {
+  return allocs
+    .filter((a) => a.principal > 0)
+    .map(
+      (a) => `<tr>
+      <td>${slotLabel(a.slot, a.mat)}</td>
+      <td class="num">${fmt2(a.rate)}%</td>
+      <td class="num">${fmt(Math.round(a.principal))}</td>
+      <td class="num">${fmt(Math.round(a.valueAtHorizon - a.principal))}</td>
+      <td class="num">${fmt(Math.round(a.valueAtHorizon))}</td>
+    </tr>`,
+    )
+    .join("");
+}
+
+const SLOT_WORD: Record<Exclude<Slot, "donor">, string> = {
+  short: "Scurtă",
+  mid: "Medie",
+  long: "Lungă",
+};
+
+/**
+ * Sum a recurring plan's allocations by ladder slot. Coupon rates vary edition
+ * to edition, so the rate column shows "—" and the value tells the story.
+ */
+function aggregatedRows(res: OfferResult): string {
+  const order: Slot[] = ["short", "mid", "long", "donor"];
+  const bySlot = new Map<Slot, { principal: number; value: number; count: number }>();
+  for (const a of res.allocs) {
+    if (a.principal <= 0) continue;
+    const g = bySlot.get(a.slot) ?? { principal: 0, value: 0, count: 0 };
+    g.principal += a.principal;
+    g.value += a.valueAtHorizon;
+    g.count += 1;
+    bySlot.set(a.slot, g);
+  }
+  return order
+    .filter((s) => bySlot.has(s))
+    .map((s) => {
+      const g = bySlot.get(s)!;
+      const word = s === "donor" ? "Donator" : SLOT_WORD[s];
+      return `<tr>
+      <td>${word} · ${g.count}×</td>
+      <td class="num">—</td>
+      <td class="num">${fmt(Math.round(g.principal))}</td>
+      <td class="num">${fmt(Math.round(g.value - g.principal))}</td>
+      <td class="num">${fmt(Math.round(g.value))}</td>
+    </tr>`;
+    })
+    .join("");
 }
 
 /** Wealth-over-time growth chart as a self-contained, responsive inline SVG. */
@@ -421,7 +536,7 @@ function growthChartHTML(res: OfferResult): string {
     const xx = round(sx(yr));
     xTicks.push(
       `<line x1="${xx}" y1="${py1}" x2="${xx}" y2="${py1 + 4}" class="gc-grid" />` +
-        `<text x="${xx}" y="${py1 + 16}" class="gc-xlab" text-anchor="middle">+${yr}</text>`,
+        `<text x="${xx}" y="${py1 + 16}" class="gc-xlab" text-anchor="middle">${yr}</text>`,
     );
   }
 
@@ -437,11 +552,12 @@ function growthChartHTML(res: OfferResult): string {
   const ey = round(sy(last.value));
   const tagW = 104;
   const tagX = Math.min(ex + 10, px1 - tagW);
+  const tag = res.horizon === "maturity" ? "La scadență" : "Azi";
   const endTag = `
     <line x1="${ex}" y1="${ey}" x2="${ex}" y2="${py1}" class="gc-drop" />
     <g class="gc-tag" transform="translate(${round(tagX)}, ${round(Math.max(ey - 30, py0))})">
       <rect width="${tagW}" height="34" rx="3" />
-      <text x="9" y="14" class="gc-tagk">La scadență</text>
+      <text x="9" y="14" class="gc-tagk">${tag}</text>
       <text x="9" y="28" class="gc-tagv">${fmt(Math.round(last.value))}</text>
     </g>
     <circle cx="${ex}" cy="${ey}" r="4" class="gc-end" />`;

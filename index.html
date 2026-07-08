@@ -47,24 +47,31 @@
       <aside class="panel terms" id="planPanel">
         <div class="terms__head">
           <h2>Planul tău</h2>
-          <span class="micro">oferta curentă</span>
+          <span class="micro">simulează</span>
         </div>
-        <p class="plan-offer" id="poOfferLine"></p>
-
         <label>Monedă</label>
         <div class="seg" id="poCcy" role="group">
           <button data-ccy="RON" aria-pressed="true">RON (lei)</button>
           <button data-ccy="EUR">EUR (euro)</button>
         </div>
 
+        <label>Ediția</label>
+        <div class="seg seg--dates" id="poStart" role="group"></div>
+
+        <label>Contribuție</label>
+        <div class="seg" id="poContrib" role="group">
+          <button data-contrib="once" aria-pressed="true">O singură dată</button>
+          <button data-contrib="monthly">Lunar (recurent)</button>
+        </div>
+
+        <label for="poAmount" id="poAmountLabel">Sumă investită (lei)</label>
+        <input type="number" id="poAmount" value="50000" min="0" step="1000" />
+
         <label>Abordare</label>
         <div class="seg" id="poMode" role="group">
           <button data-mode="single" aria-pressed="true">O singură tranșă</button>
           <button data-mode="ladder">Scară (ladder)</button>
         </div>
-
-        <label for="poAmount" id="poAmountLabel">Sumă investită (lei)</label>
-        <input type="number" id="poAmount" value="50000" min="0" step="1000" />
 
         <!-- SINGLE — pick one tranche -->
         <div id="poSingle">
@@ -82,6 +89,12 @@
           </div>
           <div id="poWeights" class="po-weights"></div>
           <p class="plan-hint" id="poWeightHint"></p>
+        </div>
+
+        <label>Evaluare</label>
+        <div class="seg" id="poHorizon" role="group">
+          <button data-hz="now">Până azi</button>
+          <button data-hz="maturity" aria-pressed="true">La scadență</button>
         </div>
       </aside>
 
