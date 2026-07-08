@@ -14,6 +14,18 @@ export function benchmarkAt(t: number): BenchmarkPoint {
 }
 
 /**
+ * The most recent year-over-year CPI change (%) in the macro series — the
+ * "current inflation" figure. Used by the forward planner benchmark as a
+ * constant go-forward assumption, since the CPI table stops at the program
+ * horizon. Returns 0 if the series is shorter than 13 months.
+ */
+export function latestInflation(): number {
+  const n = BENCHMARKS.length;
+  if (n < 13) return 0;
+  return (BENCHMARKS[n - 1].cpiIndex / BENCHMARKS[n - 13].cpiIndex - 1) * 100;
+}
+
+/**
  * One taxed RON term deposit opened at `t0`: annual capitalization with 10%
  * tax withheld on each year's interest, the rate re-fixing at the then-current
  * benchmark rate on every anniversary, net interest accruing linearly within a

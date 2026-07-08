@@ -24,6 +24,8 @@ import {
   type OfferResult,
   type Slot,
 } from "../sim/offer";
+import { offerBenchmark } from "../sim/offerBenchmark";
+import { forwardBenchmarkSectionHTML } from "./benchmark";
 import { fmt, fmt2, fmtK, fmtMonthYear } from "./format";
 
 const el = <T extends HTMLElement>(id: string): T => {
@@ -302,9 +304,16 @@ export function initPlan(): void {
 // ── result painters ──────────────────────────────────────────────────────────
 
 function resultHTML(res: OfferResult): string {
+  // The deposit/inflation comparison is denominated in RON (BNR deposit rates,
+  // INS CPI), so it is meaningless for a EUR plan.
+  const bench =
+    res.currency === "RON" && res.invested > 0
+      ? forwardBenchmarkSectionHTML(res.finalValue, res.invested, res.yieldPct, offerBenchmark(res))
+      : "";
   return (
     certHTML(res) +
     growthChartHTML(res) +
+    bench +
     couponStripHTML(res) +
     calendarHTML(res) +
     detailHTML(res)

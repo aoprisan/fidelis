@@ -1,7 +1,8 @@
 import { BNR_SOURCE, INS_SOURCE } from "../data/benchmarks";
 import type { BenchmarkSummary } from "../sim/benchmark";
+import type { ForwardBenchmark } from "../sim/forwardBenchmark";
 import type { ValuePoint } from "../sim/simulate";
-import { fmt, fmtK } from "./format";
+import { fmt, fmt2, fmtK } from "./format";
 
 /** One named curve on the comparison chart. */
 interface Series {
@@ -126,4 +127,59 @@ export function benchmarkSectionHTML(
       <div class="stat"><div class="k">Câștig real, după inflație</div><div class="v ${realCls} num">${s.realProfit >= 0 ? "+" : "−"}${fmt(Math.abs(s.realProfit))} RON</div></div>
     </div>
     <p class="bench-note">Depozitul folosește dobânda medie la depozitele noi în lei ale populației (<a href="${BNR_SOURCE}" target="_blank" rel="noopener">BNR</a>), capitalizare anuală și impozit de 10% pe dobândă. Valoarea reală folosește indicele prețurilor de consum (<a href="${INS_SOURCE}" target="_blank" rel="noopener">INS</a>). Dobânda Fidelis este scutită de impozit și CASS.</p>`;
+}
+
+// ── planner benchmark (forward-looking) ──────────────────────────────────────
+
+/** One horizontal comparison bar: colored fill sized to `value / max`. */
+function planBar(label: string, value: number, max: number, cls: string, investPct: number): string {
+  const pct = Math.max(0, Math.min(100, (value / max) * 100));
+  return `
+    <div class="pbar">
+      <div class="pbar__label">${label}</div>
+      <div class="pbar__track">
+        <div class="pbar__fill ${cls}" style="width:${pct.toFixed(1)}%"></div>
+        <span class="pbar__base" style="left:${investPct.toFixed(1)}%"></span>
+      </div>
+      <div class="pbar__amt num">${fmt(value)}</div>
+    </div>`;
+}
+
+/**
+ * The "why Fidelis" section shared by the Plan tab and the rolling Planner: how
+ * the plan stacks up against a taxed bank deposit fed by the SAME contributions,
+ * the tax the exemption avoids, the gross rate a deposit would need to break
+ * even, and the real return after inflation. RON-only (BNR/INS series) — the
+ * caller omits it for EUR plans.
+ */
+export function forwardBenchmarkSectionHTML(
+  fidelisFinal: number,
+  contributed: number,
+  fidelisIrr: number,
+  b: ForwardBenchmark,
+): string {
+  const max = Math.max(fidelisFinal, b.depositFinal, contributed, 1);
+  const investPct = Math.min(100, (contributed / max) * 100);
+  const advCls = b.advantage >= 0 ? "pos" : "neg";
+  const advSign = b.advantage >= 0 ? "+" : "−";
+  const realCls = b.realCagr >= 0 ? "pos" : "neg";
+  const realSign = b.realCagr >= 0 ? "+" : "−";
+  return `
+    <div class="laddertitle">Și dacă puneai banii la bancă? Fidelis vs depozit</div>
+    <div class="bench-legend">
+      <span class="bench-key"><i class="bl-fidelis"></i>Fidelis · ${fmtK(fidelisFinal)} (IRR ${fmt2(fidelisIrr)}%)</span>
+      <span class="bench-key"><i class="bl-deposit"></i>Depozit bancar, net de impozit · ${fmtK(b.depositFinal)} (IRR ${fmt2(b.depositCagr)}%)</span>
+    </div>
+    <div class="planbench-bars">
+      ${planBar("Fidelis", fidelisFinal, max, "pbar__fill--fidelis", investPct)}
+      ${planBar("Depozit", b.depositFinal, max, "pbar__fill--deposit", investPct)}
+    </div>
+    <div class="pbar-cap">Linia verticală marchează capitalul depus · ${fmtK(contributed)} lei.</div>
+    <div class="headline bench-stats is-four">
+      <div class="stat"><div class="k">Avantaj vs depozit bancar</div><div class="v ${advCls} num">${advSign}${fmt(Math.abs(b.advantage))} lei</div></div>
+      <div class="stat"><div class="k">Impozit evitat (scutire Fidelis)</div><div class="v gold num">${fmt(b.taxSaved)} lei</div></div>
+      <div class="stat"><div class="k">Depozitul ar trebui să ofere</div><div class="v num">${fmt2(b.breakEvenGross)}%<small> brut</small></div></div>
+      <div class="stat"><div class="k">Randament real (inflație ~${fmt2(b.assumedInflation)}%)</div><div class="v ${realCls} num">${realSign}${fmt2(Math.abs(b.realCagr))}%</div></div>
+    </div>
+    <p class="bench-note">Depozitul primește aceeași contribuție, cu dobânda medie la depozitele noi în lei ale populației (<a href="${BNR_SOURCE}" target="_blank" rel="noopener">BNR</a>), capitalizare anuală și impozit de 10% pe dobândă. Fiind scutit de impozit și CASS, Fidelis egalează un depozit care ar plăti <b>${fmt2(b.breakEvenGross)}% brut</b>. Randamentul real presupune inflația recentă (<a href="${INS_SOURCE}" target="_blank" rel="noopener">INS</a>) menținută constant. Ratele viitoare — Fidelis și depozit — sunt presupuse la ultimul nivel cunoscut.</p>`;
 }

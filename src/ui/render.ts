@@ -1,6 +1,7 @@
 import { benchmarkSummary, deflate, depositTrajectory } from "../sim/benchmark";
 import { couponSchedule, scheduleByYear, type CashEvent } from "../sim/cashflow";
 import { idToYear } from "../sim/history";
+import { planBenchmark } from "../sim/planBenchmark";
 import { DONOR_MIN, plan, type PlanParams } from "../sim/planner";
 import {
   contributionMonths,
@@ -12,7 +13,7 @@ import {
   type SimParams,
   type ValuePoint,
 } from "../sim/simulate";
-import { benchmarkSectionHTML } from "./benchmark";
+import { benchmarkSectionHTML, forwardBenchmarkSectionHTML } from "./benchmark";
 import { fmt, fmt2, fmtK, fmtMonthYear } from "./format";
 
 /** DOM targets the render layer writes into. */
@@ -449,7 +450,12 @@ export function renderPlan(params: PlanParams, els: RenderTargets): void {
   const r = plan(params);
   els.headline.innerHTML = planCertHTML(r, params.currency);
   els.chart.innerHTML = "";
-  els.bench.innerHTML = "";
+  // The deposit/inflation benchmark is denominated in RON (BNR deposit rates,
+  // INS CPI), so it is meaningless for a EUR ladder.
+  els.bench.innerHTML =
+    params.currency === "EUR"
+      ? ""
+      : forwardBenchmarkSectionHTML(r.finalValue, r.contributed, r.cagr, planBenchmark(params, r));
   els.viz.innerHTML = planVizHTML(r, params);
   els.detail.innerHTML = planDetailHTML(r);
   els.calendar.innerHTML = "";

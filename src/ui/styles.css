@@ -877,6 +877,22 @@ table.detail tr:last-child td { border-bottom: none; }
 .growthchart .bench-deposit { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-linejoin: round; }
 .growthchart .bench-real { fill: none; stroke: var(--green); stroke-width: 1.5; stroke-dasharray: 5 4; opacity: 0.7; stroke-linejoin: round; }
 .bench-stats { margin-top: 14px; }
+.bench-stats.is-four { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 760px) { .bench-stats.is-four { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 420px) { .bench-stats.is-four { grid-template-columns: 1fr; } }
+
+/* planner: Fidelis-vs-deposit comparison bars */
+.planbench-bars { display: grid; gap: 8px; margin: 4px 0 2px; }
+.pbar { display: grid; grid-template-columns: 68px 1fr auto; align-items: center; gap: 12px; }
+.pbar__label { font-family: var(--sans); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.pbar__track { position: relative; height: 24px; background: var(--paper-inset); border: 1px solid var(--hair); }
+.pbar__fill { height: 100%; }
+.pbar__fill--fidelis { background: var(--green); }
+.pbar__fill--deposit { background: var(--muted); }
+.pbar__base { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--ink); }
+.pbar__amt { font-family: var(--serif); font-size: 14px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums lining-nums; }
+.pbar-cap { font-size: 11px; color: var(--muted); margin: 8px 0 0; }
+.bench-stats .v small { font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--muted); }
 .bench-note { font-size: 12px; color: var(--muted); margin: 12px 0 0; line-height: 1.6; }
 .bench-note a { color: var(--muted); text-decoration: underline; }
 .bench-note a:hover { color: var(--ink); }
