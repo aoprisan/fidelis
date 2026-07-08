@@ -15,13 +15,25 @@
 
 import { HISTORY, type Currency, type Issuance } from "../data/history";
 import { idToYear, matsAt } from "../sim/history";
-import { fmt2 } from "./format";
+import { fmt2, fmtMonthYear } from "./format";
 
 const r = (n: number): number => Math.round(n * 100) / 100;
 const pct = (v: number): string => `${fmt2(v)}%`;
 
 const esc = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/**
+ * A visible chart dot plus a larger transparent hit target carrying its value.
+ * The hit circle exposes a native hover `<title>` and a `data-label` the click
+ * handler (`attachPointValues`) reads to draw an in-SVG readout.
+ */
+function pointMark(cx: number, cy: number, dotCls: string, label: string): string {
+  return (
+    `<circle cx="${cx}" cy="${cy}" r="2" class="${dotCls}" />` +
+    `<circle cx="${cx}" cy="${cy}" r="8" class="pt-dot" data-label="${esc(label)}"><title>${esc(label)}</title></circle>`
+  );
+}
 
 /** The tranche table (maturity -> coupon) for a currency. */
 const tableOf = (h: Issuance, ccy: Currency): Readonly<Record<number, number>> =>
@@ -113,7 +125,9 @@ function trendChartHTML(ccy: Currency, heading: string): string {
     if (pts.length === 0) return "";
     const d = pts.map((p, i) => `${i ? "L" : "M"}${r(sx(p.t))} ${r(sy(p.rate))}`).join(" ");
     const dots = pts
-      .map((p) => `<circle cx="${r(sx(p.t))}" cy="${r(sy(p.rate))}" r="2" class="ic-dot ${cls}" />`)
+      .map((p) =>
+        pointMark(r(sx(p.t)), r(sy(p.rate)), `ic-dot ${cls}`, `${p.mat} ani · ${pct(p.rate)} · ${fmtMonthYear(p.t)}`),
+      )
       .join("");
     return `<path d="${d}" class="ic-line ${cls}" />${dots}`;
   };
@@ -203,8 +217,11 @@ function matChartSVG(mat: number, s: Scale): string {
     if (pts.length === 0) return "";
     const d = pts.map((p, i) => `${i ? "L" : "M"}${r(sx(p.t))} ${r(sy(p.rate))}`).join(" ");
     const line = pts.length >= 2 ? `<path d="${d}" class="mc-line ${cls}" />` : "";
+    const name = ccy === "EUR" ? "Euro" : "Lei";
     const dots = pts
-      .map((p) => `<circle cx="${r(sx(p.t))}" cy="${r(sy(p.rate))}" r="2" class="mc-dot ${cls}" />`)
+      .map((p) =>
+        pointMark(r(sx(p.t)), r(sy(p.rate)), `mc-dot ${cls}`, `${name} · ${pct(p.rate)} · ${fmtMonthYear(p.t)}`),
+      )
       .join("");
     return line + dots;
   };
@@ -370,6 +387,50 @@ function cardHTML(h: Issuance): string {
     </article>`;
 }
 
+// ── interaction ──────────────────────────────────────────────────────────────
+
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+/**
+ * Reveal a point's value on click: draw a small readout tag at the clicked dot,
+ * in the same SVG coordinate space (so no screen-coord conversion). Clicking
+ * empty chart space dismisses it. Line points otherwise carry no visible value.
+ */
+function attachPointValues(container: HTMLElement): void {
+  if (typeof container.addEventListener !== "function") return;
+  container.addEventListener("click", (e) => {
+    const hit = (e.target as Element).closest?.(".pt-dot") as SVGCircleElement | null;
+    container.querySelectorAll(".pt-tip").forEach((n) => n.remove());
+    if (!hit) return;
+    const svg = hit.ownerSVGElement;
+    const label = hit.dataset.label;
+    if (!svg || !label) return;
+
+    const cx = Number(hit.getAttribute("cx"));
+    const cy = Number(hit.getAttribute("cy"));
+    const vb = svg.viewBox.baseVal;
+    const w = Math.max(46, label.length * 5.5 + 14);
+    const h = 17;
+    const x = Math.max(vb.x + 2, Math.min(cx - w / 2, vb.x + vb.width - w - 2));
+    const y = cy - h - 7 < vb.y + 2 ? cy + 9 : cy - h - 7;
+
+    const g = document.createElementNS(SVG_NS, "g");
+    g.setAttribute("class", "pt-tip");
+    g.setAttribute("transform", `translate(${r(x)},${r(y)})`);
+    const rect = document.createElementNS(SVG_NS, "rect");
+    rect.setAttribute("width", String(r(w)));
+    rect.setAttribute("height", String(h));
+    rect.setAttribute("rx", "2");
+    const text = document.createElementNS(SVG_NS, "text");
+    text.setAttribute("x", String(r(w / 2)));
+    text.setAttribute("y", "12");
+    text.setAttribute("text-anchor", "middle");
+    text.textContent = label;
+    g.append(rect, text);
+    svg.appendChild(g);
+  });
+}
+
 // ── mount ────────────────────────────────────────────────────────────────────
 
 /** Build the whole Info view into `container` (idempotent — replaces content). */
@@ -393,4 +454,5 @@ export function initInfo(container: HTMLElement): void {
       ${maturityChartsHTML()}
       <div class="info-cards">${cards}</div>
     </div>`;
+  attachPointValues(container);
 }

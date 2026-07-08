@@ -8,7 +8,7 @@ import { initInfo } from "./info";
  * no jsdom, keeping the suite on the repo's node environment and lean deps.
  */
 function renderInfo(): string {
-  const host = { innerHTML: "" };
+  const host = { innerHTML: "", addEventListener() {} };
   initInfo(host as unknown as HTMLElement);
   return host.innerHTML;
 }
@@ -34,6 +34,13 @@ describe("initInfo", () => {
     // three tiers named in the legend
     expect(html).toContain("Scurtă ·");
     expect(html).toContain("Lungă ·");
+  });
+
+  it("makes line points clickable with a value label", () => {
+    const hits = html.match(/class="pt-dot" data-label="/g) ?? [];
+    expect(hits.length).toBeGreaterThan(0);
+    // labels carry a formatted percent, e.g. "10 ani · 6,20% · dec. 2025"
+    expect(html).toMatch(/data-label="[^"]*\d+,\d{2}%/);
   });
 
   it("draws one small-multiple chart per maturity", () => {
