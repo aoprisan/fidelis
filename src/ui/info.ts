@@ -204,12 +204,17 @@ function ronBars(h: Issuance): Bar[] {
 
 function eurBars(h: Issuance): Bar[] {
   const tbl = h.eur;
-  return matsAt(h.id, "EUR").map((mat) => ({
+  const bars: Bar[] = matsAt(h.id, "EUR").map((mat) => ({
     mat,
     rate: tbl[mat],
     label: `${mat} ani`,
     cls: "rc-bar rc-bar--eur",
   }));
+  if (h.donorRateEur != null) {
+    const mat = h.donorMaturityEur ?? 2;
+    bars.push({ mat, rate: h.donorRateEur, label: `★ ${mat} ani`, cls: "rc-bar rc-bar--donor", donor: true });
+  }
+  return bars;
 }
 
 /** "2024-02-21/03-01" -> "21 feb. 2024 – 01 mar. 2024" (best-effort, ro-RO). */

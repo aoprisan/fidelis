@@ -55,6 +55,10 @@ export interface Issuance {
   readonly donorRate: number | null;
   /** Maturity (years) of the blood-donor RON tranche, or null. */
   readonly donorMaturity: number | null;
+  /** Blood-donor EUR tranche coupon (%), when the issuance offered one. */
+  readonly donorRateEur?: number;
+  /** Maturity (years) of the blood-donor EUR tranche, when present. */
+  readonly donorMaturityEur?: number;
   /** Primary MF source URL for this issuance's terms. */
   readonly sourceUrl: string;
   /** True when a cell could NOT be confirmed to a primary MF document. */
@@ -215,6 +219,8 @@ export const HISTORY: readonly Issuance[] = [
     eur: { 2: 3.4, 5: 5.5, 7: 6.3 },
     donorRate: 8.25,
     donorMaturity: 2,
+    donorRateEur: 4.4,
+    donorMaturityEur: 2,
     sourceUrl:
       P +
       "mf-lanseaz-c4-83-a-c8-99asea-edi-c8-9bie-fidelis-din-2025-cu-dob-c3-a2nzi-de-p-c3-a2n-c4-83-la-8-25-",
@@ -228,6 +234,8 @@ export const HISTORY: readonly Issuance[] = [
     eur: { 2: 3.1, 5: 5.25, 10: 6.5 },
     donorRate: 8.2,
     donorMaturity: 2,
+    donorRateEur: 4.1,
+    donorMaturityEur: 2,
     sourceUrl:
       P +
       "o-premier-c4-83-important-c4-83-la-fidelis-vii-titluri-de-stat-pe-10-ani-denominate-c3-aen-euro",
@@ -241,6 +249,8 @@ export const HISTORY: readonly Issuance[] = [
     eur: { 2: 3.1, 5: 5.25, 10: 6.5 },
     donorRate: 8.2,
     donorMaturity: 2,
+    donorRateEur: 4.1,
+    donorMaturityEur: 2,
     sourceUrl:
       P +
       "fidelis-de-septembrie-titluri-de-stat-c3-aen-lei-c8-99i-euro-cu-dob-c3-a2nzi-neimpozabile-de-p-c3-a2n-c4-83-la-8-20-",
@@ -358,6 +368,8 @@ export const HISTORY: readonly Issuance[] = [
     eur: { 3: 4.0, 5: 4.85, 10: 5.8 },
     donorRate: 7.35,
     donorMaturity: 2,
+    donorRateEur: 6.8,
+    donorMaturityEur: 10,
     sourceUrl:
       P +
       "fidelis-aduce-c3-aen-luna-iunie-dob-c3-a2nzi-neimpozabile-de-p-c3-a2n-c4-83-la-7-60-c8-99i-dou-c4-83-tran-c8-99e-speciale-dedicate-donatorilor-de-s-c3-a2nge",

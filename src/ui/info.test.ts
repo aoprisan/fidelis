@@ -43,8 +43,12 @@ describe("initInfo", () => {
     expect(badges.length).toBe(flagged);
   });
 
-  it("draws a donor bar for issuances with a donor tranche", () => {
-    expect(HISTORY.some((h) => h.donorRate != null)).toBe(true);
-    expect(html).toContain("rc-bar--donor");
+  it("draws a donor bar for every RON and EUR donor tranche", () => {
+    const ronDonors = HISTORY.filter((h) => h.donorRate != null).length;
+    const eurDonors = HISTORY.filter((h) => h.donorRateEur != null).length;
+    expect(ronDonors).toBeGreaterThan(0);
+    expect(eurDonors).toBeGreaterThan(0);
+    const donorBars = html.match(/class="rc-bar rc-bar--donor"/g) ?? [];
+    expect(donorBars.length).toBe(ronDonors + eurDonors);
   });
 });
