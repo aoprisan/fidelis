@@ -2,6 +2,7 @@ import "./ui/styles.css";
 import { createApp } from "./ui/app";
 import { initHook } from "./ui/hook";
 import { initInfo } from "./ui/info";
+import { initPlan } from "./ui/plan";
 import { initTabs } from "./ui/tabs";
 import { initScenarios } from "./ui/scenarios";
 import { initCompare } from "./ui/compare";
@@ -23,6 +24,7 @@ const shared = paramsFromHash();
 initTabs(shared ? "advanced" : "plan");
 const infoView = document.getElementById("view-info");
 if (infoView) initInfo(infoView);
+initPlan();
 
 const app = createApp(shared);
 

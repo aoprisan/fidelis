@@ -41,12 +41,53 @@
     <button data-tab="advanced" role="tab" aria-selected="false" aria-controls="view-advanced">Avansat</button>
   </nav>
 
-  <!-- PLAN — placeholder for a future clean planning experience -->
+  <!-- PLAN — a clean earnings model built on the current Fidelis offer -->
   <section class="tabview" id="view-plan" role="tabpanel" aria-labelledby="tabBar">
-    <div class="placeholder">
-      <div class="placeholder__seal" aria-hidden="true"><span>în<br />curând</span></div>
-      <h2>Planificator</h2>
-      <p>Un mod de planificare simplu, pas cu pas, pentru a-ți construi scara de titluri Fidelis. În lucru — între timp, folosește <b>Avansat</b> pentru simulări complete.</p>
+    <div class="sheet">
+      <aside class="panel terms" id="planPanel">
+        <div class="terms__head">
+          <h2>Planul tău</h2>
+          <span class="micro">oferta curentă</span>
+        </div>
+        <p class="plan-offer" id="poOfferLine"></p>
+
+        <label>Monedă</label>
+        <div class="seg" id="poCcy" role="group">
+          <button data-ccy="RON" aria-pressed="true">RON (lei)</button>
+          <button data-ccy="EUR">EUR (euro)</button>
+        </div>
+
+        <label>Abordare</label>
+        <div class="seg" id="poMode" role="group">
+          <button data-mode="single" aria-pressed="true">O singură tranșă</button>
+          <button data-mode="ladder">Scară (ladder)</button>
+        </div>
+
+        <label for="poAmount" id="poAmountLabel">Sumă investită (lei)</label>
+        <input type="number" id="poAmount" value="50000" min="0" step="1000" />
+
+        <!-- SINGLE — pick one tranche -->
+        <div id="poSingle">
+          <label>Alege tranșa</label>
+          <div class="seg po-tranche" id="poPick" role="group"></div>
+        </div>
+
+        <!-- LADDER — spread across maturities by weight -->
+        <div id="poLadder" hidden>
+          <div class="plan-head">
+            <label>Repartizare pe maturități</label>
+            <div class="plan-tools">
+              <button id="poEqual" type="button" class="plan-tool" title="Împarte egal pe tranșele standard">Egal</button>
+            </div>
+          </div>
+          <div id="poWeights" class="po-weights"></div>
+          <p class="plan-hint" id="poWeightHint"></p>
+        </div>
+      </aside>
+
+      <section class="cert-col">
+        <div id="planResult"></div>
+      </section>
     </div>
   </section>
 
