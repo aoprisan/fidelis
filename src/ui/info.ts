@@ -389,45 +389,34 @@ function cardHTML(h: Issuance): string {
 
 // ── interaction ──────────────────────────────────────────────────────────────
 
-const SVG_NS = "http://www.w3.org/2000/svg";
-
 /**
- * Reveal a point's value on click: draw a small readout tag at the clicked dot,
- * in the same SVG coordinate space (so no screen-coord conversion). Clicking
- * empty chart space dismisses it. Line points otherwise carry no visible value.
+ * Reveal a point's value on click as an HTML overlay positioned over the dot.
+ * Rendering it in the page (rather than inside the SVG) keeps the label a fixed,
+ * legible on-screen size regardless of how far each chart's viewBox is scaled
+ * down. Clicking empty chart space dismisses it.
  */
 function attachPointValues(container: HTMLElement): void {
-  if (typeof container.addEventListener !== "function") return;
+  if (typeof container.addEventListener !== "function" || typeof container.querySelector !== "function") return;
+  const info = container.querySelector<HTMLElement>(".info");
+  if (!info) return;
+
+  const tip = document.createElement("div");
+  tip.className = "pt-tip";
+  tip.hidden = true;
+  info.appendChild(tip);
+
   container.addEventListener("click", (e) => {
     const hit = (e.target as Element).closest?.(".pt-dot") as SVGCircleElement | null;
-    container.querySelectorAll(".pt-tip").forEach((n) => n.remove());
-    if (!hit) return;
-    const svg = hit.ownerSVGElement;
-    const label = hit.dataset.label;
-    if (!svg || !label) return;
-
-    const cx = Number(hit.getAttribute("cx"));
-    const cy = Number(hit.getAttribute("cy"));
-    const vb = svg.viewBox.baseVal;
-    const w = Math.max(46, label.length * 5.5 + 14);
-    const h = 17;
-    const x = Math.max(vb.x + 2, Math.min(cx - w / 2, vb.x + vb.width - w - 2));
-    const y = cy - h - 7 < vb.y + 2 ? cy + 9 : cy - h - 7;
-
-    const g = document.createElementNS(SVG_NS, "g");
-    g.setAttribute("class", "pt-tip");
-    g.setAttribute("transform", `translate(${r(x)},${r(y)})`);
-    const rect = document.createElementNS(SVG_NS, "rect");
-    rect.setAttribute("width", String(r(w)));
-    rect.setAttribute("height", String(h));
-    rect.setAttribute("rx", "2");
-    const text = document.createElementNS(SVG_NS, "text");
-    text.setAttribute("x", String(r(w / 2)));
-    text.setAttribute("y", "12");
-    text.setAttribute("text-anchor", "middle");
-    text.textContent = label;
-    g.append(rect, text);
-    svg.appendChild(g);
+    if (!hit || !hit.dataset.label) {
+      tip.hidden = true;
+      return;
+    }
+    const base = info.getBoundingClientRect();
+    const dot = hit.getBoundingClientRect();
+    tip.textContent = hit.dataset.label;
+    tip.style.left = `${dot.left + dot.width / 2 - base.left}px`;
+    tip.style.top = `${dot.top - base.top}px`;
+    tip.hidden = false;
   });
 }
 

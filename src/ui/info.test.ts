@@ -8,7 +8,7 @@ import { initInfo } from "./info";
  * no jsdom, keeping the suite on the repo's node environment and lean deps.
  */
 function renderInfo(): string {
-  const host = { innerHTML: "", addEventListener() {} };
+  const host = { innerHTML: "", addEventListener() {}, querySelector: () => null };
   initInfo(host as unknown as HTMLElement);
   return host.innerHTML;
 }

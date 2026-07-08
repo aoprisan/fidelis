@@ -522,7 +522,7 @@ input[type="number"]:focus-visible {
 .placeholder p b { color: var(--ink); font-weight: 600; }
 
 /* ── info tab: rate history ──────────────────────────────────────────────── */
-.info { max-width: 980px; margin: 0 auto; padding: 0 clamp(6px, 2vw, 26px); }
+.info { position: relative; max-width: 980px; margin: 0 auto; padding: 0 clamp(6px, 2vw, 26px); }
 .info__head {
   display: flex;
   align-items: baseline;
@@ -633,9 +633,23 @@ input[type="number"]:focus-visible {
 
 /* click-to-reveal point value (trend + per-maturity charts) */
 .pt-dot { fill: transparent; cursor: pointer; }
-.pt-tip { pointer-events: none; }
-.pt-tip rect { fill: var(--paper-raised); stroke: var(--ink); stroke-width: 1; }
-.pt-tip text { fill: var(--ink); font-family: var(--sans); font-weight: 700; font-size: 10px; font-variant-numeric: tabular-nums lining-nums; }
+.pt-tip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 9px));
+  z-index: 5;
+  padding: 5px 10px;
+  background: var(--paper-raised);
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 1px 2px 0 rgba(28,43,34,.14);
+}
+.pt-tip[hidden] { display: none; }
 
 .info-cards { display: grid; grid-template-columns: 1fr; gap: 14px; }
 @media (min-width: 720px) { .info-cards { grid-template-columns: 1fr 1fr; } }
