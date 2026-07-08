@@ -259,16 +259,19 @@ function maturityChartsHTML(): string {
     .join("");
 
   return `
-    <section class="info-maturities">
-      <div class="info-maturities__head">
-        <h3>Cuponul pe fiecare maturitate</h3>
+    <details class="info-maturities">
+      <summary>
+        <span class="info-maturities__title">Cuponul pe fiecare maturitate</span>
+        <span class="info-maturities__hint">${mats.length} maturități</span>
+      </summary>
+      <div class="info-maturities__body">
         <div class="mc-legend">
           <span class="mc-key mc-key--ron">Lei</span>
           <span class="mc-key mc-key--eur">Euro</span>
         </div>
+        <div class="mc-grid">${cells}</div>
       </div>
-      <div class="mc-grid">${cells}</div>
-    </section>`;
+    </details>`;
 }
 
 // ── per-issuance coupon bars ─────────────────────────────────────────────────
