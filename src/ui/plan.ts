@@ -360,7 +360,7 @@ function certHTML(res: OfferResult): string {
           <span class="supp__v ${profitCls}">${sign}${fmt(Math.round(Math.abs(res.totalInterest)))} ${w}</span>
         </div>
         <div class="supp">
-          <span class="supp__k">Randament (IRR)</span>
+          <span class="supp__k">Randament pe an (IRR)</span>
           <span class="supp__v">${fmt2(res.yieldPct)}%</span>
         </div>
         <div class="supp">

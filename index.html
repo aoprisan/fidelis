@@ -28,7 +28,7 @@
       </div>
       <div class="mast__title">
         <h1 class="wordmark">Fidelis</h1>
-        <p class="tagline"><b>Cât ai fi câștigat?</b> Un certificat de randament pentru titlurile de stat, calculat pe dobânzile reale ale emisiunilor 2024–2026.</p>
+        <p class="tagline"><b>Împrumuți statul, statul îți plătește dobândă — fără impozit, fără comisioane.</b> Simulează în 30 de secunde cât câștigi cu titlurile de stat Fidelis, pe dobânzile reale ale emisiunilor 2024–2026.</p>
       </div>
     </div>
     <div class="hook" id="hook"></div>
@@ -43,6 +43,35 @@
 
   <!-- PLAN — a clean earnings model built on the current Fidelis offer -->
   <section class="tabview" id="view-plan" role="tabpanel" aria-labelledby="tabBar">
+
+    <!-- FIDELIS PE SCURT — the neophyte on-ramp -->
+    <section class="facts" aria-label="Fidelis pe scurt">
+      <p class="facts__eyebrow">Prima dată aici? Fidelis în 30 de secunde</p>
+      <div class="facts__grid">
+        <div class="fact">
+          <span class="fact__num">0%</span>
+          <span class="fact__lab">impozit pe câștig</span>
+          <span class="fact__sub">dobânda e scutită prin lege de impozit pe venit și de CASS</span>
+        </div>
+        <div class="fact">
+          <span class="fact__num">0 lei</span>
+          <span class="fact__lab">comisioane</span>
+          <span class="fact__sub">subscrii și încasezi fără niciun cost, prin bănci și brokeri parteneri</span>
+        </div>
+        <div class="fact">
+          <span class="fact__num">1×/an</span>
+          <span class="fact__lab">dobânda vine în cont</span>
+          <span class="fact__sub">cupon fix plătit anual, capitalul înapoi integral la scadență</span>
+        </div>
+        <div class="fact fact--donor">
+          <span class="fact__num">500 lei</span>
+          <span class="fact__lab">prag donatori de sânge</span>
+          <span class="fact__sub">tranșă dedicată cu dobândă mai mare; la tranșele standard, de regulă de la 5.000 lei</span>
+        </div>
+      </div>
+      <p class="facts__cta">Alege suma și tranșa în panoul „Planul tău” — certificatul îți arată instant cât încasezi, an de an. Pașii concreți de cumpărare sunt mai jos, la „Cum funcționează Fidelis?”.</p>
+    </section>
+
     <div class="sheet">
       <aside class="panel terms" id="planPanel">
         <div class="terms__head">
@@ -101,6 +130,49 @@
       <section class="cert-col">
         <div id="planResult"></div>
       </section>
+    </div>
+
+    <div class="plan-foot">
+      <section class="explainer" id="explainer" aria-label="Cum funcționează Fidelis">
+        <h2>Cum funcționează Fidelis?</h2>
+
+        <details open>
+          <summary>Ce sunt titlurile Fidelis?</summary>
+          <p>Titluri de stat emise de Ministerul Finanțelor pentru populație, în lei și în euro, listate la Bursa de Valori București. Împrumuți statul român pe o perioadă fixă (2–6 ani la tranșele în lei), iar statul îți plătește o dobândă anuală fixă — cuponul — și îți returnează integral suma la scadență. Detalii oficiale: <a href="https://mfinante.gov.ro/ro/web/titluridestat/fidelis" target="_blank" rel="noopener">mfinante.gov.ro</a>.</p>
+        </details>
+
+        <details>
+          <summary>Cum subscrii?</summary>
+          <p>În perioadele de subscriere (de regulă o săptămână, aproape lunar) poți cumpăra prin băncile și brokerii parteneri — de exemplu Banca Transilvania, BCR, BRD sau brokerii membri BVB — la ghișeu ori din aplicație. <b>Nu plătești niciun comision</b> la subscriere sau la păstrarea până la scadență. Pragul minim este de regulă 5.000 lei (500 lei pentru donatorii de sânge la tranșa dedicată) — verifică prospectul fiecărei emisiuni.</p>
+        </details>
+
+        <details>
+          <summary>Cum funcționează cuponul?</summary>
+          <p>Dobânda este fixă și se plătește anual, direct în contul tău, iar principalul revine integral la scadență — fluxurile exacte pentru scenariul ales sunt în secțiunea „Calendarul încasărilor” de mai sus. Dacă alegi reinvestirea, capitalul și cupoanele intră în emisiunea echivalentă curentă și câștigul se compune.</p>
+        </details>
+
+        <details>
+          <summary>De ce e neimpozabil?</summary>
+          <p>Prin lege, dobânzile și câștigurile de capital din titlurile de stat pentru populație sunt <b>scutite de impozit pe venit și de CASS</b>. La un depozit bancar, dobânda este impozitată cu 10%. Diferența este cuantificată în secțiunea „Fidelis vs depozit vs inflație” — pentru scenariul tău, exact cât impozit eviți.</p>
+        </details>
+
+        <details>
+          <summary>Tranșa pentru donatorii de sânge</summary>
+          <p>Cine a donat sânge în perioada indicată în prospect primește acces la o tranșă specială cu dobândă mai mare (istoric, în jur de +1 punct procentual peste tranșa standard echivalentă), cu prag minim redus la 500 lei. Bifează „Donator de sânge” în simulator ca să vezi efectul.</p>
+        </details>
+
+        <details>
+          <summary>Strategia „scară” și limitele modelului</summary>
+          <p>Strategia scară (ladder) împarte suma egal între maturitatea scurtă, medie și lungă: o parte din bani se eliberează periodic și se reinvestește la dobânda momentului — un compromis între randament și flexibilitate. Limitele modelului: cupon fix plătit anual, deținere până la scadență (nu modelează vânzarea anticipată pe bursă la preț de piață), iar dobânzile istorice nu garantează dobânzile emisiunilor viitoare.</p>
+        </details>
+      </section>
+
+      <div class="colophon">
+        <div class="stamp" aria-hidden="true"><span>uz<br />educativ</span></div>
+        <p class="disclaimer">
+          Instrument educativ. Nu este consultanță de investiții sau recomandare. Randamentele istorice nu garantează rezultate viitoare. Verifică termenii finali oficiali pe mfinante.gov.ro înainte de a subscrie.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -254,40 +326,6 @@
       <div id="calendar"></div>
 
       <section class="compare" id="compare" aria-label="Comparație scenarii"></section>
-
-      <section class="explainer" id="explainer" aria-label="Cum funcționează Fidelis">
-        <h2>Cum funcționează Fidelis?</h2>
-
-        <details open>
-          <summary>Ce sunt titlurile Fidelis?</summary>
-          <p>Titluri de stat emise de Ministerul Finanțelor pentru populație, în lei și în euro, listate la Bursa de Valori București. Împrumuți statul român pe o perioadă fixă (2–6 ani la tranșele în lei), iar statul îți plătește o dobândă anuală fixă — cuponul — și îți returnează integral suma la scadență. Detalii oficiale: <a href="https://mfinante.gov.ro/ro/web/titluridestat/fidelis" target="_blank" rel="noopener">mfinante.gov.ro</a>.</p>
-        </details>
-
-        <details>
-          <summary>Cum subscrii?</summary>
-          <p>În perioadele de subscriere (de regulă o săptămână, aproape lunar) poți cumpăra prin băncile și brokerii parteneri — de exemplu Banca Transilvania, BCR, BRD sau brokerii membri BVB — la ghișeu ori din aplicație. <b>Nu plătești niciun comision</b> la subscriere sau la păstrarea până la scadență. Pragul minim este de regulă 5.000 lei (500 lei pentru donatorii de sânge la tranșa dedicată) — verifică prospectul fiecărei emisiuni.</p>
-        </details>
-
-        <details>
-          <summary>Cum funcționează cuponul?</summary>
-          <p>Dobânda este fixă și se plătește anual, direct în contul tău, iar principalul revine integral la scadență — fluxurile exacte pentru scenariul ales sunt în secțiunea „Calendarul încasărilor” de mai sus. Dacă alegi reinvestirea, capitalul și cupoanele intră în emisiunea echivalentă curentă și câștigul se compune.</p>
-        </details>
-
-        <details>
-          <summary>De ce e neimpozabil?</summary>
-          <p>Prin lege, dobânzile și câștigurile de capital din titlurile de stat pentru populație sunt <b>scutite de impozit pe venit și de CASS</b>. La un depozit bancar, dobânda este impozitată cu 10%. Diferența este cuantificată în secțiunea „Fidelis vs depozit vs inflație” — pentru scenariul tău, exact cât impozit eviți.</p>
-        </details>
-
-        <details>
-          <summary>Tranșa pentru donatorii de sânge</summary>
-          <p>Cine a donat sânge în perioada indicată în prospect primește acces la o tranșă specială cu dobândă mai mare (istoric, în jur de +1 punct procentual peste tranșa standard echivalentă), cu prag minim redus la 500 lei. Bifează „Donator de sânge” în simulator ca să vezi efectul.</p>
-        </details>
-
-        <details>
-          <summary>Strategia „scară” și limitele modelului</summary>
-          <p>Strategia scară (ladder) împarte suma egal între maturitatea scurtă, medie și lungă: o parte din bani se eliberează periodic și se reinvestește la dobânda momentului — un compromis între randament și flexibilitate. Limitele modelului: cupon fix plătit anual, deținere până la scadență (nu modelează vânzarea anticipată pe bursă la preț de piață), iar dobânzile istorice nu garantează dobânzile emisiunilor viitoare.</p>
-        </details>
-      </section>
 
       <div class="colophon">
         <div class="stamp" aria-hidden="true"><span>uz<br />educativ</span></div>

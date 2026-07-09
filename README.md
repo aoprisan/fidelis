@@ -1,11 +1,19 @@
-# Fidelis Backtester
+# Fidelis — cât câștigi împrumutând statul?
 
-A single-page **historic-yield simulator** for Romania's Fidelis government-bond
-program (RON tranches, 2024–2025). Pick an amount, a contribution schedule (a
-one-off lump sum or a recurring monthly plan) and a strategy (single issuance or
-a 3-rung ladder), toggle the blood-donor tranche and reinvestment, and see what
-the holding would have been worth by mid-2026 — with tax-free annual coupons
-compounded on reinvestment.
+A single-page **yield simulator** for Romania's Fidelis government-bond program
+(**RON + EUR** tranches, 2024–2026): tax-free annual coupons, zero fees, and a
+special higher-rate tranche for blood donors. Three tabs, one certificate-styled
+sheet:
+
+- **Plan** — the newcomer-friendly earnings model: pick an amount and a tranche
+  from the current (or any past) edition and see exactly what the state pays
+  you, year by year, to maturity or marked to today. Opens with a "Fidelis in 30
+  seconds" fact strip and a plain-language explainer for first-time buyers.
+- **Info** — the full rate history of every issuance.
+- **Avansat** — the historic backtester: lump-sum or recurring contributions,
+  single issuance or a 3-rung ladder, donor tranche, reinvestment compounding, a
+  taxed-deposit + inflation benchmark, saved/compared/shared scenarios, PNG/PDF
+  export.
 
 > Educational tool. Not investment advice. Historic yields do not guarantee
 > future results. Verify the official terms on
